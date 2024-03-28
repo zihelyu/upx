@@ -16,8 +16,8 @@ env:
   UPX_CMAKE_BUILD_FLAGS: --verbose
   UPX_CMAKE_CONFIG_FLAGS: -Wdev --warn-uninitialized
   UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO: 1
-  # 2024-03-23
-  ZIG_DIST_VERSION: 0.12.0-dev.3429+13a9d94a8
+  # 2024-03-28
+  ZIG_DIST_VERSION: 0.12.0-dev.3480+9dac8db2d
 
 jobs:
   job-rebuild-and-verify-stubs:
@@ -71,8 +71,6 @@ jobs:
         include:
           - { os: ubuntu-22.04, use_m32: true }
           - { os: ubuntu-20.04, use_m32: true } # use_m32 also works here, but save some CI time
-    env:
-      UPX_CONFIG_EXPECT_THREADS: 'ON'
     steps:
       - name: 'Install extra 32-bit and Windows packages'
         if: ${{ matrix.use_m32 }}
@@ -171,6 +169,7 @@ jobs:
         run: |
           env -C build/extra/gcc/release bash "$PWD"/misc/testsuite/test_symlinks.sh
       - name: 'Run file system test suite with Valgrind'
+        if: false # valgrind is SLOW
         run: |
           if command -v valgrind >/dev/null; then
             export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
@@ -199,8 +198,6 @@ jobs:
           # { os: macos-14, gcc: gcc-13, gxx: 'g++-13', testsuite: true }                        # gcc-13: INTERNAL ERROR in ld64
           # { os: macos-14, gcc: gcc-13, gxx: 'g++-13', testsuite: true, xcode_version: 14.3.1 } # gcc-13: MISSING HEADER FILES
           - { os: macos-14, gcc: gcc-12, gxx: 'g++-12', testsuite: true } # => use gcc-12 for now
-    env:
-      UPX_CONFIG_EXPECT_THREADS: 'ON'
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         if: matrix.xcode_version # NOTE: gcc-12 on macos-13 does not work with Xcode-15
@@ -297,8 +294,6 @@ jobs:
         include:
           - { name: windows-2019-amd64, os: windows-2019, vsversion: 2019, arch: amd64 }
           - { name: windows-2022-amd64, os: windows-2022, vsversion: 2022, arch: amd64 }
-    env:
-      UPX_CONFIG_EXPECT_THREADS: 'ON'
     steps:
       - run: git config --global core.autocrlf false
       - name: 'Check out code'
@@ -487,7 +482,6 @@ jobs:
           # { zig_target: x86_64-macos.13.0-none }
           - { zig_target: x86_64-windows-gnu }
     env:
-      ##UPX_CONFIG_EXPECT_THREADS: 'ON'
       # zig is currently missing winpthreads; see https://github.com/ziglang/zig/issues/10989
       UPX_CONFIG_EXPECT_THREADS: ${{ contains(matrix.zig_target, '-windows-') && 'OFF' || 'ON' }}
       # for zig-cc wrapper scripts (see below):

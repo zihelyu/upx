@@ -66,7 +66,7 @@ endif
 test:: build/all+test PHONY
 ifneq ($(wildcard /usr/bin/env),) # need Unix utils like bash, perl, sed, xargs, etc.
 ifneq ($(wildcard ./misc/scripts/.),)
-check-whitespace clang-format run-testsuite run-testsuite-debug run-testsuite-release: src/Makefile PHONY
+check-whitespace clang-format run-testsuite run-testsuite-all run-testsuite-debug run-testsuite-release: src/Makefile PHONY
 	$(MAKE) -C src $@
 endif
 endif

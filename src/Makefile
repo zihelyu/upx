@@ -59,7 +59,8 @@ endif
 # The   actual (new) checksums are in ./tmp-upx-testsuite-*/testsuite_1/.sha256sums.recreate
 ifneq ($(wildcard $(upx_testsuite_SRCDIR)/files/packed/.),)
 ifneq ($(wildcard $(top_srcdir)/misc/testsuite/upx_testsuite_1.sh),)
-run-testsuite: run-testsuite-release PHONY
+run-testsuite:     run-testsuite-release PHONY
+run-testsuite-all: run-testsuite-debug run-testsuite-release PHONY
 run-testsuite-%: export upx_testsuite_SRCDIR := $(upx_testsuite_SRCDIR)
 run-testsuite-debug: export upx_testsuite_BUILDDIR := ./tmp-upx-testsuite-debug
 run-testsuite-debug: export upx_exe := $(top_srcdir)/build/debug/upx
