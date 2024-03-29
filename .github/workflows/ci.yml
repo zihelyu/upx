@@ -16,8 +16,8 @@ env:
   UPX_CMAKE_BUILD_FLAGS: --verbose
   UPX_CMAKE_CONFIG_FLAGS: -Wdev --warn-uninitialized
   UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO: 1
-  # 2024-03-28
-  ZIG_DIST_VERSION: 0.12.0-dev.3480+9dac8db2d
+  # 2024-03-29
+  ZIG_DIST_VERSION: 0.12.0-dev.3484+7aa42f47b
 
 jobs:
   job-rebuild-and-verify-stubs:
@@ -465,14 +465,15 @@ jobs:
           - { zig_target: aarch64-windows-gnu }
           - { zig_target: arm-linux-musleabihf, qemu: qemu-arm }
           # { zig_target: arm-linux-musleabihf, qemu: qemu-arm, zig_pic: -fPIE }
-          - { zig_target: i386-linux-musl, qemu: qemu-i386 -cpu Conroe }
-          # { zig_target: i386-linux-musl, qemu: qemu-i386 -cpu Conroe, zig_pic: -fPIE }
+          - { zig_target: i386-linux-musl, qemu: qemu-i386 }
+          # { zig_target: i386-linux-musl, qemu: qemu-i386, zig_pic: -fPIE }
           - { zig_target: i386-windows-gnu }
           # mips and mipsel: bad hard-float code generation(??); or QEMU bug; or UPX bug; see https://github.com/upx/upx/issues/788
           - { zig_target: mips-linux-musl, zig_flags: -msoft-float, qemu: qemu-mips }
           - { zig_target: mipsel-linux-musl, zig_flags: -msoft-float, qemu: qemu-mipsel }
           - { zig_target: powerpc-linux-musl, qemu: qemu-ppc }
-          - { zig_target: powerpc64-linux-musl, qemu: qemu-ppc64 }
+          # powerpc64: obscure problem with C++ exceptions in doctest checks when *NOT* using -fstack-protector
+          - { zig_target: powerpc64-linux-musl, zig_flags: -fstack-protector, qemu: qemu-ppc64 }
           - { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le }
           - { zig_target: x86_64-linux-musl, qemu: qemu-x86_64 }
           # { zig_target: x86_64-linux-musl, qemu: qemu-x86_64, zig_pic: -fPIE }

@@ -1,3 +1,4 @@
+# Copyright (C) Markus Franz Xaver Johannes Oberhumer
 FROM docker.io/library/ubuntu:22.04
 ENV UPX_CONTAINER_IMAGE_NAME=upx-stubtools-20221212-v6
 ARG DEBIAN_FRONTEND=noninteractive

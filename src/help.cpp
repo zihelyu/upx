@@ -25,6 +25,11 @@
    <markus@oberhumer.com>               <ezerotven+github@gmail.com>
  */
 
+#if defined(_WIN32_WINNT)
+static constexpr long long initial_win32_winnt = _WIN32_WINNT + 0LL;
+#else
+static constexpr long long initial_win32_winnt = 0;
+#endif
 #define WANT_WINDOWS_LEAN_H 1 // _WIN32_WINNT
 #include "conf.h"
 #include "compress/compress.h" // upx_ucl_version_string()
@@ -425,11 +430,14 @@ void show_version(bool one_line) {
     fprintf(f, "Copyright (C) 1996-2024 Markus Franz Xaver Johannes Oberhumer\n");
     fprintf(f, "Copyright (C) 1996-2024 Laszlo Molnar\n");
     fprintf(f, "Copyright (C) 2000-2024 John F. Reiser\n");
-    fprintf(f, "Copyright (C) 2002-2024 Jens Medoch\n");
+    // Jens contributed the ps1/exe format; no need to list as main author
+    //   fprintf(f, "Copyright (C) 2002-2024 Jens Medoch\n");
 #if (WITH_ZLIB)
+    // see vendor/zlib/LICENSE
     fprintf(f, "Copyright (C) 1995" "-2024 Jean-loup Gailly and Mark Adler\n");
 #endif
 #if (WITH_LZMA)
+    // see vendor/lzma-sdk/lzma.txt
     fprintf(f, "Copyright (C) 1999" "-2006 Igor Pavlov\n");
 #endif
 #if (WITH_ZSTD)
@@ -437,13 +445,15 @@ void show_version(bool one_line) {
     fprintf(f, "Copyright (C) 2015" "-2024 Meta Platforms, Inc. and affiliates\n");
 #endif
 #if (WITH_BZIP2)
-    fprintf(f, "Copyright (C) 1996" "-2010 Julian Seward\n"); // see <bzlib.h>
+    // see <bzlib.h>
+    fprintf(f, "Copyright (C) 1996" "-2010 Julian Seward\n");
 #endif
 #if !defined(DOCTEST_CONFIG_DISABLE)
+    // see vendor/doctest/LICENSE.txt
     fprintf(f, "Copyright (C) 2016" "-2023 Viktor Kirilov\n");
 #endif
-    fprintf(f, "UPX comes with ABSOLUTELY NO WARRANTY; for details type '%s -L'.\n", progname);
     // clang-format on
+    fprintf(f, "UPX comes with ABSOLUTELY NO WARRANTY; for details type '%s -L'.\n", progname);
 }
 
 /*************************************************************************
@@ -525,6 +535,8 @@ void show_sysinfo(const char *options_var) {
 #endif
 #if defined(_WIN32_WINNT)
         cf_print("_WIN32_WINNT", "0x%04llx", _WIN32_WINNT + 0);
+        if (initial_win32_winnt != 0 && initial_win32_winnt != _WIN32_WINNT + 0)
+            cf_print("INITIAL_WIN32_WINNT", "0x%04llx", initial_win32_winnt);
 #endif
 #if defined(__MSVCRT_VERSION__)
         cf_print("__MSVCRT_VERSION__", "0x%04llx", __MSVCRT_VERSION__ + 0);
@@ -556,6 +568,7 @@ void show_sysinfo(const char *options_var) {
 #endif
         UNUSED(cf_count);
         UNUSED(cf_print);
+        UNUSED(initial_win32_winnt);
     }
 
     // run-time
