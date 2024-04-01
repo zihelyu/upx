@@ -60,7 +60,7 @@ ElfLinker::Section::Section(const char *n, const void *i, unsigned s, unsigned a
     : name(nullptr), output(nullptr), size(s), offset(0), p2align(a), next(nullptr) {
     name = strdup(n);
     assert(name != nullptr);
-    input = malloc(s + 1);
+    input = ::malloc(s + 1);
     assert(input != nullptr);
     if (s != 0) {
         assert(i != nullptr);
@@ -70,8 +70,8 @@ ElfLinker::Section::Section(const char *n, const void *i, unsigned s, unsigned a
 }
 
 ElfLinker::Section::~Section() noexcept {
-    free(name);
-    free(input);
+    ::free(name);
+    ::free(input);
 }
 
 /*************************************************************************
@@ -85,7 +85,7 @@ ElfLinker::Symbol::Symbol(const char *n, Section *s, upx_uint64_t o)
     assert(section != nullptr);
 }
 
-ElfLinker::Symbol::~Symbol() noexcept { free(name); }
+ElfLinker::Symbol::~Symbol() noexcept { ::free(name); }
 
 /*************************************************************************
 // Relocation
@@ -110,13 +110,13 @@ ElfLinker::~ElfLinker() noexcept {
     unsigned ic;
     for (ic = 0; ic < nsections; ic++)
         delete sections[ic];
-    free(sections);
+    ::free(sections);
     for (ic = 0; ic < nsymbols; ic++)
         delete symbols[ic];
-    free(symbols);
+    ::free(symbols);
     for (ic = 0; ic < nrelocations; ic++)
         delete relocations[ic];
-    free(relocations);
+    ::free(relocations);
 }
 
 void ElfLinker::init(const void *pdata_v, int plen, unsigned pxtra) {
@@ -425,7 +425,7 @@ int ElfLinker::addLoader(const char *sname) {
         }
         sect += strlen(sect) + 1;
     }
-    free(begin);
+    ::free(begin);
     return outputlen;
 }
 

@@ -162,7 +162,7 @@ ACC_COMPILE_TIME_ASSERT_HEADER(sizeof(upx_charptr_unit_type) == 1)
 typedef upx_int64_t upx_off_t;
 #undef off_t
 #if 0
-// TODO cleanup: at some future point we can do this:
+// TODO later cleanup: at some future point we can do this:
 #define off_t DO_NOT_USE_off_t
 #else
 #define off_t upx_off_t
@@ -228,12 +228,6 @@ typedef upx_int64_t upx_off_t;
 #endif
 #if (ACC_OS_DOS32) && defined(__DJGPP__)
 #undef sopen
-#endif
-
-#if defined(HAVE_DUP) && (HAVE_DUP + 0 == 0)
-// TODO later: add upx_fd_dup() util
-#undef dup
-#define dup(x) (-1)
 #endif
 
 #ifndef STDIN_FILENO
@@ -338,7 +332,7 @@ typedef upx_int64_t upx_off_t;
 // TODO later: check __MINGW_PRINTF_FORMAT
 #if defined(_WIN32) && defined(__MINGW32__) && defined(__GNUC__) && !defined(__clang__)
 #define attribute_format(a, b) __attribute__((__format__(__gnu_printf__, a, b)))
-#elif (ACC_CC_CLANG || ACC_CC_GNUC)
+#elif defined(__clang__) || defined(__GNUC__)
 #define attribute_format(a, b) __attribute__((__format__(__printf__, a, b)))
 #else
 #define attribute_format(a, b) /*empty*/
@@ -442,6 +436,7 @@ inline void mem_clear(T *object) noexcept {
     static_assert(size >= 1 && size <= UPX_RSIZE_MAX_MEM);
     memset((void *) object, 0, size);
 }
+// disable some overloads
 #if defined(__clang__) || __GNUC__ != 7
 template <class T>
 inline void mem_clear(T (&array)[]) noexcept DELETED_FUNCTION;

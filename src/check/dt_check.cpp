@@ -24,6 +24,9 @@
    <markus@oberhumer.com>
  */
 
+// doctest checks, and various tests to catch toolchain/qemu/sanitizer/valgrind/wine/etc
+// problems; grown historically
+
 #include "../util/system_headers.h"
 #include <cmath> // std::isinf std::isnan
 #include "../conf.h"
@@ -376,6 +379,7 @@ struct TestFloat {
     static noinline Float add_div_x(Int a, Int b) { return Float(a + b) / Float(X); }
     static noinline Float sub_div_x(Int a, Int b) { return Float(a - b) / Float(X); }
     static noinline void check() noexcept {
+        assert_noexcept(div(2 * X, Float(X)) == Float(2));
         assert_noexcept(add_div(X, X, Float(X)) == Float(2));
         assert_noexcept(add_div_x(X, X) == Float(2));
         assert_noexcept(sub_div(3 * X, X, Float(X)) == Float(2));
@@ -391,6 +395,7 @@ struct TestFloat {
 #else
             assert_noexcept(std::isnan(div(0, Float(0))));
             assert_noexcept(std::isinf(div(1, Float(0))));
+            assert_noexcept(std::isinf(div(Int(-1), Float(0))));
 #endif
         }
     }
@@ -431,6 +436,19 @@ void upx_compiler_sanity_check(void) noexcept {
     }
 
     check_basic_floating_point();
+
+    // check_basic_decltype()
+    {
+        auto a = +0;
+        constexpr auto b = -0;
+        const auto &c = -1;
+        COMPILE_TIME_ASSERT((std::is_same<int, decltype(a)>::value))
+        COMPILE_TIME_ASSERT((std::is_same<const int, decltype(b)>::value))
+        COMPILE_TIME_ASSERT((std::is_same<const int &, decltype(c)>::value))
+        UNUSED(a);
+        UNUSED(b);
+        UNUSED(c);
+    }
 
 #define ACC_WANT_ACC_CHK_CH 1
 #undef ACCCHK_ASSERT
@@ -646,7 +664,7 @@ void upx_compiler_sanity_check(void) noexcept {
 **************************************************************************/
 
 TEST_CASE("assert_noexcept") {
-    // just to make sure that our own assert() macros don't generate any warnings
+    // just to make sure that our own assert() macros do not trigger any compiler warnings
     byte dummy = 0;
     byte *ptr1 = &dummy;
     const byte *const ptr2 = &dummy;
@@ -668,10 +686,13 @@ TEST_CASE("acc_vget") {
     CHECK_EQ(acc_vget_long(1, -1), 1);
     CHECK_EQ(acc_vget_acc_int64l_t(2, 1), 2);
     CHECK_EQ(acc_vget_acc_hvoid_p(nullptr, 0), nullptr);
+    if (acc_vget_int(1, 0) > 0)
+        return;
+    assert_noexcept(false);
 }
 
 TEST_CASE("ptr_invalidate_and_poison") {
-    int *ip = nullptr;
+    int *ip = nullptr; // initialized
     ptr_invalidate_and_poison(ip);
     assert(ip != nullptr);
     (void) ip;
@@ -751,11 +772,13 @@ TEST_CASE("libc snprintf") {
     CHECK_EQ(strcmp(buf, "0X1A   0x1b   0x1c  "), 0);
 }
 
-#if 0
 TEST_CASE("libc qsort") {
     // runtime check that libc qsort() never compares identical objects
-    // UPDATE: while only poor implementations of qsort() would actually do
-    //   this, it is probably allowed by the standard; so skip this test case
+    // UPDATE: while only poor implementations of qsort() would actually do this
+    //   it is probably allowed by the standard, so skip this test by default
+    if (!is_envvar_true("UPX_DEBUG_TEST_LIBC_QSORT"))
+        return;
+
     struct Elem {
         upx_uint16_t id;
         upx_uint16_t value;
@@ -765,8 +788,8 @@ TEST_CASE("libc qsort") {
             assert_noexcept(a->id != b->id); // check not IDENTICAL
             return a->value < b->value ? -1 : (a->value == b->value ? 0 : 1);
         }
-        static bool check_sort(upx_sort_func_t sort, Elem *e, size_t n) {
-            upx_uint32_t x = 5381 + n + ((upx_uintptr_t) e & 0xff);
+        static noinline bool check_sort(upx_sort_func_t sort, Elem *e, size_t n) {
+            upx_uint32_t x = 5381 + n + (upx_rand() & 0xff);
             for (size_t i = 0; i < n; i++) {
                 e[i].id = (upx_uint16_t) i;
                 x = x * 33 + 1 + (i & 255);
@@ -782,18 +805,19 @@ TEST_CASE("libc qsort") {
     constexpr size_t N = 4096;
     Elem e[N];
     for (size_t n = 0; n <= N; n = 2 * n + 1) {
-        // CHECK(Elem::check_sort(qsort, e, n)); // libc qsort()
-        CHECK(Elem::check_sort(upx_gnomesort, e, n));
-        CHECK(Elem::check_sort(upx_shellsort_memswap, e, n));
-        CHECK(Elem::check_sort(upx_shellsort_memcpy, e, n));
+        // system sort functions
+        CHECK(Elem::check_sort(::qsort, e, n)); // libc qsort()
 #if UPX_CONFIG_USE_STABLE_SORT
         upx_sort_func_t wrap_stable_sort = [](void *aa, size_t nn, size_t, upx_compare_func_t cc) {
             upx_std_stable_sort<sizeof(Elem)>(aa, nn, cc);
         };
-        CHECK(Elem::check_sort(wrap_stable_sort, e, n));
+        CHECK(Elem::check_sort(wrap_stable_sort, e, n)); // std::stable_sort()
 #endif
+        // UPX sort functions
+        CHECK(Elem::check_sort(upx_gnomesort, e, n));
+        CHECK(Elem::check_sort(upx_shellsort_memswap, e, n));
+        CHECK(Elem::check_sort(upx_shellsort_memcpy, e, n));
     }
 }
-#endif
 
 /* vim:set ts=4 sw=4 et: */

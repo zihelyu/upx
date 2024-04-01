@@ -785,6 +785,26 @@ inline unsigned UPX_MIN(const LE32 &a, unsigned b) { return UPX_MIN(unsigned(a),
 // misc support
 **************************************************************************/
 
+// for use with qsort()
+extern "C" {
+int __acc_cdecl_qsort be16_compare(const void *, const void *);
+int __acc_cdecl_qsort be24_compare(const void *, const void *);
+int __acc_cdecl_qsort be32_compare(const void *, const void *);
+int __acc_cdecl_qsort be64_compare(const void *, const void *);
+int __acc_cdecl_qsort le16_compare(const void *, const void *);
+int __acc_cdecl_qsort le24_compare(const void *, const void *);
+int __acc_cdecl_qsort le32_compare(const void *, const void *);
+int __acc_cdecl_qsort le64_compare(const void *, const void *);
+int __acc_cdecl_qsort be16_compare_signed(const void *, const void *);
+int __acc_cdecl_qsort be24_compare_signed(const void *, const void *);
+int __acc_cdecl_qsort be32_compare_signed(const void *, const void *);
+int __acc_cdecl_qsort be64_compare_signed(const void *, const void *);
+int __acc_cdecl_qsort le16_compare_signed(const void *, const void *);
+int __acc_cdecl_qsort le24_compare_signed(const void *, const void *);
+int __acc_cdecl_qsort le32_compare_signed(const void *, const void *);
+int __acc_cdecl_qsort le64_compare_signed(const void *, const void *);
+} // extern "C"
+
 // <type_traits> upx_is_integral; see conf.h
 #define TT_UPX_IS_INTEGRAL(T)                                                                      \
     template <>                                                                                    \
@@ -825,26 +845,6 @@ typedef LE64 NE64;
 #define ne32_compare_signed le32_compare_signed
 #define ne64_compare_signed le64_compare_signed
 #endif
-
-// for use with qsort()
-extern "C" {
-int __acc_cdecl_qsort be16_compare(const void *, const void *);
-int __acc_cdecl_qsort be24_compare(const void *, const void *);
-int __acc_cdecl_qsort be32_compare(const void *, const void *);
-int __acc_cdecl_qsort be64_compare(const void *, const void *);
-int __acc_cdecl_qsort le16_compare(const void *, const void *);
-int __acc_cdecl_qsort le24_compare(const void *, const void *);
-int __acc_cdecl_qsort le32_compare(const void *, const void *);
-int __acc_cdecl_qsort le64_compare(const void *, const void *);
-int __acc_cdecl_qsort be16_compare_signed(const void *, const void *);
-int __acc_cdecl_qsort be24_compare_signed(const void *, const void *);
-int __acc_cdecl_qsort be32_compare_signed(const void *, const void *);
-int __acc_cdecl_qsort be64_compare_signed(const void *, const void *);
-int __acc_cdecl_qsort le16_compare_signed(const void *, const void *);
-int __acc_cdecl_qsort le24_compare_signed(const void *, const void *);
-int __acc_cdecl_qsort le32_compare_signed(const void *, const void *);
-int __acc_cdecl_qsort le64_compare_signed(const void *, const void *);
-} // extern "C"
 
 /*************************************************************************
 // Provide namespaces and classes to abstract endianness policies.

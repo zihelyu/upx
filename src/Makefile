@@ -33,10 +33,6 @@ debug+test release+test all+test:                   PHONY; $(MAKE) -C $(top_srcd
 
 test:: build/all+test PHONY
 
-# OLD target names [deprecated]
-$(top_srcdir)/build/debug:   build/debug PHONY
-$(top_srcdir)/build/release: build/release PHONY
-
 #***********************************************************************
 # make run-testsuite
 # git clone https://github.com/upx/upx-testsuite.git

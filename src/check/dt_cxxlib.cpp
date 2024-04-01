@@ -27,24 +27,8 @@
 // lots of tests (and probably quite a number of redundant tests)
 // modern compilers will optimize away much of this code
 
-#if 0 // TODO later
-// libc++ hardenining
-#if defined(__clang__) && defined(__clang_major__) && (__clang_major__ + 0 >= 18)
-#if DEBUG
-#define _LIBCPP_HARDENING_MODE _LIBCPP_HARDENING_MODE_DEBUG
-#else
-#define _LIBCPP_HARDENING_MODE _LIBCPP_HARDENING_MODE_EXTENSIVE
-#endif
-#endif
-#if defined(__clang__) && defined(__clang_major__) && (__clang_major__ + 0 < 18)
-#if DEBUG
-#define _LIBCPP_ENABLE_ASSERTIONS 1
-#endif
-#endif
-#endif // TODO later
-
 #include "../util/system_headers.h"
-#include <vector>
+#include <vector> // std::vector
 #include "../conf.h"
 
 /*************************************************************************
@@ -125,7 +109,7 @@ ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_le("abc", "abz"))
 //
 **************************************************************************/
 
-TEST_CASE("libc++") {
+TEST_CASE("std::vector") {
     constexpr size_t N = 16;
     std::vector<int> v(N);
     CHECK(v.end() - v.begin() == N);
@@ -298,7 +282,7 @@ TEST_CASE("upx::ObjectDeleter 2") {
 }
 
 TEST_CASE("upx::ptr_static_cast") {
-    // check that we don't trigger any -Wcast-align warnings
+    // check that we do not trigger any -Wcast-align warnings
     using upx::ptr_static_cast;
     void *vp = nullptr;
     byte *bp = nullptr;

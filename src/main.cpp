@@ -923,7 +923,7 @@ int main_get_options(int argc, char **argv) {
         // atari/tos
         {"split-segments", 0x90, N, 650},
         // darwin/macho
-        {"force-macos", 0x90, N, 690}, // undocumented temporary until we fix macOS 13+
+        {"force-macos", 0x90, N, 690}, // undocumented temporary option until we do fix macOS 13+
         // djgpp2/coff
         {"coff", 0x90, N, 610}, // produce COFF output
         // dos/exe
@@ -1355,9 +1355,9 @@ int __acc_cdecl_main main(int argc, char *argv[]) /*noexcept*/ {
 #endif
     acc_wildargv(&argc, &argv);
 #if defined(__wasi__)
-    srand((int) time(nullptr));
+    ::srand((unsigned) time(nullptr));
 #else
-    srand((int) clock());
+    ::srand((unsigned) clock());
 #endif
 
     // info: main() is implicitly "noexcept", so we need a try block

@@ -203,7 +203,7 @@ const char *prettyName(const char *n) noexcept {
             n++;
         else if (*n == ' ')
             n++;
-        else if (strncmp(n, "class ", 6) == 0) // Visual C++ (msvc)
+        else if (strncmp(n, "class ", 6) == 0) // Visual C++ (MSVC)
             n += 6;
         else
             break;

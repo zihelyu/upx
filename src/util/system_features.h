@@ -55,7 +55,7 @@
 #if DEBUG
 #define _LIBCPP_ENABLE_ASSERTIONS 1
 #endif
-#endif
+#endif // clang >= 18
 #endif // TODO later
 
 /* vim:set ts=4 sw=4 et: */

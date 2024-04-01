@@ -84,10 +84,14 @@ struct PackHeader final {
 
     // info fields set by Packer::compressWithFilters()
     unsigned overlap_overhead;
+
+private: // UPX conventions
+    UPX_CXX_DISABLE_ADDRESS(PackHeader)
+    UPX_CXX_DISABLE_NEW_DELETE(PackHeader)
 };
 
 /*************************************************************************
-// ph default util functions
+// PackHeader ph util functions
 **************************************************************************/
 
 bool ph_is_forced_method(int method) noexcept; // predicate

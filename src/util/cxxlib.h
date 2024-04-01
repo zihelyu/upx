@@ -427,7 +427,7 @@ template <class T>
 inline void owner_free(OwningPointer(T)(&object)) noexcept {
     static_assert(!std::is_class_v<T>); // UPX convention
     if (object != nullptr) {
-        free((T *) object);
+        ::free((T *) object);
         object = nullptr;
     }
     assert_noexcept((T *) object == nullptr);

@@ -215,7 +215,7 @@ int PeFile::readFileHeader() {
 
 PeFile::Interval::Interval(SPAN_P(byte) b) : base(b) {}
 
-PeFile::Interval::~Interval() noexcept { free(ivarr); }
+PeFile::Interval::~Interval() noexcept { ::free(ivarr); }
 
 int __acc_cdecl_qsort PeFile::Interval::compare(const void *p1, const void *p2) {
     const interval *i1 = (const interval *) p1;
@@ -1175,14 +1175,14 @@ PeFile::Export::Export(char *_base) : base(_base), iv((byte *) _base) {
 }
 
 PeFile::Export::~Export() noexcept {
-    free(ename);
+    ::free(ename);
     delete[] functionptrs;
     delete[] ordinals;
     if (names) {
         const unsigned limit = edir.names + edir.functions;
         for (unsigned ic = 0; ic < limit; ic++)
             if (names[ic])
-                free(names[ic]); // allocated by strdup()
+                ::free(names[ic]); // allocated by strdup()
         delete[] names;
     }
 }

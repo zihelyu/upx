@@ -267,7 +267,7 @@ int PackVmlinuzI386::decompressKernel()
             fd_pos = -1;
             // open
             fi->seek(gzoff, SEEK_SET);
-            fd = dup(fi->getFd());
+            fd = fi->dup();
             if (fd < 0)
                 break;
             gzFile zf = gzdopen(fd, "rb");
@@ -849,7 +849,7 @@ int PackVmlinuzARMEL::decompressKernel()
             fd_pos = -1;
             // open
             fi->seek(gzoff, SEEK_SET);
-            fd = dup(fi->getFd());
+            fd = fi->dup();
             if (fd < 0)
                 break;
             gzFile zf = gzdopen(fd, "rb");

@@ -28,8 +28,9 @@
 #pragma once
 
 struct Options;
-extern Options *opt;      // global options, see class PackMaster for per-file local options
 #define options_t Options // old name
+
+extern Options *opt; // global options, see class PackMaster for per-file local options
 
 #if WITH_THREADS
 extern std::mutex opt_lock_mutex;
@@ -177,6 +178,9 @@ struct Options final {
         int strip_relocs;
         const char *keep_resource;
     } win32_pe;
+
+private: // UPX conventions
+    UPX_CXX_DISABLE_NEW_DELETE(Options)
 };
 
 /* vim:set ts=4 sw=4 et: */

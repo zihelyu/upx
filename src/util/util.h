@@ -143,9 +143,11 @@ inline void ptr_invalidate_and_poison(T *(&ptr)) noexcept {
 // stdlib
 **************************************************************************/
 
-void *upx_calloc(size_t n, size_t element_size) may_throw;
+noinline void *upx_calloc(size_t n, size_t element_size) may_throw;
 
-void upx_memswap(void *a, void *b, size_t n) noexcept;
+void upx_memswap(void *a, void *b, size_t bytes) noexcept;
+
+noinline int upx_rand(void) noexcept;
 
 typedef int(__acc_cdecl_qsort *upx_compare_func_t)(const void *, const void *);
 typedef void (*upx_sort_func_t)(void *array, size_t n, size_t element_size, upx_compare_func_t);
@@ -165,7 +167,7 @@ void upx_std_stable_sort(void *array, size_t n, upx_compare_func_t compare);
     upx_std_stable_sort<(element_size)>((a), (n), (compare))
 #else
 // use libc qsort(); good enough for our use cases
-#define upx_qsort qsort
+#define upx_qsort ::qsort
 #endif
 
 /*************************************************************************

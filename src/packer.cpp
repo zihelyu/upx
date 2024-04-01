@@ -495,7 +495,7 @@ unsigned Packer::getRandomId() const {
 #endif
         id ^= (unsigned) fi->st.st_ino;
         id ^= (unsigned) fi->st.st_atime;
-        id ^= (unsigned) rand();
+        id ^= (unsigned) upx_rand();
     }
     return id;
 }
@@ -947,7 +947,7 @@ int Packer::prepareMethods(int *methods, int ph_method, const int *all_methods) 
     }
     // debug
     if (opt->debug.use_random_method && nmethods >= 2) {
-        int method = methods[rand() % nmethods];
+        int method = methods[upx_rand() % nmethods];
         methods[0] = method;
         nmethods = 1;
         NO_printf("\nuse_random_method = %d\n", method);
@@ -1015,7 +1015,7 @@ done:
         filters[nfilters++] = 0;
     // debug
     if (opt->debug.use_random_filter && nfilters >= 3 && filters[nfilters - 1] == 0) {
-        int filter_id = filters[rand() % (nfilters - 1)];
+        int filter_id = filters[upx_rand() % (nfilters - 1)];
         if (filter_id > 0) {
             filters[0] = filter_id;
             filters[1] = 0;
