@@ -293,8 +293,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: windows-2019-amd64, os: windows-2019, vsversion: 2019, arch: amd64 }
-          - { name: windows-2022-amd64, os: windows-2022, vsversion: 2022, arch: amd64 }
+          - { name: windows-2019-amd64, os: windows-2019, vsversion: 2019, vsarch: amd64 }
+          - { name: windows-2022-amd64, os: windows-2022, vsversion: 2022, vsarch: amd64 }
     steps:
       - run: git config --global core.autocrlf false
       - name: 'Check out code'
@@ -306,7 +306,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           vsversion: ${{ matrix.vsversion }}
-          arch: ${{ matrix.arch }}
+          arch: ${{ matrix.vsarch }}
       - name: 'Build debug'
         run:  'make build/debug'
       - name: 'Build release'
@@ -325,12 +325,12 @@ jobs:
           name: ${{ env.artifact_name }}
           path: tmp/artifact
       - name: 'Run ctest tests'
-        if: ${{ matrix.arch != 'amd64_arm64' }}
+        if: ${{ matrix.vsarch != 'amd64_arm64' }}
         run: |
           ctest --test-dir build/debug   -C Debug
           ctest --test-dir build/release -C Release
       - name: 'Run test suite build/release'
-        if: ${{ matrix.arch != 'amd64_arm64' }}
+        if: ${{ matrix.vsarch != 'amd64_arm64' }}
         shell: bash
         run: |
           export upx_testsuite_SRCDIR="$(readlink -en ../deps/upx-testsuite)"
@@ -348,14 +348,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: amd64-win64-vs2019,   os: windows-2019, vsversion: 2019, arch: amd64 }
-          - { name: amd64-win64-vs2022,   os: windows-2022, vsversion: 2022, arch: amd64 }
-          - { name: arm64-win64-vs2019,   os: windows-2019, vsversion: 2019, arch: amd64_arm64 }
-          - { name: arm64-win64-vs2022,   os: windows-2022, vsversion: 2022, arch: amd64_arm64 }
-          - { name: arm64ec-win64-vs2022, os: windows-2022, vsversion: 2022, arch: amd64_arm64, cl_machine_flags: -arm64EC, link_machine_flags: '/machine:arm64ec' }
-          # { name: arm64x-win64-vs2022,  os: windows-2022, vsversion: 2022, arch: amd64_arm64, cl_machine_flags: -arm64EC, link_machine_flags: '/machine:arm64x' }
-          - { name: i386-win32-vs2019,    os: windows-2019, vsversion: 2019, arch: amd64_x86 }
-          - { name: i386-win32-vs2022,    os: windows-2022, vsversion: 2022, arch: amd64_x86 }
+          - { name: amd64-win64-vs2019,   os: windows-2019, vsversion: 2019, vsarch: amd64 }
+          - { name: amd64-win64-vs2022,   os: windows-2022, vsversion: 2022, vsarch: amd64 }
+          - { name: arm64-win64-vs2019,   os: windows-2019, vsversion: 2019, vsarch: amd64_arm64 }
+          - { name: arm64-win64-vs2022,   os: windows-2022, vsversion: 2022, vsarch: amd64_arm64 }
+          - { name: arm64ec-win64-vs2022, os: windows-2022, vsversion: 2022, vsarch: amd64_arm64, cl_machine_flags: -arm64EC, link_machine_flags: '/machine:arm64ec' }
+          # { name: arm64x-win64-vs2022,  os: windows-2022, vsversion: 2022, vsarch: amd64_arm64, cl_machine_flags: -arm64EC, link_machine_flags: '/machine:arm64x' }
+          - { name: i386-win32-vs2019,    os: windows-2019, vsversion: 2019, vsarch: amd64_x86 }
+          - { name: i386-win32-vs2022,    os: windows-2022, vsversion: 2022, vsarch: amd64_x86 }
     steps:
       - run: git config --global core.autocrlf false
       - name: 'Check out code'
@@ -372,7 +372,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           vsversion: ${{ matrix.vsversion }}
-          arch: ${{ matrix.arch }}
+          arch: ${{ matrix.vsarch }}
       - name: 'Build by hand'
         shell: cmd
         run: |
@@ -426,7 +426,7 @@ jobs:
           name: ${{ env.artifact_name }}
           path: tmp/artifact
       - name: 'Run basic tests'
-        if: ${{ matrix.arch != 'amd64_arm64' }}
+        if: ${{ matrix.vsarch != 'amd64_arm64' }}
         run: |
           $ErrorActionPreference = 'stop'
           $ErrorView = 'NormalView'
@@ -440,7 +440,7 @@ jobs:
           .\upx.exe -t upx_packed.exe
           .\upx_packed.exe --version
       - name: 'Run test suite'
-        if: ${{ matrix.arch != 'amd64_arm64' }}
+        if: ${{ matrix.vsarch != 'amd64_arm64' }}
         shell: bash
         run: |
           export upx_testsuite_SRCDIR="$(readlink -en ../deps/upx-testsuite)"

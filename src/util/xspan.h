@@ -38,7 +38,7 @@
 
 // Automatic conversion to underlying pointer; do NOT enable this config as this
 // defeats the main purpose of a checked pointer => use raw_bytes() as needed;
-// and see xspan_fwd.h how to make this more convenient.
+// and see "xspan_fwd.h" how to make this more convenient.
 #ifndef XSPAN_CONFIG_ENABLE_IMPLICIT_CONVERSION
 #define XSPAN_CONFIG_ENABLE_IMPLICIT_CONVERSION 0
 #endif
