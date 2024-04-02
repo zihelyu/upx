@@ -293,8 +293,12 @@ function(upx_sanitize_target) # ARGV
         elseif(MINGW OR CYGWIN)
             # avoid link errors with current MinGW-w64 versions
             # see https://www.mingw-w64.org/contribute/#sanitizers-asan-tsan-usan
+        elseif(CMAKE_C_COMPILER_ID MATCHES "^Clang$" AND CMAKE_C_COMPILER_VERSION VERSION_LESS "9.0")
+            # unreliable/broken sanitize implementation before clang-9 (Sep 2019)
+            message(WARNING "WARNING: ignoring SANITIZE for target '${t}'")
         elseif(CMAKE_C_COMPILER_ID MATCHES "^GNU" AND CMAKE_C_COMPILER_VERSION VERSION_LESS "8.0")
-            # unsupported compiler; unreliable/broken sanitize implementation
+            # unsupported compiler; unreliable/broken sanitize implementation before gcc-8 (May 2018)
+            message(WARNING "WARNING: ignoring SANITIZE for target '${t}'")
         else()
             # default sanitizer for Debug builds
             target_compile_options(${t} PRIVATE $<$<CONFIG:Debug>:-fsanitize=undefined -fsanitize-undefined-trap-on-error -fstack-protector-all>)

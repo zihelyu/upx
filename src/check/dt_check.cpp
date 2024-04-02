@@ -384,14 +384,6 @@ static noinline bool shall_test_float_division_by_zero(void) {
 #if defined(__clang__) && defined(__FAST_MATH__) && defined(__INTEL_LLVM_COMPILER)
             // warning: comparison with NaN always evaluates to false in fast floating point modes
             fprintf(stderr, "upx: WARNING: ignoring %s: __FAST_MATH__\n", envvar);
-#elif defined(__clang__) && (__clang_major__ < 9) && defined(__SANITIZE_UNDEFINED_BEHAVIOR__)
-            // UBSAN problem with clang < 9
-            // @COMPILER_BUG @CLANG_BUG @UBSAN_BUG
-            fprintf(stderr, "upx: WARNING: ignoring %s: UBSAN\n", envvar);
-#elif defined(__clang__) && (__clang_major__ < 8)
-            // NOTE: cannot reliably detect __SANITIZE_UNDEFINED_BEHAVIOR__ on older clang versions
-            // @COMPILER_BUG @CLANG_BUG @UBSAN_BUG
-            fprintf(stderr, "upx: WARNING: ignoring %s: clang %d\n", envvar, __clang_major__);
 #else
             result = true;
 #endif
