@@ -23,28 +23,30 @@ env:
 jobs:
   job-rebuild-and-verify-stubs:
     name: 'Rebuild stubs'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container: 'ubuntu:23.10'
     steps:
-      - name: 'Install extra packages'
+      - name: 'Install packages'
         run: |
           uname -a; pwd; id; umask
+          dpkg --add-architecture i386
+          apt-get update && apt-get upgrade -y
+          apt-get install -y --no-install-recommends bash ca-certificates curl git libmpc3 make perl-base xz-utils libc6:i386 zlib1g:i386
           mkdir ../deps; cd ../deps; mkdir packages
-          if ! test -e /usr/bin/python2; then
-            ####sudo apt-get update && sudo apt-get install -y --no-install-recommends python2-minimal
-            # install python2-minimal packages from Debian-11
-            wget -q 'https://ftp.debian.org/debian/pool/main/p/python2.7/libpython2.7-minimal_2.7.18-8+deb11u1_amd64.deb'
-            wget -q 'https://ftp.debian.org/debian/pool/main/p/python2.7/python2.7-minimal_2.7.18-8+deb11u1_amd64.deb'
-            sudo dpkg -i ./*python2*.deb && rm ./*python2*.deb && sudo ldconfig
-            sudo ln -s -v python2.7 /usr/bin/python2
-          fi
+          # install python2-minimal packages from Debian-11
+          curl -sS -L -O 'https://ftp.debian.org/debian/pool/main/p/python2.7/libpython2.7-minimal_2.7.18-8+deb11u1_amd64.deb'
+          curl -sS -L -O 'https://ftp.debian.org/debian/pool/main/p/python2.7/python2.7-minimal_2.7.18-8+deb11u1_amd64.deb'
+          dpkg -i ./*python2*.deb && rm ./*python2*.deb && ldconfig
+          ln -s -v python2.7 /usr/bin/python2
           # manually unpack and install compat libs from Ubuntu-16.04
-          wget -q 'https://archive.kernel.org/ubuntu-archive/ubuntu/pool/main/m/mpfr4/libmpfr4_3.1.6-1_amd64.deb'
+          curl -sS -L -O 'https://archive.kernel.org/ubuntu-archive/ubuntu/pool/main/m/mpfr4/libmpfr4_3.1.6-1_amd64.deb'
           for f in ./*.deb; do dpkg -x $f ./packages; done
-          sudo mv -v -n ./packages/usr/lib/x86_64-linux-gnu/lib* /usr/lib/x86_64-linux-gnu/
-          rm -rf ./*.deb ./packages
-          sudo ldconfig
+          mv -v -n ./packages/usr/lib/x86_64-linux-gnu/lib* /usr/lib/x86_64-linux-gnu/
+          rm -rf ./*.deb ./packages && ldconfig
           # install upx-stubtools
-          wget -q -O - https://github.com/upx/upx-stubtools/releases/download/v20221212/bin-upx-20221212.tar.xz | tar -xJ
+          curl -sS -L https://github.com/upx/upx-stubtools/releases/download/v20221212/bin-upx-20221212.tar.xz | tar -xJ
+          # config git for use in container
+          git config --global --add safe.directory '*'
       - name: 'Check out code'
         uses: actions/checkout@v4
         with: { submodules: true }
