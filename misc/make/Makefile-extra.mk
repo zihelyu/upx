@@ -277,49 +277,45 @@ endif
 # it easy to set other variables like CMAKE_AR or CMAKE_RANLIB
 #***********************************************************************
 
-ifneq ($(origin UPX_CMAKE_CONFIG_FLAGS),command line) # GNU make bug work-around
-# GNU make bug, see https://savannah.gnu.org/bugs/index.php?64822
-# and commit https://git.savannah.gnu.org/cgit/make.git/commit/?id=07187db947ba25e6c59b55f10660a04f8e9c5229
-
 $(call check_undefined,__add_cmake_config)
+# promote an environment or Make variable to a CMake cache entry:
 __add_cmake_config = $(and $($1),-D$1="$($1)")
-# pass common CMake settings from environment/make to cmake
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_VERBOSE_MAKEFILE)
-# pass common CMake toolchain settings from environment/make to cmake
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_ADDR2LINE)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_AR)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_DLLTOOL)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_LINKER)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_NM)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_OBJCOPY)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_OBJDUMP)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_RANLIB)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_READELF)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_STRIP)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_TAPI)
-# pass common CMake LTO toolchain settings from environment/make to cmake (for use with "-flto")
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_C_COMPILER_AR)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_C_COMPILER_RANLIB)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_CXX_COMPILER_AR)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_CXX_COMPILER_RANLIB)
-# pass common CMake cross compilation settings from environment/make to cmake
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_SYSTEM_NAME)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_SYSTEM_PROCESSOR)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_CROSSCOMPILING_EMULATOR)
-# pass UPX config options from environment/make to cmake; see CMakeLists.txt
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_GITREV)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_SANITIZE)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_WSTRICT)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_WERROR)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_SELF_PACK_TEST)
-# pass UPX extra compile options from environment/make to cmake; see CMakeLists.txt
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_BZIP2)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_UCL)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_UPX)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_ZLIB)
-build/%: UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_ZSTD)
 
-endif # GNU make bug work-around
+# pass common CMake settings
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_VERBOSE_MAKEFILE)
+# pass common CMake toolchain settings
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_ADDR2LINE)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_AR)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_DLLTOOL)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_LINKER)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_NM)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_OBJCOPY)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_OBJDUMP)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_RANLIB)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_READELF)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_STRIP)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_TAPI)
+# pass common CMake LTO toolchain settings
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_C_COMPILER_AR)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_C_COMPILER_RANLIB)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_CXX_COMPILER_AR)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_CXX_COMPILER_RANLIB)
+# pass common CMake cross compilation settings
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_SYSTEM_NAME)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_SYSTEM_PROCESSOR)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_CROSSCOMPILING_EMULATOR)
+# pass UPX config options; see CMakeLists.txt
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_GITREV)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_SANITIZE)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_WSTRICT)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_WERROR)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_SELF_PACK_TEST)
+# pass UPX extra compile options; see CMakeLists.txt
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_BZIP2)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_UCL)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_UPX)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_ZLIB)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_EXTRA_COMPILE_OPTIONS_ZSTD)
 
 #***********************************************************************
 # check git submodules

@@ -3,6 +3,15 @@
 # Copyright (C) Markus Franz Xaver Johannes Oberhumer
 #
 
+# set USE_STRICT_DEFAULTS
+if(NOT DEFINED USE_STRICT_DEFAULTS AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+    include("${CMAKE_CURRENT_SOURCE_DIR}/misc/cmake/use_strict_defaults.cmake" OPTIONAL)
+endif()
+if(NOT DEFINED USE_STRICT_DEFAULTS)
+    # permissive config defaults when building from source code tarball
+    set(USE_STRICT_DEFAULTS FALSE CACHE INTERNAL "" FORCE)
+endif()
+
 #***********************************************************************
 # macros
 #***********************************************************************
@@ -90,6 +99,24 @@ function(upx_print_have_symbol) # ARGV; needs include(CheckSymbolExists)
             message(STATUS "HAVE ${symbol}")
         endif()
     endforeach()
+endfunction()
+
+function(upx_make_bool_var result_var_name var_name default_value)
+    set(result "${default_value}")
+    if(NOT ",${var_name}," STREQUAL ",,")
+        if(DEFINED ${var_name})
+            if(NOT ",${${var_name}}," STREQUAL ",,")
+                set(result "${${var_name}}")
+            endif()
+        endif()
+    endif()
+    # convert to bool
+    if(${result})
+        set(result ON)
+    else()
+        set(result OFF)
+    endif()
+    set(${result_var_name} "${result}" PARENT_SCOPE) # return value
 endfunction()
 
 # examine MinGW/Cygwin compiler configuration
@@ -290,6 +317,8 @@ function(upx_sanitize_target) # ARGV
             # no-op
         elseif(MSVC_FRONTEND)
             # MSVC uses -GS (similar to -fstack-protector) by default
+        elseif(NOT GNU_FRONTEND)
+            # unknown compiler
         elseif(MINGW OR CYGWIN)
             # avoid link errors with current MinGW-w64 versions
             # see https://www.mingw-w64.org/contribute/#sanitizers-asan-tsan-usan

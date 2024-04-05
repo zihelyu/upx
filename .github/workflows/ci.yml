@@ -17,23 +17,26 @@ env:
   UPX_CMAKE_CONFIG_FLAGS: -Wdev --warn-uninitialized
   UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO: 1
   UPX_DEBUG_TEST_LIBC_QSORT: 1
-  # 2024-04-01
-  ZIG_DIST_VERSION: 0.12.0-dev.3508+a6ed3e6d2
+  # 2024-04-04
+  ZIG_DIST_VERSION: 0.12.0-dev.3533+e5d900268
 
 jobs:
   job-rebuild-and-verify-stubs:
     name: 'Rebuild stubs'
     runs-on: ubuntu-latest
-    container: 'ubuntu:23.10'
+    container: 'ubuntu:24.04' # glibc-2.39
+    #container: 'debian:12-slim' # also works; glibc-2.36
+    #container: 'debian:testing-slim' # also works
     steps:
       - name: 'Install packages'
         run: |
           uname -a; pwd; id; umask
           dpkg --add-architecture i386
           apt-get update && apt-get upgrade -y
+          # install system packages
           apt-get install -y --no-install-recommends bash ca-certificates curl git libmpc3 make perl-base xz-utils libc6:i386 zlib1g:i386
-          mkdir ../deps; cd ../deps; mkdir packages
           # install python2-minimal packages from Debian-11
+          mkdir ../deps; cd ../deps; mkdir packages
           curl -sS -L -O 'https://ftp.debian.org/debian/pool/main/p/python2.7/libpython2.7-minimal_2.7.18-8+deb11u1_amd64.deb'
           curl -sS -L -O 'https://ftp.debian.org/debian/pool/main/p/python2.7/python2.7-minimal_2.7.18-8+deb11u1_amd64.deb'
           dpkg -i ./*python2*.deb && rm ./*python2*.deb && ldconfig
@@ -45,11 +48,12 @@ jobs:
           rm -rf ./*.deb ./packages && ldconfig
           # install upx-stubtools
           curl -sS -L https://github.com/upx/upx-stubtools/releases/download/v20221212/bin-upx-20221212.tar.xz | tar -xJ
-          # config git for use in container
-          git config --global --add safe.directory '*'
       - name: 'Check out code'
-        uses: actions/checkout@v4
-        with: { submodules: true }
+        run: |
+          # this seems to be needed when running in a container (beause of UID mismatch??)
+          git config --global --add safe.directory '*'
+          git clone --branch "$GITHUB_REF_NAME" --depth 1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" .
+          git submodule update --init -- vendor/lzma-sdk
       - name: 'Rebuild and verify stubs'
         run: |
           export PATH="$(readlink -en ../deps/bin-upx-20221212):$PATH"
