@@ -1,6 +1,6 @@
 # Copyright (C) Markus Franz Xaver Johannes Oberhumer
-FROM docker.io/library/ubuntu:22.04
-ENV UPX_CONTAINER_IMAGE_NAME=upx-stubtools-20221212-v6
+FROM docker.io/library/ubuntu:24.04
+ENV UPX_CONTAINER_IMAGE_NAME=upx-stubtools-20240405-v1
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
 
@@ -8,19 +8,31 @@ ENV LANG=C.UTF-8
 RUN dpkg --add-architecture i386 \
     && apt-get update && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        aria2 bash bash-completion ca-certificates dash git less libmpc3 libncurses5 \
-        make ncurses-term perl-base python2-minimal time wget xz-utils \
+        aria2 bash bash-completion ca-certificates dash git less libmpc3 \
+        make ncurses-term perl-base time wget xz-utils \
         libc6:i386 zlib1g:i386 \
         # the following packages are not required for rebuilding the stubs, but
         # they do make the image *much* more convenient and also allow building
         # the full UPX binary inside the container via CMake:
         7zip bfs busybox bzip2 cabextract ccache chrpath cmake cpio curl elfutils fd-find file fzf \
         g++ gawk gdb gojq ht htop hyperfine jq libzstd-dev lsb-release lz4 lzip lzop \
-        mksh moreutils ninja-build p7zip parallel patch patchelf patchutils pax-utils paxctl \
+        mksh moreutils ninja-build p7zip parallel patch patchelf patchutils pax-utils \
         python3 python3-pyasn1 python3-pycryptodome python3-zstd \
         re2c ripgrep rsync screen universal-ctags unzip vim yash zip zlib1g-dev zsh zstd \
         # extra packages for compiling with "gcc -m32" and "gcc -mx32":
         g++-multilib gcc-multilib \
+    && true
+
+# install python2-minimal packages from Debian-11; REQUIRED
+RUN cd /root \
+    && aria2c --checksum=sha-256=85833c92314011b89bbead6f9a5a7a360b5ee4f9b95e001225afead4ebf9f7d3 \
+              'https://ftp.debian.org/debian/pool/main/p/python2.7/libpython2.7-minimal_2.7.18-8+deb11u1_amd64.deb' \
+    && aria2c --checksum=sha-256=44f0cdc1a343303d31c55fcb3a6402cfe326adf749ec30e375e6e0c0c5f7c1f7 \
+              'https://ftp.debian.org/debian/pool/main/p/python2.7/python2.7-minimal_2.7.18-8+deb11u1_amd64.deb' \
+    && dpkg -i ./*.deb \
+    && rm ./*.deb \
+    && if ! test -f /usr/bin/python2; then ln -s -v python2.7 /usr/bin/python2; fi \
+    && ldconfig \
     && true
 
 # manually unpack and install compat libs from Ubuntu-16.04; REQUIRED
