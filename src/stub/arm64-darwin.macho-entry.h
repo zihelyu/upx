@@ -33,8 +33,8 @@
 /* clang-format off */
 
 #define STUB_ARM64_DARWIN_MACHO_ENTRY_SIZE    7365
-#define STUB_ARM64_DARWIN_MACHO_ENTRY_ADLER32 0x31b06f6b
-#define STUB_ARM64_DARWIN_MACHO_ENTRY_CRC32   0x0f5ec97d
+#define STUB_ARM64_DARWIN_MACHO_ENTRY_ADLER32 0xb6c76f2b
+#define STUB_ARM64_DARWIN_MACHO_ENTRY_CRC32   0x34c5965d
 
 unsigned char stub_arm64_darwin_macho_entry[7365] = {
 /* 0x0000 */ 127, 69, 76, 70,  2,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -82,7 +82,7 @@ unsigned char stub_arm64_darwin_macho_entry[7365] = {
 /* 0x02a0 */ 243,255,255,151, 33,  0,  1, 58,241,255,255,151, 33,  0,  1, 58,
 /* 0x02b0 */ 239,255,255,151, 67,255,255, 84, 35, 12,  0,113,  1,  0,128, 82,
 /* 0x02c0 */  35,  1,  0, 84,  5, 20, 64, 56,165, 32,  3, 42,229,  3, 37, 42,
-/* 0x02d0 */ 101,248,255, 52,163,  0,  1, 83,165,124,  1, 83, 99,  0,  3, 43,
+/* 0x02d0 */ 101,248,255, 52,163,  0,  1, 83,165,124,  1, 19, 99,  0,  3, 43,
 /* 0x02e0 */   2,  0,  0, 20,226,255,255,151, 33,  0,  1, 58,224,255,255,151,
 /* 0x02f0 */  33,  0,  1, 58,225,  0,  0, 84, 33,  0,128, 82,220,255,255,151,
 /* 0x0300 */  33,  0,  1, 58,218,255,255,151,163,255,255, 84, 33,  8,  0, 17,

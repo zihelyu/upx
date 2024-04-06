@@ -157,7 +157,7 @@ getoff_n2d:
         CHECK_SRC; LDRB3(off,[src],#1)  // low 7+1 bits
         orr  off,off,tmp,lsl #8
         mvn off,off; cbz off,eof_n2d  // off= ~off
-        lsl tmp,off,#31; lsr off,off,#1; adds tmp,tmp,tmp
+        lsl tmp,off,#31; asr off,off,#1; adds tmp,tmp,tmp
         b len_n2d -4 // CHEAT [getnextb ends in ADC2(reg,reg)]
 
 offprev_n2d:
