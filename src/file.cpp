@@ -214,7 +214,7 @@ upx_off_t InputFile::seek(upx_off_t off, int whence) {
 
 upx_off_t InputFile::st_size_orig() const { return _length_orig; }
 
-int InputFile::dup() may_throw {
+int InputFile::dupFd() may_throw {
     if (!isOpen())
         throwIOException("bad dup");
 #if defined(HAVE_DUP) && (HAVE_DUP + 0 == 0)

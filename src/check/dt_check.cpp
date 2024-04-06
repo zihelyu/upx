@@ -56,7 +56,7 @@ int upx_doctest_check(int argc, char **argv) {
     // default for debug builds: do show the [doctest] summary
     minimal = false;
 #endif
-    const char *e = getenv("UPX_DEBUG_DOCTEST_VERBOSE");
+    const char *e = upx_getenv("UPX_DEBUG_DOCTEST_VERBOSE");
     if (e && e[0]) {
         if (strcmp(e, "0") == 0) {
             minimal = true;
@@ -375,8 +375,8 @@ static noinline bool shall_test_float_division_by_zero(void) {
     static bool result = false; // default is false
     static upx_std_once_flag init_done;
     upx_std_call_once(init_done, []() noexcept {
-        const char envvar[] = "UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO";
-        const char *e = getenv(envvar);
+        static const char envvar[] = "UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO";
+        const char *e = upx_getenv(envvar);
         bool force = (e && e[0] && strcmp(e, "2") == 0);
         if (force)
             result = true;
@@ -441,6 +441,8 @@ static noinline void check_basic_floating_point(void) noexcept {
 #include "../util/miniacc.h"
 
 void upx_compiler_sanity_check(void) noexcept {
+    check_basic_floating_point();
+
     if (is_envvar_true("UPX_DEBUG_DOCTEST_DISABLE", "UPX_DEBUG_DISABLE_DOCTEST")) {
         // If UPX_DEBUG_DOCTEST_DISABLE is set then we don't want to throw any
         // exceptions in order to improve debugging experience.
@@ -448,8 +450,6 @@ void upx_compiler_sanity_check(void) noexcept {
         // check working C++ exception handling to early catch toolchain/qemu/wine/etc problems
         check_basic_cxx_exception_handling(throwSomeValue);
     }
-
-    check_basic_floating_point();
 
     // check_basic_decltype()
     {
@@ -716,6 +716,11 @@ TEST_CASE("ptr_invalidate_and_poison") {
     (void) dp;
 }
 
+TEST_CASE("upx_getenv") {
+    CHECK_EQ(upx_getenv(nullptr), nullptr);
+    CHECK_EQ(upx_getenv(""), nullptr);
+}
+
 TEST_CASE("working -fno-strict-aliasing") {
     bool ok;
     long v = 0;
@@ -802,17 +807,22 @@ TEST_CASE("libc qsort") {
             assert_noexcept(a->id != b->id); // check not IDENTICAL
             return a->value < b->value ? -1 : (a->value == b->value ? 0 : 1);
         }
-        static noinline bool check_sort(upx_sort_func_t sort, Elem *e, size_t n) {
-            upx_uint32_t x = 5381 + n + (upx_rand() & 0xff);
+        static noinline bool check_sort(upx_sort_func_t sort, Elem *e, size_t n, bool is_stable) {
+            upx_uint32_t x = 5381 + (upx_rand() & 255);
             for (size_t i = 0; i < n; i++) {
                 e[i].id = (upx_uint16_t) i;
                 x = x * 33 + 1 + (i & 255);
-                e[i].value = (upx_uint16_t) x;
+                e[i].value = (upx_uint16_t) ((x >> 4) & 15);
             }
             sort(e, n, sizeof(Elem), Elem::compare);
-            for (size_t i = 1; i < n; i++)
+            // verify
+            for (size_t i = 1; i < n; i++) {
                 if very_unlikely (e[i - 1].value > e[i].value)
                     return false;
+                if (is_stable)
+                    if very_unlikely (e[i - 1].value == e[i].value && e[i - 1].id >= e[i].id)
+                        return false;
+            }
             return true;
         }
     };
@@ -820,17 +830,17 @@ TEST_CASE("libc qsort") {
     Elem e[N];
     for (size_t n = 0; n <= N; n = 2 * n + 1) {
         // system sort functions
-        CHECK(Elem::check_sort(::qsort, e, n)); // libc qsort()
+        CHECK(Elem::check_sort(::qsort, e, n, false)); // libc qsort()
 #if UPX_CONFIG_USE_STABLE_SORT
         upx_sort_func_t wrap_stable_sort = [](void *aa, size_t nn, size_t, upx_compare_func_t cc) {
             upx_std_stable_sort<sizeof(Elem)>(aa, nn, cc);
         };
-        CHECK(Elem::check_sort(wrap_stable_sort, e, n)); // std::stable_sort()
+        CHECK(Elem::check_sort(wrap_stable_sort, e, n, true)); // std::stable_sort()
 #endif
-        // UPX sort functions
-        CHECK(Elem::check_sort(upx_gnomesort, e, n));
-        CHECK(Elem::check_sort(upx_shellsort_memswap, e, n));
-        CHECK(Elem::check_sort(upx_shellsort_memcpy, e, n));
+        // simple UPX sort functions
+        CHECK(Elem::check_sort(upx_gnomesort, e, n, true));
+        CHECK(Elem::check_sort(upx_shellsort_memswap, e, n, false));
+        CHECK(Elem::check_sort(upx_shellsort_memcpy, e, n, false));
     }
 }
 

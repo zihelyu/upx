@@ -62,19 +62,33 @@ exe=".out"
 upx_self_exe=$upx_exe
 fo="--force-overwrite"
 
-"${upx_run[@]}" -3         "${upx_self_exe}" ${fo} -o upx-packed${exe}
-"${upx_run[@]}" -3 --nrv2b "${upx_self_exe}" ${fo} -o upx-packed-n2b${exe}
-"${upx_run[@]}" -3 --nrv2d "${upx_self_exe}" ${fo} -o upx-packed-n2d${exe}
-"${upx_run[@]}" -3 --nrv2e "${upx_self_exe}" ${fo} -o upx-packed-n2e${exe}
-"${upx_run[@]}" -1 --lzma  "${upx_self_exe}" ${fo} -o upx-packed-lzma${exe}
+"${upx_run[@]}" -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed${exe}
+"${upx_run[@]}" -3 --nrv2b       "${upx_self_exe}" ${fo} -o upx-packed-n2b${exe}
+"${upx_run[@]}" -3 --nrv2d       "${upx_self_exe}" ${fo} -o upx-packed-n2d${exe}
+"${upx_run[@]}" -3 --nrv2e       "${upx_self_exe}" ${fo} -o upx-packed-n2e${exe}
+"${upx_run[@]}" -1 --lzma        "${upx_self_exe}" ${fo} -o upx-packed-lzma${exe}
 
 "${upx_run[@]}" -l         upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe}
 "${upx_run[@]}" --fileinfo upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe}
 "${upx_run[@]}" -t         upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe}
-"${upx_run[@]}" -d upx-packed${exe} ${fo} -o upx-unpacked${exe}
+
+"${upx_run[@]}" -d upx-packed${exe}      ${fo} -o upx-unpacked${exe}
+"${upx_run[@]}" -d upx-packed-n2b${exe}  ${fo} -o upx-unpacked-n2b${exe}
+"${upx_run[@]}" -d upx-packed-n2d${exe}  ${fo} -o upx-unpacked-n2d${exe}
+"${upx_run[@]}" -d upx-packed-n2e${exe}  ${fo} -o upx-unpacked-n2e${exe}
+"${upx_run[@]}" -d upx-packed-lzma${exe} ${fo} -o upx-unpacked-lzma${exe}
 
 set -x
 "${upx_runner[@]}" ./upx-unpacked${exe} --version-short
+"${upx_runner[@]}" ./upx-unpacked-n2b${exe} --version-short
+"${upx_runner[@]}" ./upx-unpacked-n2d${exe} --version-short
+"${upx_runner[@]}" ./upx-unpacked-n2e${exe} --version-short
+"${upx_runner[@]}" ./upx-unpacked-lzma${exe} --version-short
+
 "${upx_runner[@]}" ./upx-packed${exe} --version-short
+"${upx_runner[@]}" ./upx-packed-n2b${exe} --version-short
+"${upx_runner[@]}" ./upx-packed-n2d${exe} --version-short
+"${upx_runner[@]}" ./upx-packed-n2e${exe} --version-short
+"${upx_runner[@]}" ./upx-packed-lzma${exe} --version-short
 
 echo "All done."

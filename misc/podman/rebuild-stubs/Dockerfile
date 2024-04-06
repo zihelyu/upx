@@ -14,11 +14,11 @@ RUN dpkg --add-architecture i386 \
         # the following packages are not required for rebuilding the stubs, but
         # they do make the image *much* more convenient and also allow building
         # the full UPX binary inside the container via CMake:
-        7zip bfs busybox bzip2 cabextract ccache chrpath cmake cpio curl elfutils fd-find file fzf \
+        7zip bfs busybox bzip2 cabextract ccache chrpath cmake cpio curl elfutils fd-find file fish fzf \
         g++ gawk gdb gojq ht htop hyperfine jq libzstd-dev lsb-release lz4 lzip lzop \
-        mksh moreutils ninja-build p7zip parallel patch patchelf patchutils pax-utils \
+        minify mksh moreutils neovim ninja-build p7zip parallel patch patchelf patchutils pax-utils \
         python3 python3-pyasn1 python3-pycryptodome python3-zstd \
-        re2c ripgrep rsync screen universal-ctags unzip vim yash zip zlib1g-dev zsh zstd \
+        re2c ripgrep rsync screen universal-ctags unzip yash yq zip zlib1g-dev zsh zstd \
         # extra packages for compiling with "gcc -m32" and "gcc -mx32":
         g++-multilib gcc-multilib \
     && true
@@ -74,6 +74,9 @@ RUN useradd upx -U --uid 2000 --shell /bin/bash -m \
     && for d in bin include lib share state; do mkdir -p .local/$d; done \
     && ln -s .cache/wine .wine && ln -s .cache/tmp tmp \
     && ln -s /usr/local/bin/bin-upx-20221212 .local/bin/bin-upx \
+    && echo 'm() { make "$@"; }' >> .bash_aliases \
+    && echo 'source /usr/share/bash-completion/completions/make' >> .bash_aliases \
+    && echo 'complete -F _make m' >> .bash_aliases \
     && chown -R upx:upx . \
     && true
 USER upx

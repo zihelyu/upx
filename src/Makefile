@@ -3,8 +3,8 @@
 # Copyright (C) Markus Franz Xaver Johannes Oberhumer
 #
 
-# NOTE: this Makefile is deprecated - please directly use
-# the top-level CMake build instead.
+# NOTE: this Makefile is intended for developers - please use
+#   the top-level Makefile instead
 
 ifndef srcdir
   srcdir := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
@@ -14,7 +14,7 @@ ifndef top_srcdir
 endif
 
 #***********************************************************************
-# redirect to top-level CMake build
+# redirect to top-level Makefile
 #***********************************************************************
 
 # NOTE that the top-level Makefile .DEFAULT_GOAL is build/release

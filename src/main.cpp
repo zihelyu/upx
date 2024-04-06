@@ -37,6 +37,9 @@
 **************************************************************************/
 
 #ifndef OPTIONS_VAR
+// historical note: "UPX_OPTIONS" would be a better name, but back in the old
+// days environment variables used to be short; and we cannot change that now
+// because of backward compatibility issues
 #define OPTIONS_VAR "UPX"
 #endif
 
@@ -1086,7 +1089,7 @@ void main_get_envoptions() {
     static const char sep[] = " \t";
     char shortopts[256];
 
-    var = getenv(OPTIONS_VAR);
+    var = upx_getenv(OPTIONS_VAR);
     if (var == nullptr || !var[0])
         return;
     env = strdup(var);

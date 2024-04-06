@@ -66,7 +66,7 @@ void Options::reset() noexcept {
 #endif
     // support NO_COLOR, see https://no-color.org/
     // "... when present and not an empty string (regardless of its value)"
-    const char *e = getenv("NO_COLOR");
+    const char *e = upx_getenv("NO_COLOR");
     if (e && e[0])
         o->console = CON_FILE;
 

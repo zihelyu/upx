@@ -88,7 +88,7 @@ public:
     virtual upx_off_t seek(upx_off_t off, int whence) override;
     upx_off_t st_size_orig() const;
 
-    noinline int dup() may_throw;
+    noinline int dupFd() may_throw;
 
 protected:
     upx_off_t _length_orig = 0;

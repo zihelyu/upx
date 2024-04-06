@@ -254,6 +254,12 @@ TEST_CASE("ptr_check_no_overlap 3") {
 // stdlib
 **************************************************************************/
 
+const char *upx_getenv(const char *envvar) noexcept {
+    if (envvar != nullptr && envvar[0])
+        return ::getenv(envvar);
+    return nullptr;
+}
+
 int upx_rand(void) noexcept { return ::rand(); }
 
 void *upx_calloc(size_t n, size_t element_size) may_throw {
@@ -430,7 +436,7 @@ struct TestSortAllPermutations {
             memcpy(a, perm, sizeof(*a) * n);
             sort(a, n, sizeof(*a), CompareFunc);
             for (size_t i = 0; i < n; i++)
-                assert_noexcept((a[i] == 255 + i));
+                assert_noexcept(a[i] == 255 + i);
             num_perms += 1;
         } while (std::next_permutation(perm, perm + n));
         return num_perms;
@@ -774,11 +780,11 @@ int fn_strcmp(const char *n1, const char *n2) {
 
 // UPX convention: any environment variable that is set and is not strictly equal to "0" is true
 bool is_envvar_true(const char *envvar, const char *alternate_name) noexcept {
-    const char *e = getenv(envvar);
+    const char *e = upx_getenv(envvar);
     if (e != nullptr && e[0])
         return strcmp(e, "0") != 0;
     if (alternate_name != nullptr) {
-        e = getenv(alternate_name);
+        e = upx_getenv(alternate_name);
         if (e != nullptr && e[0])
             return strcmp(e, "0") != 0;
     }

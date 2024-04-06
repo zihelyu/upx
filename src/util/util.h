@@ -145,6 +145,8 @@ inline void ptr_invalidate_and_poison(T *(&ptr)) noexcept {
 
 noinline void *upx_calloc(size_t n, size_t element_size) may_throw;
 
+noinline const char *upx_getenv(const char *envvar) noexcept;
+
 void upx_memswap(void *a, void *b, size_t bytes) noexcept;
 
 noinline int upx_rand(void) noexcept;

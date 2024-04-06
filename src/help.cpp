@@ -430,8 +430,6 @@ void show_version(bool one_line) {
     fprintf(f, "Copyright (C) 1996-2024 Markus Franz Xaver Johannes Oberhumer\n");
     fprintf(f, "Copyright (C) 1996-2024 Laszlo Molnar\n");
     fprintf(f, "Copyright (C) 2000-2024 John F. Reiser\n");
-    // Jens contributed the ps1/exe format; no need to list as main author
-    //   fprintf(f, "Copyright (C) 2002-2024 Jens Medoch\n");
 #if (WITH_ZLIB)
     // see vendor/zlib/LICENSE
     fprintf(f, "Copyright (C) 1995" "-2024 Jean-loup Gailly and Mark Adler\n");
@@ -591,7 +589,7 @@ void show_sysinfo(const char *options_var) {
 #endif
 
     if (options_var && options_var[0]) {
-        const char *e = getenv(options_var);
+        const char *e = upx_getenv(options_var);
         con_fprintf(f, "\n");
         if (e && e[0])
             con_fprintf(f, "Contents of environment variable %s: '%s'\n\n", options_var, e);

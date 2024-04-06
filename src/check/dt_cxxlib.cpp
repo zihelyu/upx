@@ -345,7 +345,7 @@ TEST_CASE("upx::noncopyable") {
 namespace {
 template <class T>
 struct TestTriBool {
-    static void test(bool expect_true) {
+    static noinline void test(bool expect_true) {
         static_assert(std::is_class<T>::value);
         static_assert(std::is_nothrow_default_constructible<T>::value);
         static_assert(std::is_nothrow_destructible<T>::value);

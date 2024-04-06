@@ -29,7 +29,7 @@
 #include "system_defs.h"
 
 #if !(__cplusplus + 0 >= 201703L)
-#error "C++17 is required"
+#error "FATAL ERROR: C++17 is required"
 #endif
 
 // check expected defines
