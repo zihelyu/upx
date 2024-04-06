@@ -33,8 +33,8 @@
 /* clang-format off */
 
 #define STUB_POWERPC64LE_LINUX_ELF_ENTRY_SIZE    10183
-#define STUB_POWERPC64LE_LINUX_ELF_ENTRY_ADLER32 0x9a03ac5f
-#define STUB_POWERPC64LE_LINUX_ELF_ENTRY_CRC32   0x0b4eb11a
+#define STUB_POWERPC64LE_LINUX_ELF_ENTRY_ADLER32 0xa938ad18
+#define STUB_POWERPC64LE_LINUX_ELF_ENTRY_CRC32   0x88b1165d
 
 unsigned char stub_powerpc64le_linux_elf_entry[10183] = {
 /* 0x0000 */ 127, 69, 76, 70,  2,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -74,7 +74,7 @@ unsigned char stub_powerpc64le_linux_elf_entry[10183] = {
 /* 0x0220 */ 177,255,194, 65, 21, 57,231,124, 21, 72, 41,125,165,255,194, 65,
 /* 0x0230 */  21, 57,231,124, 64,  0, 41,124, 20, 74, 41,125,149,255,194, 65,
 /* 0x0240 */ 216,255,192, 65,  0,  0,  0, 57,253,255,231, 52, 46, 64,231, 84,
-/* 0x0250 */  28,  0,192, 65,  1,  0,  3,140,249,  0,234,124,112, 14, 74,125,
+/* 0x0250 */  28,  0,192, 65,  1,  0, 99,141,249, 88,234,124,112, 14, 74,125,
 /* 0x0260 */   0,  0, 42, 44,  0,  0,194, 65, 12,  0,  0, 72, 21, 72, 41,125,
 /* 0x0270 */  97,255,194, 65, 21, 65,  8,125, 21, 72, 41,125, 85,255,194, 65,
 /* 0x0280 */  21, 65,  8,125, 40,  0,130, 64,  1,  0,  0, 57, 21, 72, 41,125,

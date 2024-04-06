@@ -33,8 +33,8 @@
 /* clang-format off */
 
 #define STUB_POWERPC64LE_LINUX_KERNEL_VMLINUX_SIZE    10035
-#define STUB_POWERPC64LE_LINUX_KERNEL_VMLINUX_ADLER32 0xd2824cf1
-#define STUB_POWERPC64LE_LINUX_KERNEL_VMLINUX_CRC32   0x38edae70
+#define STUB_POWERPC64LE_LINUX_KERNEL_VMLINUX_ADLER32 0x684f4daa
+#define STUB_POWERPC64LE_LINUX_KERNEL_VMLINUX_CRC32   0xf64aa7ab
 
 unsigned char stub_powerpc64le_linux_kernel_vmlinux[10035] = {
 /* 0x0000 */ 127, 69, 76, 70,  2,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -75,7 +75,7 @@ unsigned char stub_powerpc64le_linux_kernel_vmlinux[10035] = {
 /* 0x0230 */  21, 72, 41,125,177,255,194, 65, 21, 57,231,124, 21, 72, 41,125,
 /* 0x0240 */ 165,255,194, 65, 21, 57,231,124, 64,  0, 41,124, 20, 74, 41,125,
 /* 0x0250 */ 149,255,194, 65,216,255,192, 65,  0,  0,  0, 57,253,255,231, 52,
-/* 0x0260 */  46, 64,231, 84, 28,  0,192, 65,  1,  0,  3,140,249,  0,234,124,
+/* 0x0260 */  46, 64,231, 84, 28,  0,192, 65,  1,  0, 99,141,249, 88,234,124,
 /* 0x0270 */ 112, 14, 74,125,  0,  0, 42, 44,  0,  0,194, 65, 12,  0,  0, 72,
 /* 0x0280 */  21, 72, 41,125, 97,255,194, 65, 21, 65,  8,125, 21, 72, 41,125,
 /* 0x0290 */  85,255,194, 65, 21, 65,  8,125, 40,  0,130, 64,  1,  0,  0, 57,
