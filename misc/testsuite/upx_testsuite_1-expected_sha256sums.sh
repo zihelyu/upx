@@ -74,7 +74,7 @@ f1ecf2d3ccb1738b54d8abad053cc2055cb37dc75dfbf40d0a0d90ff3f7999a7 *amd64-linux.el
 0314c6974f29d180e46e41a1004d46a3993fe96f03de7f78d45ad89ad3b2177e *amd64-win64.pe/upx-3.95.exe
 01d2d7ed5173bf4241977a7987000c9b41c9ec99631f9b800311194bc986df71 *arm-linux.elf/upx-3.95
 d7839b7dee866794e4ca3df32e2b1084b35aa22dee5f060fa14b5ca09c612ba3 *arm-wince.pe/upx-3.91.exe
-fd276822baa3aa042e6d225b68f5b670c99d19948cd6c7fb93b63fad4e372943 *arm64-linux.elf/upx-3.95
+b535ebb234fc5948c6905eb3407b745bd14168a5d57d07dd72eda5a9a58ceeb4 *arm64-linux.elf/upx-3.95
 1fb7f4523bb64348252e379860687d9fae9dae4ef0f91c6c7b43af5ae3f6eede *armeb-linux.elf/upx-3.91
 975471f7f85a3044fefca41550b46ef83cf8db4b74cb1134286be31a9b1a0dfc *armeb-linux.elf/upx-3.95
 4a434c3a14686786369c8bede8736d15e307ed7dd8c40cccb8f22003b05db968 *i386-dos32.djgpp2.coff/upx-3.91.exe
@@ -89,7 +89,7 @@ dec92f4426cd66ad46e1c55baea771c215c8d7459f3ee20402a4d3badec2b346 *mips-linux.elf
 1074ed555a78cf8cf64f1eb63b4e53aa8f7722b84e43d2e93584f15cb673dafb *mipsel-linux.elf/upx-3.95
 454185b21fb6e4005f602379b52397f115dbf6196a762389938d604c453f1a11 *powerpc-linux.elf/upx-3.91
 947c023dcc560672b4fcc56ca6dcd2ea6dd10451014ba30115d568ee2972dada *powerpc-linux.elf/upx-3.95
-1e0dcbdec8f3bb6eab3c6bbeeae9e540e9cfd17914ac61785edb28ecb5428aad *powerpc64le-linux.elf/upx-3.95
+bfc72d9676a0ebede02c5db1b0ea31616648430f8c2720e51ee6afa4bfd0f995 *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t130_compress_ucl_nrv2e_3_no_filter="\
 76395d696c4e3fd50d1232559181f3726a4ec1845cb452ac3f85ec2b169b628d *amd64-linux.elf/upx-3.91
