@@ -190,11 +190,12 @@ leave_dir() {
 tmpdir="$(mktemp -d tmp-upx-test-XXXXXX)"
 cd "./$tmpdir" || exit 1
 
-if [[ -f /bin/ls ]]; then
-    test_file="$(readlink -fn /bin/ls)"
-else
-    test_file="$(readlink -fn /usr/bin/env)"
-fi
+for test_file in /usr/bin/make /usr/bin/gmake /usr/bin/env /bin/ls; do
+    if [[ -f $test_file ]]; then
+        test_file="$(readlink -fn "$test_file")"
+        break
+    fi
+done
 
 testsuite_header "default"
 flags="-qq -1 --no-filter"

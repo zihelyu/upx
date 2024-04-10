@@ -792,7 +792,7 @@ static int do_option(int optc, const char *arg) {
         break;
 
 #if !defined(DOCTEST_CONFIG_DISABLE)
-    case 999: // doctest --dt-XXX option
+    case 999: // [doctest] --dt-XXX option; ignored here, see upx_doctest_check()
         break;
 #endif
 
@@ -816,7 +816,7 @@ int main_get_options(int argc, char **argv) {
         // commands
         {"best", 0x10, N, 900},        // compress best
         {"brute", 0x10, N, 901},       // compress best, brute force
-        {"ultra-brute", 0x10, N, 902}, // compress best, brute force
+        {"ultra-brute", 0x10, N, 902}, // compress best, ultra-brute force
         {"decompress", 0, N, 'd'},     // decompress
         {"fast", 0x10, N, '1'},        // compress faster
         {"fileinfo", 0x10, N, 909},    // display info about file
@@ -966,7 +966,7 @@ int main_get_options(int argc, char **argv) {
         {"strip-relocs", 0x12, N, 634},
         {"keep-resource", 0x31, N, 635},
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#if !defined(DOCTEST_CONFIG_DISABLE) // accept and ignore some doctest --dt-XXX options
         // [doctest] Query flags - the program quits after them. Available:
         {"dt-c", 0x10, N, 999},
         {"dt-count", 0x10, N, 999},
@@ -1023,7 +1023,7 @@ void main_get_envoptions() {
         // commands
         {"best", 0x10, N, 900},        // compress best
         {"brute", 0x10, N, 901},       // compress best, brute force
-        {"ultra-brute", 0x10, N, 902}, // compress best, brute force
+        {"ultra-brute", 0x10, N, 902}, // compress best, ultra-brute force
         {"fast", 0x10, N, '1'},        // compress faster
 
         // options

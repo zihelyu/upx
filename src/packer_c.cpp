@@ -33,10 +33,8 @@
 // compression method util
 **************************************************************************/
 
-/*static*/ bool Packer::isValidCompressionMethod(int method) {
-    if (M_IS_LZMA(method))
-        return true;
-    return method >= M_NRV2B_LE32 && method <= M_LZMA;
+/*static*/ bool Packer::isValidCompressionMethod(int m) {
+    return M_IS_LZMA(m) || M_IS_NRV2B(m) || M_IS_NRV2D(m) || M_IS_NRV2E(m);
 }
 
 const int *Packer::getDefaultCompressionMethods_8(int method, int level, int small) const {

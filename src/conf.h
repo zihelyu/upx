@@ -589,7 +589,7 @@ using upx::tribool;
 // #define M_CL1B_8      12
 // #define M_CL1B_LE16   13
 #define M_LZMA        14
-#define M_DEFLATE     15 // zlib
+#define M_DEFLATE     15 // NOT YET USED
 #define M_ZSTD        16 // NOT YET USED
 #define M_BZIP2       17 // NOT YET USED
 // compression methods internal usage
@@ -781,18 +781,18 @@ struct upx_compress_result_t final {
 
 // classes
 class ElfLinker;
-typedef ElfLinker Linker;
+typedef ElfLinker Linker; // shortcut
 class Throwable;
+
+// check/dt_check.cpp
+noinline void upx_compiler_sanity_check() noexcept;
+noinline int upx_doctest_check(int argc, char **argv);
+int upx_doctest_check();
 
 // util/membuffer.h
 class MemBuffer;
 void *membuffer_get_void_ptr(MemBuffer &mb) noexcept;
 unsigned membuffer_get_size(MemBuffer &mb) noexcept;
-
-// util/dt_check.cpp
-noinline void upx_compiler_sanity_check() noexcept;
-noinline int upx_doctest_check(int argc, char **argv);
-int upx_doctest_check();
 
 // main.cpp
 extern const char *progname;

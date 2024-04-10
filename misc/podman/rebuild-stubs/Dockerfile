@@ -15,7 +15,7 @@ RUN dpkg --add-architecture i386 \
         # they do make the image *much* more convenient and also allow building
         # the full UPX binary inside the container via CMake:
         7zip bfs busybox bzip2 cabextract ccache chrpath cmake cpio curl elfutils fd-find file fish fzf \
-        g++ gawk gdb gojq ht htop hyperfine jq libzstd-dev lsb-release lz4 lzip lzop \
+        g++ gawk gdb gojq ht htop hyperfine jq ksh libzstd-dev lsb-release lz4 lzip lzop \
         minify mksh moreutils neovim ninja-build p7zip parallel patch patchelf patchutils pax-utils \
         python3 python3-pyasn1 python3-pycryptodome python3-zstd \
         re2c ripgrep rsync screen universal-ctags unzip yash yq zip zlib1g-dev zsh zstd \

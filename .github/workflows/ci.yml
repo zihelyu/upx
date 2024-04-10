@@ -17,8 +17,8 @@ env:
   UPX_CMAKE_CONFIG_FLAGS: -Wdev --warn-uninitialized
   UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO: 1
   UPX_DEBUG_TEST_LIBC_QSORT: 1
-  # 2024-04-04
-  ZIG_DIST_VERSION: 0.12.0-dev.3533+e5d900268
+  # 2024-04-10
+  ZIG_DIST_VERSION: 0.12.0-dev.3610+9d27f34d0
 
 jobs:
   job-rebuild-and-verify-stubs:
@@ -66,6 +66,10 @@ jobs:
         run: |
           UPX_CLANG_FORMAT="$PWD/../deps/bin-upx-20221212/clang-format-15.0.6" make -C src clang-format
           if ! git diff --quiet; then git diff; exit 1; fi
+      - name: 'Rebuild docs'
+        run: |
+          make -C doc clean all
+          if ! git diff --quiet; then git diff || true; fi # ignore diff error
 
   job-linux-cmake: # uses cmake + make
     if: true

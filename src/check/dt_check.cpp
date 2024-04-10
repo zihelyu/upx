@@ -78,7 +78,7 @@ int upx_doctest_check(int argc, char **argv) {
         context.setOption("dt-duration", true);
     if (success)
         context.setOption("dt-success", true);
-    // this requires that main_get_options() understands "--dt-XXX" options
+    // this requires that main_get_options() understands/ignores doctest "--dt-XXX" options
     if (argc > 0 && argv != nullptr)
         context.applyCommandLine(argc, argv);
     int r = context.run();

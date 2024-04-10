@@ -33,7 +33,7 @@ struct Options;
 extern Options *opt; // global options, see class PackMaster for per-file local options
 
 #if WITH_THREADS
-extern std::mutex opt_lock_mutex;
+extern std::mutex opt_lock_mutex; // for locking "opt"
 #endif
 
 /*************************************************************************

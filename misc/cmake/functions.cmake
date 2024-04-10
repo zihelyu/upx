@@ -8,7 +8,7 @@ if(NOT DEFINED USE_STRICT_DEFAULTS AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}
     include("${CMAKE_CURRENT_SOURCE_DIR}/misc/cmake/use_strict_defaults.cmake" OPTIONAL)
 endif()
 if(NOT DEFINED USE_STRICT_DEFAULTS)
-    # permissive config defaults when building from source code tarball
+    # use permissive config defaults when building from source code tarball
     set(USE_STRICT_DEFAULTS FALSE CACHE INTERNAL "" FORCE)
 endif()
 

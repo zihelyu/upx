@@ -83,6 +83,7 @@ upx_cache_bool_vars(OFF
     UPX_CONFIG_CMAKE_DISABLE_TEST UPX_CONFIG_CMAKE_DISABLE_INSTALL
     UPX_CONFIG_CMAKE_DISABLE_PRINT_INFO UPX_CONFIG_CMAKE_DISABLE_PLATFORM_CHECK
     UPX_CONFIG_DISABLE_C_STANDARD UPX_CONFIG_DISABLE_CXX_STANDARD
+    UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST UPX_CONFIG_DISABLE_RUN_PACKED_TEST
     UPX_CONFIG_REQUIRE_THREADS
 )
 upx_cache_bool_vars(ON UPX_CONFIG_EXPECT_THREADS)
@@ -432,9 +433,11 @@ if(NOT UPX_CONFIG_CMAKE_DISABLE_TEST)
 
 include(CTest)
 if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
-    add_test(NAME upx-version COMMAND upx --version)
-    add_test(NAME upx-help    COMMAND upx --help)
-    add_test(NAME upx-sysinfo COMMAND upx --sysinfo -v)
+    add_test(NAME upx-version       COMMAND upx --version)
+    add_test(NAME upx-version-short COMMAND upx --version-short)
+    add_test(NAME upx-help          COMMAND upx --help)
+    add_test(NAME upx-license       COMMAND upx --license)
+    add_test(NAME upx-sysinfo       COMMAND upx --sysinfo -v)
 if(NOT UPX_CONFIG_DISABLE_SELF_PACK_TEST)
     # IMPORTANT NOTE: these tests can only work if the host executable format is supported by UPX!
     set(emu "")
@@ -444,34 +447,43 @@ if(NOT UPX_CONFIG_DISABLE_SELF_PACK_TEST)
     set(exe "${CMAKE_EXECUTABLE_SUFFIX}")
     set(upx_self_exe "$<TARGET_FILE:upx>")
     set(fo "--force-overwrite")
-    upx_add_serial_test(upx-self-pack      upx -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed${exe})
-    upx_add_serial_test(upx-self-pack-n2b  upx -3 --nrv2b "${upx_self_exe}" ${fo} -o upx-packed-n2b${exe})
-    upx_add_serial_test(upx-self-pack-n2d  upx -3 --nrv2d "${upx_self_exe}" ${fo} -o upx-packed-n2d${exe})
-    upx_add_serial_test(upx-self-pack-n2e  upx -3 --nrv2e "${upx_self_exe}" ${fo} -o upx-packed-n2e${exe})
-    upx_add_serial_test(upx-self-pack-lzma upx -1 --lzma  "${upx_self_exe}" ${fo} -o upx-packed-lzma${exe})
-    upx_add_serial_test(upx-list           upx -l         upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe})
-    upx_add_serial_test(upx-fileinfo       upx --fileinfo upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe})
-    upx_add_serial_test(upx-test           upx -t         upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe})
 
-    upx_add_serial_test(upx-unpack          upx -d upx-packed${exe}      ${fo} -o upx-unpacked${exe})
-    upx_add_serial_test(upx-unpack-n2b      upx -d upx-packed-n2b${exe}  ${fo} -o upx-unpacked-n2b${exe})
-    upx_add_serial_test(upx-unpack-n2d      upx -d upx-packed-n2d${exe}  ${fo} -o upx-unpacked-n2d${exe})
-    upx_add_serial_test(upx-unpack-n2e      upx -d upx-packed-n2e${exe}  ${fo} -o upx-unpacked-n2e${exe})
-    upx_add_serial_test(upx-unpack-lzma     upx -d upx-packed-lzma${exe} ${fo} -o upx-unpacked-lzma${exe})
+    # use fast compression levels because
+    #   - we want to test UPX and not the compression libraries
+    #   - higher compression levels are somewhat slow in our automated QEMU/Valgrind CI tests
+    upx_add_serial_test(upx-self-pack         upx -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed${exe})
+    upx_add_serial_test(upx-self-pack-n2b     upx -3 --nrv2b       "${upx_self_exe}" ${fo} -o upx-packed-n2b${exe})
+    upx_add_serial_test(upx-self-pack-n2d     upx -3 --nrv2d       "${upx_self_exe}" ${fo} -o upx-packed-n2d${exe})
+    upx_add_serial_test(upx-self-pack-n2e     upx -3 --nrv2e       "${upx_self_exe}" ${fo} -o upx-packed-n2e${exe})
+    upx_add_serial_test(upx-self-pack-lzma    upx -1 --lzma        "${upx_self_exe}" ${fo} -o upx-packed-lzma${exe})
 
+    upx_add_serial_test(upx-list              upx -l         upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe})
+    upx_add_serial_test(upx-fileinfo          upx --fileinfo upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe})
+    upx_add_serial_test(upx-test              upx -t         upx-packed${exe} upx-packed-n2b${exe} upx-packed-n2d${exe} upx-packed-n2e${exe} upx-packed-lzma${exe})
+
+    upx_add_serial_test(upx-unpack            upx -d upx-packed${exe}      ${fo} -o upx-unpacked${exe})
+    upx_add_serial_test(upx-unpack-n2b        upx -d upx-packed-n2b${exe}  ${fo} -o upx-unpacked-n2b${exe})
+    upx_add_serial_test(upx-unpack-n2d        upx -d upx-packed-n2d${exe}  ${fo} -o upx-unpacked-n2d${exe})
+    upx_add_serial_test(upx-unpack-n2e        upx -d upx-packed-n2e${exe}  ${fo} -o upx-unpacked-n2e${exe})
+    upx_add_serial_test(upx-unpack-lzma       upx -d upx-packed-lzma${exe} ${fo} -o upx-unpacked-lzma${exe})
+
+    if(NOT UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST)
     upx_add_serial_test(upx-run-unpacked      ${emu} ./upx-unpacked${exe} --version-short)
     upx_add_serial_test(upx-run-unpacked-n2b  ${emu} ./upx-unpacked-n2b${exe} --version-short)
     upx_add_serial_test(upx-run-unpacked-n2d  ${emu} ./upx-unpacked-n2d${exe} --version-short)
     upx_add_serial_test(upx-run-unpacked-n2e  ${emu} ./upx-unpacked-n2e${exe} --version-short)
     upx_add_serial_test(upx-run-unpacked-lzma ${emu} ./upx-unpacked-lzma${exe} --version-short)
+    endif()
 
-    upx_add_serial_test(upx-run-packed      ${emu} ./upx-packed${exe} --version-short)
-    upx_add_serial_test(upx-run-packed-n2b  ${emu} ./upx-packed-n2b${exe} --version-short)
-    upx_add_serial_test(upx-run-packed-n2d  ${emu} ./upx-packed-n2d${exe} --version-short)
-    upx_add_serial_test(upx-run-packed-n2e  ${emu} ./upx-packed-n2e${exe} --version-short)
-    upx_add_serial_test(upx-run-packed-lzma ${emu} ./upx-packed-lzma${exe} --version-short)
+    if(NOT UPX_CONFIG_DISABLE_RUN_PACKED_TEST)
+    upx_add_serial_test(upx-run-packed        ${emu} ./upx-packed${exe} --version-short)
+    upx_add_serial_test(upx-run-packed-n2b    ${emu} ./upx-packed-n2b${exe} --version-short)
+    upx_add_serial_test(upx-run-packed-n2d    ${emu} ./upx-packed-n2d${exe} --version-short)
+    upx_add_serial_test(upx-run-packed-n2e    ${emu} ./upx-packed-n2e${exe} --version-short)
+    upx_add_serial_test(upx-run-packed-lzma   ${emu} ./upx-packed-lzma${exe} --version-short)
+    endif()
 endif() # UPX_CONFIG_DISABLE_SELF_PACK_TEST
-endif()
+endif() # CMAKE_CROSSCOMPILING
 
 endif() # UPX_CONFIG_CMAKE_DISABLE_TEST
 

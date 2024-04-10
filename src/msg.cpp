@@ -143,7 +143,7 @@ void printWarn(const char *iname, const char *format, ...) noexcept {
 }
 
 void printUnhandledException(const char *iname, const std::exception *e) noexcept {
-    if (e)
+    if (e != nullptr)
         printErr(iname, "unhandled exception: %s\n", prettyName(e->what()));
     else
         printErr(iname, "internal error: unhandled exception!\n");

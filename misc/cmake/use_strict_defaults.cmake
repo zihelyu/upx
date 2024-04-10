@@ -4,7 +4,7 @@
 #
 
 if(NOT DEFINED USE_STRICT_DEFAULTS)
-    # strict config defaults for Git developer builds
+    # use strict config defaults for Git developer builds
     set(USE_STRICT_DEFAULTS TRUE CACHE INTERNAL "" FORCE)
 endif()
 

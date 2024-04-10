@@ -7,6 +7,7 @@ argv0=$0; argv0abs=$(readlink -fn "$argv0"); argv0dir=$(dirname "$argv0abs")
 # Copyright (C) Markus Franz Xaver Johannes Oberhumer
 #
 # mimic running "ctest", i.e. the "test" section of CMakeLists.txt; does not redirect stdout
+# (allows freely setting $upx_exe_runner, while CMake is restricted to configure-time settings)
 #
 # requires:
 #   $upx_exe                (required, but with convenience fallback "./upx")
@@ -47,16 +48,32 @@ if ! "${upx_run[@]}" --help >/dev/null;  then echo "UPX-ERROR: FATAL: upx --help
 # see CMakeLists.txt
 #***********************************************************************
 
+set_on_off() {
+    local var_name
+    for var_name do
+        case "${!var_name}" in
+            "" | "0" | "FALSE" | "OFF") eval $var_name=OFF ;;
+            *) eval $var_name=ON ;;
+        esac
+    done
+}
+
+set -x
+set_on_off UPX_CONFIG_DISABLE_SELF_PACK_TEST
+set_on_off UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST
+set_on_off UPX_CONFIG_DISABLE_RUN_PACKED_TEST
+
 export UPX="--no-color --no-progress"
 
 "${upx_run[@]}" --version
+"${upx_run[@]}" --version-short
 "${upx_run[@]}" --help
+"${upx_run[@]}" --license
 "${upx_run[@]}" --sysinfo -v
 
-case "$UPX_CONFIG_DISABLE_SELF_PACK_TEST" in
-"" | "0" | "FALSE" | "OFF") ;;
-*) echo "Self-pack test disabled. All done."; exit 0 ;;
-esac
+if [[ $UPX_CONFIG_DISABLE_SELF_PACK_TEST == ON ]]; then
+    echo "Self-pack test disabled. All done."; exit 0
+fi
 
 exe=".out"
 upx_self_exe=$upx_exe
@@ -78,17 +95,20 @@ fo="--force-overwrite"
 "${upx_run[@]}" -d upx-packed-n2e${exe}  ${fo} -o upx-unpacked-n2e${exe}
 "${upx_run[@]}" -d upx-packed-lzma${exe} ${fo} -o upx-unpacked-lzma${exe}
 
-set -x
+if [[ $UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST == OFF ]]; then
 "${upx_runner[@]}" ./upx-unpacked${exe} --version-short
 "${upx_runner[@]}" ./upx-unpacked-n2b${exe} --version-short
 "${upx_runner[@]}" ./upx-unpacked-n2d${exe} --version-short
 "${upx_runner[@]}" ./upx-unpacked-n2e${exe} --version-short
 "${upx_runner[@]}" ./upx-unpacked-lzma${exe} --version-short
+fi
 
+if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST == OFF ]]; then
 "${upx_runner[@]}" ./upx-packed${exe} --version-short
 "${upx_runner[@]}" ./upx-packed-n2b${exe} --version-short
 "${upx_runner[@]}" ./upx-packed-n2d${exe} --version-short
 "${upx_runner[@]}" ./upx-packed-n2e${exe} --version-short
 "${upx_runner[@]}" ./upx-packed-lzma${exe} --version-short
+fi
 
 echo "All done."
