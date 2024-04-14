@@ -3,7 +3,7 @@
 # Copyright (C) Markus Franz Xaver Johannes Oberhumer
 #
 
-BUILT_SOURCES = upx.1 upx-doc.html upx-doc.txt
+BUILT_SOURCES := upx.1 upx-doc.html upx-doc.txt
 
 top_srcdir ?= ..
 
@@ -25,6 +25,7 @@ DETAB2 := sed -e 's/$(tab)/  /g'
 #***********************************************************************
 
 .DEFAULT_GOAL = all
+
 .PHONY: PHONY
 .SECONDEXPANSION:
 .SUFFIXES:

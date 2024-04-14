@@ -15,7 +15,7 @@ Checks: >
   clang-analyzer-*,
     -clang-analyzer-optin.performance.Padding,
     -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
-  clang-diagnostics-*',
+  clang-diagnostics-*,
   performance-*,
 FormatStyle: file
 HeaderFilterRegex: '.*'

@@ -14,7 +14,7 @@ Checks: >
     -bugprone-suspicious-include,
   clang-analyzer-*,
     -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
-  clang-diagnostics-*',
+  clang-diagnostics-*,
   performance-*,
 FormatStyle: file
 HeaderFilterRegex: '.*'

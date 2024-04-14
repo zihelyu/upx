@@ -32,7 +32,7 @@ ii  curl                          8.5.0-2ubuntu9                    amd64       
 ii  dash                          0.5.12-6ubuntu5                   amd64        POSIX-compliant shell
 ii  debconf                       1.5.86                            all          Debian configuration management system
 ii  debianutils                   5.17build1                        amd64        Miscellaneous utilities specific to Debian
-ii  diffutils                     1:3.10-1                          amd64        File comparison utilities
+ii  diffutils                     1:3.10-1build1                    amd64        File comparison utilities
 ii  dpkg                          1.22.6ubuntu6                     amd64        Debian package management system
 ii  e2fsprogs                     1.47.0-2.4~exp1ubuntu3            amd64        ext2/ext3/ext4 file system utilities
 ii  elfutils                      0.190-1.1build4                   amd64        collection of utilities to handle ELF objects
@@ -66,9 +66,9 @@ ii  gpgv                          2.4.4-2ubuntu7                    amd64       
 ii  grep                          3.11-4                            amd64        GNU grep, egrep and fgrep
 ii  groff-base                    1.23.0-3build2                    amd64        GNU troff text-formatting system (base system components)
 ii  gzip                          1.12-1ubuntu2                     amd64        GNU compression utilities
-ii  hostname                      3.23+nmu2ubuntu1                  amd64        utility to set/show the host name or domain name
+ii  hostname                      3.23+nmu2ubuntu2                  amd64        utility to set/show the host name or domain name
 ii  ht                            2.1.0+repack1-5                   amd64        Viewer/editor/analyser (mostly) for executables
-ii  htop                          3.3.0-4                           amd64        interactive processes viewer
+ii  htop                          3.3.0-4build1                     amd64        interactive processes viewer
 ii  hyperfine                     1.18.0-2build1                    amd64        Command-line benchmarking tool
 ii  init-system-helpers           1.66ubuntu1                       all          helper tools for all init systems
 ii  jq                            1.7.1-3build1                     amd64        lightweight and flexible command-line JSON processor
@@ -85,7 +85,7 @@ ii  lib32quadmath0                14-20240330-1ubuntu2              amd64       
 ii  lib32stdc++-13-dev            13.2.0-23ubuntu3                  amd64        GNU Standard C++ Library v3 (development files)
 ii  lib32stdc++6                  14-20240330-1ubuntu2              amd64        GNU Standard C++ Library v3 (32 bit Version)
 ii  lib32ubsan1                   14-20240330-1ubuntu2              amd64        UBSan -- undefined behaviour sanitizer (32bit)
-ii  libacl1:amd64                 2.3.2-1                           amd64        access control list - shared library
+ii  libacl1:amd64                 2.3.2-1build1                     amd64        access control list - shared library
 ii  libapt-pkg6.0:amd64           2.7.12                            amd64        package management runtime library
 ii  libarchive13t64:amd64         3.7.2-2                           amd64        Multi-format archive and compression library (shared library)
 ii  libaria2-0:amd64              1.37.0+debian-1build2             amd64        C++ library interface to aria2
@@ -93,7 +93,7 @@ ii  libasan8:amd64                14-20240330-1ubuntu2              amd64       
 ii  libasm1t64:amd64              0.190-1.1build4                   amd64        library with a programmable assembler interface
 ii  libassuan0:amd64              2.5.6-1                           amd64        IPC library for the GnuPG components
 ii  libatomic1:amd64              14-20240330-1ubuntu2              amd64        support library providing __atomic built-in functions
-ii  libattr1:amd64                1:2.5.2-1                         amd64        extended attribute handling - shared library
+ii  libattr1:amd64                1:2.5.2-1build1                   amd64        extended attribute handling - shared library
 ii  libaudit-common               1:3.1.2-2.1build1                 all          Dynamic library for security auditing - common files
 ii  libaudit1:amd64               1:3.1.2-2.1build1                 amd64        Dynamic library for security auditing
 ii  libbabeltrace1:amd64          1.5.11-3build3                    amd64        Babeltrace conversion libraries
@@ -152,7 +152,7 @@ ii  libicu74:amd64                74.2-1ubuntu1                     amd64       
 ii  libidn2-0:amd64               2.3.7-2                           amd64        Internationalized domain names (IDNA2008/TR46) library
 ii  libio-pty-perl                1:1.20-1build2                    amd64        Perl module for pseudo tty IO
 ii  libipc-run-perl               20231003.0-1                      all          Perl module for running processes
-ii  libipt2                       2.0.6-1                           amd64        Intel Processor Trace Decoder Library
+ii  libipt2                       2.0.6-1build1                     amd64        Intel Processor Trace Decoder Library
 ii  libisl23:amd64                0.26-3                            amd64        manipulating sets and relations of integer points bounded by linear constraints
 ii  libitm1:amd64                 14-20240330-1ubuntu2              amd64        GNU Transactional Memory Library
 ii  libjansson4:amd64             2.14-2build2                      amd64        C library for encoding, decoding and manipulating JSON data
@@ -310,7 +310,7 @@ ii  python3-pyelftools            0.30-1                            all         
 ii  python3-toml                  0.10.2-1                          all          library for Tom's Obvious, Minimal Language - Python 3.x
 ii  python3-xmltodict             0.13.0-1                          all          Makes working with XML feel like you are working with JSON (Python 3)
 ii  python3-yaml                  6.0.1-2build2                     amd64        YAML parser and emitter for Python3
-ii  python3-zstd                  1.5.5.1-1                         amd64        python bindings to Yann Collet ZSTD compression library
+ii  python3-zstd                  1.5.5.1-1build1                   amd64        python bindings to Yann Collet ZSTD compression library
 ii  python3.12                    3.12.2-5ubuntu3                   amd64        Interactive high-level object-oriented language (version 3.12)
 ii  python3.12-minimal            3.12.2-5ubuntu3                   amd64        Minimal subset of the Python language (version 3.12)
 ii  re2c                          3.1-1                             amd64        lexer generator for C, C++, Go and Rust
@@ -321,11 +321,11 @@ ii  rsync                         3.2.7-1build2                     amd64       
 ii  screen                        4.9.1-1                           amd64        terminal multiplexer with VT100/ANSI terminal emulation
 ii  sed                           4.9-2                             amd64        GNU stream editor for filtering/transforming text
 ii  sensible-utils                0.0.22                            all          Utilities for sensible alternative selection
-ii  sysstat                       12.6.1-1ubuntu1                   amd64        system performance tools for Linux
+ii  sysstat                       12.6.1-2                          amd64        system performance tools for Linux
 ii  sysvinit-utils                3.08-6ubuntu2                     amd64        System-V-like utilities
 ii  tar                           1.35+dfsg-3                       amd64        GNU version of the tar archiving utility
 ii  time                          1.9-0.2                           amd64        GNU time program for measuring CPU resource usage
-ii  tzdata                        2024a-1ubuntu1                    all          time zone and daylight-saving time data
+ii  tzdata                        2024a-2ubuntu1                    all          time zone and daylight-saving time data
 ii  ubuntu-keyring                2023.11.28.1                      all          GnuPG keys of the Ubuntu archive
 ii  ucf                           3.0043+nmu1                       all          Update Configuration File(s): preserve user changes to config files
 ii  universal-ctags               5.9.20210829.0-1                  amd64        build tag file indexes of source code definitions
@@ -348,7 +348,7 @@ rc  libgnutls30:amd64             3.8.3-1ubuntu1                    amd64       
 ||/ Name                          Version                           Architecture Description
 
 Packages sorted by Installed-Size:
-   873771 ===== TOTAL (342 packages)
+   873753 ===== TOTAL (342 packages)
     72237 gcc-13-x86-64-linux-gnu                  amd64
     37833 g++-13-x86-64-linux-gnu                  amd64
     36493 cmake                                    amd64
@@ -446,11 +446,11 @@ Packages sorted by Installed-Size:
      1634 mksh                                     amd64
      1579 ccache                                   amd64
      1504 e2fsprogs                                amd64
-     1464 sysstat                                  amd64
      1454 bash-completion                          all
+     1452 sysstat                                  amd64
      1448 yash                                     amd64
      1395 libgcrypt20                              amd64
-     1382 tzdata                                   all
+     1381 tzdata                                   all
      1366 libx11-6                                 amd64
      1342 libx11-data                              all
      1321 zlib1g-dev                               amd64
@@ -499,7 +499,7 @@ Packages sorted by Installed-Size:
       496 libssh-4                                 amd64
       493 debconf                                  all
       467 libreadline8t64                          amd64
-      440 diffutils                                amd64
+      452 diffutils                                amd64
       426 base-files                               amd64
       425 libgssapi-krb5-2                         amd64
       424 libnettle8t64                            amd64
@@ -596,8 +596,8 @@ Packages sorted by Installed-Size:
       137 librtmp1                                 amd64
       136 libhiredis1.1.0                          amd64
       132 libkrb5support0                          amd64
+      131 libipt2                                  amd64
       130 init-system-helpers                      all
-      127 libipt2                                  amd64
       127 libbsd0                                  amd64
       126 libsframe1                               amd64
       123 time                                     amd64
@@ -644,7 +644,6 @@ Packages sorted by Installed-Size:
        69 liberror-perl                            all
        69 libdebuginfod1t64                        amd64
        67 libpipeline1                             amd64
-       65 python3-zstd                             amd64
        63 sensible-utils                           all
        63 libtermkey1                              amd64
        63 file                                     amd64
@@ -661,6 +660,7 @@ Packages sorted by Installed-Size:
        47 python3-xmltodict                        all
        46 hostname                                 amd64
        45 libatomic1                               amd64
+       44 python3-zstd                             amd64
        43 libxdmcp6                                amd64
        43 libx32atomic1                            amd64
        41 libkeyutils1                             amd64

@@ -340,7 +340,8 @@ int upx_lzma_compress(const upx_bytep src, unsigned src_len, upx_bytep dst, unsi
     progress.cb = cb; // progress.Init()
 
     NCompress::NLZMA::CEncoder enc;
-    const PROPID propIDs[8] = {
+    constexpr unsigned NPROPS = 8;
+    static const PROPID propIDs[NPROPS] = {
         NCoderPropID::kPosStateBits,      // 0  pb    _posStateBits(2)
         NCoderPropID::kLitPosBits,        // 1  lp    _numLiteralPosStateBits(0)
         NCoderPropID::kLitContextBits,    // 2  lc    _numLiteralContextBits(3)
@@ -350,8 +351,7 @@ int upx_lzma_compress(const upx_bytep src, unsigned src_len, upx_bytep dst, unsi
         NCoderPropID::kMatchFinderCycles, // 6  mfc   _matchFinderCycles, _cutValue
         NCoderPropID::kMatchFinder        // 7  mf
     };
-    PROPVARIANT pr[8];
-    const unsigned nprops = 8;
+    PROPVARIANT pr[NPROPS];
     if (!prepare_result(res, src_len, method, level, lcconf))
         goto error;
     pr[0].vt = pr[1].vt = pr[2].vt = pr[3].vt = pr[4].vt = pr[5].vt = pr[6].vt = VT_UI4;
@@ -368,7 +368,7 @@ int upx_lzma_compress(const upx_bytep src, unsigned src_len, upx_bytep dst, unsi
     pr[7].bstrVal = ACC_PCAST(BSTR, ACC_UNCONST_CAST(wchar_t *, matchfinder));
 
     try {
-        if (enc.SetCoderProperties(propIDs, pr, nprops) != S_OK)
+        if (enc.SetCoderProperties(propIDs, pr, NPROPS) != S_OK)
             goto error;
         // encode properties in LZMA-style (5 bytes)
         if (enc.WriteCoderProperties(&os) != S_OK)

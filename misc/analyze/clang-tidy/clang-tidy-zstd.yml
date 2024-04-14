@@ -18,7 +18,7 @@ Checks: >
     -clang-analyzer-core.UndefinedBinaryOperatorResult,
     -clang-analyzer-deadcode.DeadStores,
     -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
-  clang-diagnostics-*',
+  clang-diagnostics-*,
   performance-*,
     -performance-no-int-to-ptr,
 FormatStyle: file

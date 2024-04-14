@@ -16,7 +16,7 @@ Checks: >
     -clang-analyzer-core.UndefinedBinaryOperatorResult,
     -clang-analyzer-core.uninitialized.Assign,
     -clang-analyzer-security.insecureAPI.strcpy,
-  clang-diagnostics-*',
+  clang-diagnostics-*,
   performance-*,
 FormatStyle: file
 HeaderFilterRegex: '.*'

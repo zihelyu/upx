@@ -429,9 +429,11 @@ struct TestTriBool {
             assert(a);
             assert(bool(a));
             assert((a ? true : false));
+            assert((!a ? false : true));
         } else {
             assert(!a);
             assert(!bool(a));
+            assert((a ? false : true));
             assert((!a ? true : false));
         }
         assert(!a.isStrictFalse());
