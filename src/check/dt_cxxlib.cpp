@@ -366,10 +366,6 @@ struct TestTriBool {
         static_assert(alignof(typename T::value_type) == alignof(typename T::underlying_type));
 #if defined(__m68k__) && defined(__atarist__) && defined(__GNUC__)
         // broken compiler or broken ABI
-#elif defined(__i386__) && defined(__clang__) && (__clang_major__ < 9)
-        static_assert(sizeof(T) == sizeof(typename T::underlying_type));
-        // i386: "long long" enum align bug/ABI problem on older compilers
-        static_assert(alignof(T) <= alignof(typename T::underlying_type));
 #elif defined(__i386__) && defined(__GNUC__) && (__GNUC__ == 7) && !defined(__clang__)
         static_assert(sizeof(T) == sizeof(typename T::underlying_type));
         // i386: "long long" enum align bug/ABI problem on older compilers

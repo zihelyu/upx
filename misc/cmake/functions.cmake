@@ -65,9 +65,37 @@ macro(upx_apply_build_type)
     endif()
 endmacro()
 
+# ternary conditional operator
+macro(upx_ternary result_var_name condition true_value false_value)
+    if(${condition})
+        set(${result_var_name} "${true_value}")
+    else()
+        set(${result_var_name} "${false_value}")
+    endif()
+endmacro()
+
 #***********************************************************************
 # util
 #***********************************************************************
+
+# convert to CMake bool
+function(upx_make_bool_var result_var_name var_name default_value)
+    set(result "${default_value}")
+    # only query $var_name if it is defined and not empty
+    if(NOT ",${var_name}," STREQUAL ",,")
+        if(DEFINED ${var_name})
+            if(NOT ",${${var_name}}," STREQUAL ",,")
+                set(result "${${var_name}}")
+            endif()
+        endif()
+    endif()
+    if(${result})
+        set(result ON)
+    else()
+        set(result OFF)
+    endif()
+    set(${result_var_name} "${result}" PARENT_SCOPE) # return value
+endfunction()
 
 function(upx_print_var) # ARGV
     foreach(var_name ${ARGV})
@@ -101,22 +129,10 @@ function(upx_print_have_symbol) # ARGV; needs include(CheckSymbolExists)
     endforeach()
 endfunction()
 
-function(upx_make_bool_var result_var_name var_name default_value)
-    set(result "${default_value}")
-    if(NOT ",${var_name}," STREQUAL ",,")
-        if(DEFINED ${var_name})
-            if(NOT ",${${var_name}}," STREQUAL ",,")
-                set(result "${${var_name}}")
-            endif()
-        endif()
-    endif()
-    # convert to bool
-    if(${result})
-        set(result ON)
-    else()
-        set(result OFF)
-    endif()
-    set(${result_var_name} "${result}" PARENT_SCOPE) # return value
+# examine compiler configuration
+function(upx_print_common_symbols)
+    upx_print_have_symbol(__FAST_MATH__)
+    upx_print_have_symbol(__PIC__ __pic__ __PIE__ __pie__)
 endfunction()
 
 # examine MinGW/Cygwin compiler configuration

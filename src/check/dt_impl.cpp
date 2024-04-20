@@ -55,7 +55,7 @@
 #endif
 #endif
 
-#if defined(__clang__) && defined(__FAST_MATH__)
+#if defined(__FAST_MATH__) && defined(__clang__) && (__clang_major__ + 0 >= 6)
 // warning: comparison with NaN always evaluates to false in fast floating point modes
 #pragma clang diagnostic ignored "-Wtautological-constant-compare"
 #endif

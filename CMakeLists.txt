@@ -236,10 +236,11 @@ if(NOT CMAKE_C_COMPILER_ID MATCHES "^MSVC")
     endif()
 endif()
 
-# examine MinGW/Cygwin compiler configuration
-if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+# examine compiler configuration
+if(NOT UPX_CONFIG_CMAKE_DISABLE_PRINT_INFO)
+    upx_print_common_symbols()
     upx_print_mingw_symbols()
-endif()
+endif() # UPX_CONFIG_CMAKE_DISABLE_PRINT_INFO
 
 #***********************************************************************
 # targets
