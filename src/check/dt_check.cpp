@@ -370,28 +370,6 @@ static noinline double u64_f64_sub_div(upx_uint64_t a, upx_uint64_t b) {
     return (a - b) / 1000000.0;
 }
 
-// extra debugging; floating point edge cases cause portability problems in practice
-static noinline bool shall_test_float_division_by_zero(void) {
-    static bool result = false; // default is false
-    static upx_std_once_flag init_done;
-    upx_std_call_once(init_done, []() noexcept {
-        static const char envvar[] = "UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO";
-        const char *e = upx_getenv(envvar);
-        bool force = (e && e[0] && strcmp(e, "2") == 0);
-        if (force)
-            result = true;
-        else if (is_envvar_true(envvar)) {
-#if defined(__clang__) && defined(__FAST_MATH__) && defined(__INTEL_LLVM_COMPILER)
-            // warning: comparison with NaN always evaluates to false in fast floating point modes
-            fprintf(stderr, "upx: WARNING: ignoring %s: __FAST_MATH__\n", envvar);
-#else
-            result = true;
-#endif
-        }
-    });
-    return result;
-}
-
 template <class Int, class Float>
 struct TestFloat {
     static constexpr Int X = 1000000;
@@ -407,10 +385,16 @@ struct TestFloat {
         assert_noexcept(sub_div(3 * X, X, Float(X)) == Float(2));
         assert_noexcept(sub_div_x(3 * X, X) == Float(2));
         // extra debugging; floating point edge cases cause portability problems in practice
-        if (shall_test_float_division_by_zero()) {
+        static const char envvar[] = "UPX_DEBUG_TEST_FLOAT_DIVISION_BY_ZERO";
+        if (is_envvar_true(envvar)) {
+#if defined(__FAST_MATH__)
+            // warning: comparison with NaN always evaluates to false in fast floating point modes
+            fprintf(stderr, "upx: WARNING: ignoring %s: __FAST_MATH__\n", envvar);
+#else
             assert_noexcept(std::isnan(div(0, Float(0))));
             assert_noexcept(std::isinf(div(1, Float(0))));
             assert_noexcept(std::isinf(div(Int(-1), Float(0))));
+#endif
         }
     }
 };
