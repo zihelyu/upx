@@ -58,8 +58,10 @@ void Packer::assertPacker() const {
     assert(getVersion() <= 14);
     assert(strlen(getName()) <= 15);
     // info: 36 is the limit for show_all_packers() in help.cpp, but 32 should be enough
-    assert(strlen(getFullName(opt)) <= 32);
     assert(strlen(getFullName(nullptr)) <= 32);
+    assert(strlen(getFullName(opt)) <= 32);
+    assert(getCompressionMethods(M_ALL, 10) != nullptr);
+    (void) getFilters();
     if (bele == nullptr)
         fprintf(stderr, "%s\n", getName());
     assert(bele != nullptr);

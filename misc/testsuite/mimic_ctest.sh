@@ -25,6 +25,7 @@ if [[ -z $upx_exe ]]; then echo "UPX-ERROR: please set \$upx_exe"; exit 1; fi
 if [[ ! -f $upx_exe ]]; then echo "UPX-ERROR: file '$upx_exe' does not exist"; exit 1; fi
 upx_exe=$(readlink -fn "$upx_exe") # make absolute
 [[ -f $upx_exe ]] || exit 1
+
 # set emu and run_upx
 emu=()
 if [[ -n $upx_exe_runner ]]; then
@@ -67,9 +68,13 @@ export UPX="--no-color --no-progress"
 
 "${run_upx[@]}" --version
 "${run_upx[@]}" --version-short
-"${run_upx[@]}" --help
 "${run_upx[@]}" --license
+"${run_upx[@]}" --help
+"${run_upx[@]}" --help-short
+"${run_upx[@]}" --help-verbose
+"${run_upx[@]}" --sysinfo
 "${run_upx[@]}" --sysinfo -v
+"${run_upx[@]}" --sysinfo -vv
 
 if [[ $UPX_CONFIG_DISABLE_SELF_PACK_TEST == ON ]]; then
     echo "Self-pack test disabled. All done."; exit 0

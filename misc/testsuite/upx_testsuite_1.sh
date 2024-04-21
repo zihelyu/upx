@@ -29,6 +29,7 @@ if [[ -z $upx_exe ]]; then echo "UPX-ERROR: please set \$upx_exe"; exit 1; fi
 if [[ ! -f $upx_exe ]]; then echo "UPX-ERROR: file '$upx_exe' does not exist"; exit 1; fi
 upx_exe=$(readlink -fn "$upx_exe") # make absolute
 [[ -f $upx_exe ]] || exit 1
+
 # set emu and run_upx
 emu=()
 if [[ -n $upx_exe_runner ]]; then
@@ -43,7 +44,7 @@ fi
 run_upx=( "${emu[@]}" "$upx_exe" )
 echo "run_upx='${run_upx[*]}'"
 
-# run_upx sanity check, part1
+# run_upx sanity check
 if ! "${run_upx[@]}" --version-short >/dev/null; then echo "UPX-ERROR: FATAL: upx --version-short FAILED"; exit 1; fi
 if ! "${run_upx[@]}" -L >/dev/null 2>&1; then echo "UPX-ERROR: FATAL: upx -L FAILED"; exit 1; fi
 if ! "${run_upx[@]}" --help >/dev/null;  then echo "UPX-ERROR: FATAL: upx --help FAILED"; exit 1; fi
@@ -75,19 +76,30 @@ fi
 mkdir -p "$upx_testsuite_BUILDDIR" || exit 1
 upx_testsuite_BUILDDIR=$(readlink -fn "$upx_testsuite_BUILDDIR") # make absolute
 [[ -d $upx_testsuite_BUILDDIR ]] || exit 1
-
 cd / && cd "$upx_testsuite_BUILDDIR" || exit 1
 : > ./.mfxnobackup
 
-# run_upx sanity check, part2
+# run_upx sanity check after "cd"
 if ! "${run_upx[@]}" --version-short >/dev/null; then
     echo "UPX-ERROR: FATAL: upx --version-short FAILED"
     echo "please make sure that \$upx_exe contains ABSOLUTE file paths and can be run from any directory"
     echo "INFO: run_upx='${run_upx[*]}'"
     exit 1
 fi
-if ! "${run_upx[@]}" -L >/dev/null 2>&1; then echo "UPX-ERROR: FATAL: upx -L FAILED"; exit 1; fi
-if ! "${run_upx[@]}" --help >/dev/null;  then echo "UPX-ERROR: FATAL: upx --help FAILED"; exit 1; fi
+
+#***********************************************************************
+# setup
+#***********************************************************************
+
+#set -x # debug
+
+exit_code=0
+num_errors=0
+all_errors=
+
+export UPX="--prefer-ucl --no-color --no-progress"
+export UPX_DEBUG_DISABLE_GITREV_WARNING=1
+export UPX_DEBUG_DOCTEST_VERBOSE=0
 
 case $UPX_TESTSUITE_LEVEL in
     [0-8]) ;;
@@ -97,19 +109,6 @@ if [[ $UPX_TESTSUITE_LEVEL == 0 ]]; then
     echo "UPX testsuite SKIPPED."
     exit 0
 fi
-
-#***********************************************************************
-# setup
-#***********************************************************************
-
-#set -x # debug
-exit_code=0
-num_errors=0
-all_errors=
-
-export UPX="--prefer-ucl --no-color --no-progress"
-export UPX_DEBUG_DISABLE_GITREV_WARNING=1
-export UPX_DEBUG_DOCTEST_VERBOSE=0
 
 rm -rf ./testsuite_1
 mkdir testsuite_1 || exit 1

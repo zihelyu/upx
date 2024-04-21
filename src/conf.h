@@ -822,7 +822,7 @@ int do_files(int i, int argc, char *argv[]) may_throw;
 // help.cpp
 extern const char gitrev[];
 void show_header();
-void show_help(int verbose = 0);
+void show_help(int verbose);
 void show_license();
 void show_sysinfo(const char *options_var);
 void show_usage();

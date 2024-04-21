@@ -40,6 +40,7 @@ if [[ -z $upx_exe ]]; then echo "UPX-ERROR: please set \$upx_exe"; exit 1; fi
 if [[ ! -f $upx_exe ]]; then echo "UPX-ERROR: file '$upx_exe' does not exist"; exit 1; fi
 upx_exe=$(readlink -fn "$upx_exe") # make absolute
 [[ -f $upx_exe ]] || exit 1
+
 # set emu and run_upx
 emu=()
 if [[ -n $upx_exe_runner ]]; then

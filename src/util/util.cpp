@@ -293,13 +293,13 @@ static inline void memswap_no_overlap(byte *a, byte *b, size_t bytes) noexcept {
     upx_memswap(a, b, bytes);
 #else // clang bug
     upx_alignas_max byte tmp_buf[16];
-#define SWAP(x)                                                                                    \
+#define SWAP(n)                                                                                    \
     do {                                                                                           \
-        upx_memcpy_inline(tmp_buf, a, x);                                                          \
-        upx_memcpy_inline(a, b, x);                                                                \
-        upx_memcpy_inline(b, tmp_buf, x);                                                          \
-        a += x;                                                                                    \
-        b += x;                                                                                    \
+        upx_memcpy_inline(tmp_buf, a, n);                                                          \
+        upx_memcpy_inline(a, b, n);                                                                \
+        upx_memcpy_inline(b, tmp_buf, n);                                                          \
+        a += n;                                                                                    \
+        b += n;                                                                                    \
     } while (0)
 
     for (; bytes >= 16; bytes -= 16)
@@ -382,7 +382,7 @@ void upx_shellsort_memcpy(void *array, size_t n, size_t element_size, upx_compar
 // wrap std::stable_sort()
 template <size_t ElementSize>
 void upx_std_stable_sort(void *array, size_t n, upx_compare_func_t compare) {
-    static_assert(ElementSize > 0 && ElementSize <= UPX_RSIZE_MAX);
+    static_assert(ElementSize >= 1 && ElementSize <= UPX_RSIZE_MAX);
     mem_size_assert(ElementSize, n); // check size
 #if 0
     // just for testing
@@ -412,7 +412,7 @@ template void upx_std_stable_sort<16>(void *, size_t, upx_compare_func_t);
 template void upx_std_stable_sort<32>(void *, size_t, upx_compare_func_t);
 template void upx_std_stable_sort<56>(void *, size_t, upx_compare_func_t);
 template void upx_std_stable_sort<72>(void *, size_t, upx_compare_func_t);
-#endif
+#endif // UPX_CONFIG_USE_STABLE_SORT
 
 #if !defined(DOCTEST_CONFIG_DISABLE) && DEBUG
 #if __cplusplus >= 202002L // use C++20 std::next_permutation() to test all permutations

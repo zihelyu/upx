@@ -218,7 +218,7 @@ static void check_and_update_options(int i, int argc) {
 **************************************************************************/
 
 static void e_help(void) {
-    show_help();
+    show_help(0);
     e_exit(EXIT_USAGE);
 }
 
@@ -386,6 +386,8 @@ static int do_option(int optc, const char *arg) {
         set_cmd(CMD_HELP);
         break;
     case 'h' + 256:
+    case 996:
+    case 997:
 #if 1
         if (!acc_isatty(STDOUT_FILENO)) {
             /* according to GNU standards */
@@ -393,7 +395,7 @@ static int do_option(int optc, const char *arg) {
             opt->console = CON_FILE;
         }
 #endif
-        show_help(1);
+        show_help(optc == 996 ? 1 : (optc == 997 ? 3 : 2));
         e_exit(EXIT_OK);
         break;
     case 'i':
@@ -1172,9 +1174,14 @@ static void first_options(int argc, char **argv) {
         if (strcmp(argv[i], "--version-short") == 0)
             do_option(998, argv[i]);
     }
-    for (i = 1; i < n; i++)
+    for (i = 1; i < n; i++) {
         if (strcmp(argv[i], "--help") == 0)
             do_option('h' + 256, argv[i]);
+        if (strcmp(argv[i], "--help-short") == 0) // undocumented and subject to change
+            do_option(996, argv[i]);
+        if (strcmp(argv[i], "--help-verbose") == 0) // undocumented and subject to change
+            do_option(997, argv[i]);
+    }
     for (i = 1; i < n; i++)
         if (strcmp(argv[i], "--no-env") == 0)
             do_option(519, argv[i]);
@@ -1272,7 +1279,7 @@ int upx_main(int argc, char *argv[]) may_throw {
         e_exit(EXIT_OK);
         break;
     case CMD_HELP:
-        show_help(1);
+        show_help(2);
         e_exit(EXIT_OK);
         break;
     case CMD_LICENSE:
