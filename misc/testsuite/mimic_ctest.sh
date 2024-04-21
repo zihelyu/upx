@@ -82,41 +82,47 @@ fo="--force-overwrite"
 "${run_upx[@]}" -3               "${upx_self_exe}" ${fo} -o upx-packed${exe}
 "${run_upx[@]}" -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed-fa${exe}
 "${run_upx[@]}" -3 --no-filter   "${upx_self_exe}" ${fo} -o upx-packed-fn${exe}
+"${run_upx[@]}" -3 --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-fr${exe}
 "${run_upx[@]}" -3 --nrv2b       "${upx_self_exe}" ${fo} -o upx-packed-nrv2b${exe}
 "${run_upx[@]}" -3 --nrv2d       "${upx_self_exe}" ${fo} -o upx-packed-nrv2d${exe}
 "${run_upx[@]}" -3 --nrv2e       "${upx_self_exe}" ${fo} -o upx-packed-nrv2e${exe}
 "${run_upx[@]}" -1 --lzma        "${upx_self_exe}" ${fo} -o upx-packed-lzma${exe}
 
-"${run_upx[@]}" -l         upx-packed${exe} upx-packed-fa${exe} upx-packed-fn${exe} upx-packed-nrv2b${exe} upx-packed-nrv2d${exe} upx-packed-nrv2e${exe} upx-packed-lzma${exe}
-"${run_upx[@]}" --fileinfo upx-packed${exe} upx-packed-fa${exe} upx-packed-fn${exe} upx-packed-nrv2b${exe} upx-packed-nrv2d${exe} upx-packed-nrv2e${exe} upx-packed-lzma${exe}
-"${run_upx[@]}" -t         upx-packed${exe} upx-packed-fa${exe} upx-packed-fn${exe} upx-packed-nrv2b${exe} upx-packed-nrv2d${exe} upx-packed-nrv2e${exe} upx-packed-lzma${exe}
+"${run_upx[@]}" -l         upx-packed${exe} upx-packed-fa${exe} upx-packed-fn${exe} upx-packed-fr${exe} upx-packed-nrv2b${exe} upx-packed-nrv2d${exe} upx-packed-nrv2e${exe} upx-packed-lzma${exe}
+"${run_upx[@]}" --fileinfo upx-packed${exe} upx-packed-fa${exe} upx-packed-fn${exe} upx-packed-fr${exe} upx-packed-nrv2b${exe} upx-packed-nrv2d${exe} upx-packed-nrv2e${exe} upx-packed-lzma${exe}
+"${run_upx[@]}" -t         upx-packed${exe} upx-packed-fa${exe} upx-packed-fn${exe} upx-packed-fr${exe} upx-packed-nrv2b${exe} upx-packed-nrv2d${exe} upx-packed-nrv2e${exe} upx-packed-lzma${exe}
 
 "${run_upx[@]}" -d upx-packed${exe}       ${fo} -o upx-unpacked${exe}
 "${run_upx[@]}" -d upx-packed-fa${exe}    ${fo} -o upx-unpacked-fa${exe}
 "${run_upx[@]}" -d upx-packed-fn${exe}    ${fo} -o upx-unpacked-fn${exe}
+"${run_upx[@]}" -d upx-packed-fr${exe}    ${fo} -o upx-unpacked-fr${exe}
 "${run_upx[@]}" -d upx-packed-nrv2b${exe} ${fo} -o upx-unpacked-nrv2b${exe}
 "${run_upx[@]}" -d upx-packed-nrv2d${exe} ${fo} -o upx-unpacked-nrv2d${exe}
 "${run_upx[@]}" -d upx-packed-nrv2e${exe} ${fo} -o upx-unpacked-nrv2e${exe}
 "${run_upx[@]}" -d upx-packed-lzma${exe}  ${fo} -o upx-unpacked-lzma${exe}
 
+# all unpacked files must be identical
+cmp -s upx-unpacked${exe} upx-unpacked-fa${exe}
+cmp -s upx-unpacked${exe} upx-unpacked-fn${exe}
+cmp -s upx-unpacked${exe} upx-unpacked-fr${exe}
+cmp -s upx-unpacked${exe} upx-unpacked-nrv2b${exe}
+cmp -s upx-unpacked${exe} upx-unpacked-nrv2d${exe}
+cmp -s upx-unpacked${exe} upx-unpacked-nrv2e${exe}
+cmp -s upx-unpacked${exe} upx-unpacked-lzma${exe}
+
 if [[ $UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST == OFF ]]; then
 "${emu[@]}" ./upx-unpacked${exe} --version-short
-"${emu[@]}" ./upx-unpacked-fa${exe} --version-short
-"${emu[@]}" ./upx-unpacked-fn${exe} --version-short
-"${emu[@]}" ./upx-unpacked-nrv2b${exe} --version-short
-"${emu[@]}" ./upx-unpacked-nrv2d${exe} --version-short
-"${emu[@]}" ./upx-unpacked-nrv2e${exe} --version-short
-"${emu[@]}" ./upx-unpacked-lzma${exe} --version-short
 fi
 
 if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST == OFF ]]; then
-"${emu[@]}" ./upx-packed${exe} --version-short
-"${emu[@]}" ./upx-packed-fa${exe} --version-short
-"${emu[@]}" ./upx-packed-fn${exe} --version-short
+"${emu[@]}" ./upx-packed${exe}       --version-short
+"${emu[@]}" ./upx-packed-fa${exe}    --version-short
+"${emu[@]}" ./upx-packed-fn${exe}    --version-short
+"${emu[@]}" ./upx-packed-fr${exe}    --version-short
 "${emu[@]}" ./upx-packed-nrv2b${exe} --version-short
 "${emu[@]}" ./upx-packed-nrv2d${exe} --version-short
 "${emu[@]}" ./upx-packed-nrv2e${exe} --version-short
-"${emu[@]}" ./upx-packed-lzma${exe} --version-short
+"${emu[@]}" ./upx-packed-lzma${exe}  --version-short
 fi
 
 echo "All done."

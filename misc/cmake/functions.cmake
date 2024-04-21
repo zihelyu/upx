@@ -120,13 +120,16 @@ function(upx_print_env_var) # ARGV
 endfunction()
 
 function(upx_print_have_symbol) # ARGV; needs include(CheckSymbolExists)
+    set(rq "${CMAKE_REQUIRED_QUIET}")
+    set(CMAKE_REQUIRED_QUIET ON)
     foreach(symbol ${ARGV})
         set(cache_var_name "HAVE_symbol_${symbol}")
-        check_symbol_exists(${symbol} "limits.h;stddef.h;stdint.h" ${cache_var_name})
+        check_symbol_exists("${symbol}" "limits.h;stddef.h;stdint.h" "${cache_var_name}")
         if(${cache_var_name})
-            message(STATUS "HAVE ${symbol}")
+            message(STATUS "HAVE_symbol ${symbol}")
         endif()
     endforeach()
+    set(CMAKE_REQUIRED_QUIET "${rq}")
 endfunction()
 
 # examine compiler configuration
@@ -140,7 +143,7 @@ function(upx_print_mingw_symbols)
     if(WIN32 OR MINGW OR CYGWIN)
         if(CMAKE_C_COMPILER_ID MATCHES "(Clang|GNU)")
             # runtime library: msvcrt vs ucrt vs cygwin
-            upx_print_have_symbol(__CRTDLL__ __CYGWIN__ __CYGWIN32__ __CYGWIN64__ __MINGW32__ __MINGW64__ __MINGW64_VERSION_MAJOR __MSVCRT__ __MSVCRT_VERSION__ _UCRT _WIN32 _WIN64)
+            upx_print_have_symbol(__CRTDLL__ __CYGWIN__ __CYGWIN32__ __CYGWIN64__ __MINGW32__ __MINGW64__ __MINGW64_VERSION_MAJOR __MSVCRT__ __MSVCRT_VERSION__ _UCRT _WIN32 _WIN32_WINNT _WIN64)
             # exception handing: SJLJ (setjmp/longjmp) vs DWARF vs SEH
             upx_print_have_symbol(__GCC_HAVE_DWARF2_CFI_ASM __SEH__ __USING_SJLJ_EXCEPTIONS__)
             # threads: win32 vs posix/pthread/winpthreads vs mcfgthread

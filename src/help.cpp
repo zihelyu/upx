@@ -100,7 +100,7 @@ void show_usage(void) {
 **************************************************************************/
 
 namespace {
-struct PackerNames {
+struct PackerNames final {
     PackerNames() noexcept = default;
     ~PackerNames() noexcept = default;
     struct Entry {
