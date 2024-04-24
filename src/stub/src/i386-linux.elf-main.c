@@ -696,13 +696,10 @@ do_xmap(int const fdi, Elf32_Ehdr const *const ehdr, Extent *const xi,
         );
     }
 
-#if DEBUG &&!defined(__mips__)  //{
-    size_t const page_mask = 0;
-#endif  //}
     DPRINTF("do_xmap  fdi=%%x  ehdr=%%p  xi=%%p(%%x %%p)\\n"
-          "  av=%%p  page_mask=%%p  reloc=%%p  p_reloc=%%p/%%p  f_unf=%%p\\n",
+          "  av=%%p  frag_mask=%%p  reloc=%%p  p_reloc=%%p/%%p  f_unf=%%p\\n",
         fdi, ehdr, xi, (xi? xi->size: 0), (xi? xi->buf: 0),
-        av, page_mask, reloc, p_reloc, *p_reloc, f_unf);
+        av, frag_mask, reloc, p_reloc, *p_reloc, f_unf);
     int j;
     for (j=0; j < ehdr->e_phnum; ++phdr, ++j)
     if (xi && PT_PHDR==phdr->p_type) {
