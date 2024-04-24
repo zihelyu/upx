@@ -89,7 +89,7 @@ dec92f4426cd66ad46e1c55baea771c215c8d7459f3ee20402a4d3badec2b346 *mips-linux.elf
 1074ed555a78cf8cf64f1eb63b4e53aa8f7722b84e43d2e93584f15cb673dafb *mipsel-linux.elf/upx-3.95
 b187d0fe62676798cc18ecd13102ca3bf579cacc1972d5ad8c4f8ab3b557673a *powerpc-linux.elf/upx-3.91
 aa75c8bb1a8f5b03ae2930447b4269d32abbe908a2c36f86b42f4b22099e3fc5 *powerpc-linux.elf/upx-3.95
-7394ebc58786b7b7747c31bdc1c912836379dfe11c8083ccf2790e9be871420f *powerpc64le-linux.elf/upx-3.95
+86ad66afe70c4c976a72ed49b8cc982a07aa2c4752a8bb5bb0a1124638a2ca1a *powerpc64le-linux.elf/upx-3.95
 "
 expected_sha256sums__t130_compress_ucl_nrv2e_3_no_filter="\
 76395d696c4e3fd50d1232559181f3726a4ec1845cb452ac3f85ec2b169b628d *amd64-linux.elf/upx-3.91

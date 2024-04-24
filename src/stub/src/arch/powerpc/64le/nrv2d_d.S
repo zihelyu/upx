@@ -59,11 +59,14 @@
     eq  must load next 32 bits from memory
 
    beql-: branch and link [call subroutine] if cr0 is eq, unlikely
+
+   'cmpld' sets EQ/NE to detect empty bit buffer, and LT/GT to detect 0/1
+   'addc' shifts left, and puts old MSB into CArry for its 0/1 data value
 */
-#define jnextb0y  cmpld bits,hibit; add bits,bits,bits; beql- get32d; blt+
-#define jnextb0n  cmpld bits,hibit; add bits,bits,bits; beql- get32d; blt-
-#define jnextb1y  cmpld bits,hibit; add bits,bits,bits; beql- get32d; bgt+
-#define jnextb1n  cmpld bits,hibit; add bits,bits,bits; beql- get32d; bgt-
+#define jnextb0y  cmpld bits,hibit; addc bits,bits,bits; beql- get32d; blt+
+#define jnextb0n  cmpld bits,hibit; addc bits,bits,bits; beql- get32d; blt-
+#define jnextb1y  cmpld bits,hibit; addc bits,bits,bits; beql- get32d; bgt+
+#define jnextb1n  cmpld bits,hibit; addc bits,bits,bits; beql- get32d; bgt-
 
 #undef  getnextb
 /* rotate next bit into bottom bit of reg, set CC on entire result */
