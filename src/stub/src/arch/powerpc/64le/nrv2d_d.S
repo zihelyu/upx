@@ -86,12 +86,10 @@ get32d:
         addi src,src,4
 #endif  /*}*/
 
-        sldi    bits,bits,32        // upper bits
-        cmpld   bits,hibit  // cr0  for   jnextb
-        addc    bits,bits,bits  // Carry for getnextb
-        li      t2,1  // flag bit on upper bit pos
-        sldi    t2,t2,32
-        or      bits,bits,t2  // the flag bit
+        adde  bits,bits,bits  // shift in Carry (== 1) from addc. in getnextb()
+        sldi  bits,bits,32-1  // left justify 33-bit result of 'adde'
+        cmpld bits,hibit  // cr0  for   jnextb; NEQ because (1==Cin) at 'adde'
+        addc  bits,bits,bits  // Carry for getnextb
         ret
 
 lit_n2d:
