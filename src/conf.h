@@ -180,7 +180,7 @@ typedef upx_int64_t upx_off_t;
 #if defined(__clang__) || defined(__GNUC__)
 #define noreturn noinline __attribute__((__noreturn__))
 #elif (ACC_CC_MSC)
-// do not use, generates annoying "warning C4702: unreachable code"
+// do not use, triggers annoying "warning C4702: unreachable code"
 ////#define noreturn noinline __declspec(noreturn)
 #define noreturn noinline
 #else
@@ -458,7 +458,7 @@ noreturn void throwAssertFailed(const char *expr, const char *file, int line, co
 #if defined(__clang__) || defined(__GNUC__)
 #undef assert
 #if DEBUG || 0
-// generate a warning if assert() is used inside a "noexcept" context
+// trigger a warning if assert() is used inside a "noexcept" context
 #define assert(e)                                                                                  \
     ((void) (__acc_cte(e) || (assertFailed(#e, __FILE__, __LINE__, __func__), throw 1, 0)))
 #else
@@ -707,7 +707,7 @@ struct upx_compress_config_t final {
     }
 };
 
-#define NULL_cconf ((upx_compress_config_t *) nullptr)
+#define NULL_cconf ((const upx_compress_config_t *) nullptr)
 
 /*************************************************************************
 // compression - result_t

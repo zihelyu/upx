@@ -1364,11 +1364,7 @@ int __acc_cdecl_main main(int argc, char *argv[]) /*noexcept*/ {
     _set_abort_behavior(_WRITE_ABORT_MSG, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 #endif
     acc_wildargv(&argc, &argv);
-#if defined(__wasi__)
-    ::srand((unsigned) time(nullptr));
-#else
-    ::srand((unsigned) clock());
-#endif
+    upx_rand_init();
 
     // info: main() is implicitly "noexcept", so we need a try block
 #if 0

@@ -125,6 +125,7 @@ static_assert(sizeof(void *) == sizeof(long));
 #include <type_traits>
 #include <utility>
 // C++ system headers
+#include <algorithm>
 #include <memory> // std::unique_ptr
 // C++ multithreading (UPX currently does not use multithreading)
 #if __STDC_NO_ATOMICS__

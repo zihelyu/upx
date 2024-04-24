@@ -26,7 +26,6 @@
  */
 
 #include "system_headers.h"
-#include <algorithm>
 #define ACC_WANT_ACC_INCI_H 1
 #include "miniacc.h"
 #define ACC_WANT_ACCLIB_GETOPT   1
@@ -260,7 +259,25 @@ const char *upx_getenv(const char *envvar) noexcept {
     return nullptr;
 }
 
+// random value from libc; quality is not important for UPX
 int upx_rand(void) noexcept { return ::rand(); }
+
+void upx_rand_init(void) noexcept {
+    unsigned seed = 0;
+#if (!HAVE_GETTIMEOFDAY || (ACC_OS_DOS32 && defined(__DJGPP__))) && !defined(__wasi__)
+    seed ^= (unsigned) time(nullptr);
+    seed ^= ((unsigned) clock()) << 12;
+#else
+    struct timeval tv = {};
+    (void) gettimeofday(&tv, nullptr);
+    seed ^= (unsigned) tv.tv_sec;
+    seed ^= ((unsigned) tv.tv_usec) << 12;
+#endif
+#if HAVE_GETPID
+    seed ^= ((unsigned) getpid()) << 4;
+#endif
+    ::srand(seed);
+}
 
 void *upx_calloc(size_t n, size_t element_size) may_throw {
     size_t bytes = mem_size(element_size, n); // assert size

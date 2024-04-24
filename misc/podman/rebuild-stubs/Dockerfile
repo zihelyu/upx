@@ -8,17 +8,19 @@ ENV LANG=C.UTF-8
 RUN dpkg --add-architecture i386 \
     && apt-get update && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        aria2 bash bash-completion ca-certificates dash git less libmpc3 \
-        make ncurses-term perl-base time wget xz-utils \
+        aria2 bash bash-completion ca-certificates curl git less libmpc3 \
+        make ncurses-term perl-base tar time wget xz-utils \
         libc6:i386 zlib1g:i386 \
         # the following packages are not required for rebuilding the stubs, but
         # they do make the image *much* more convenient and also allow building
         # the full UPX binary inside the container via CMake:
-        7zip bfs busybox bzip2 cabextract ccache chrpath cmake cpio curl elfutils fd-find file fish fzf \
-        g++ gawk gdb gojq ht htop hyperfine jq ksh libzstd-dev lsb-release lz4 lzip lzop \
-        minify mksh moreutils neovim ninja-build p7zip parallel patch patchelf patchutils pax-utils \
+        7zip bfs bubblewrap busybox bzip2 bzip3 cabextract ccache chrpath cmake cpio dash diffstat \
+        elfutils execstack fd-find file fish fzf g++ gawk gdb gojq ht htop hyperfine jq ksh \
+        libzstd-dev lsb-release lz4 lzip lzop minify mksh moreutils musl neovim ninja-build \
+        p7zip parallel patch patchelf patchutils pax-utils proot \
         python3 python3-pyasn1 python3-pycryptodome python3-zstd \
-        re2c ripgrep rsync screen universal-ctags unzip yash yq zip zlib1g-dev zsh zstd \
+        re2c ripgrep rsync screen universal-ctags unzip yash yq \
+        zip zlib1g-dev zoxide zsh zstd \
         # extra packages for compiling with "gcc -m32" and "gcc -mx32":
         g++-multilib gcc-multilib \
     && true
@@ -58,25 +60,36 @@ RUN cd /root \
 # install official UPX release binaries into /usr/local/bin; not required but convenient for testing
 RUN cd /root \
     && wget -q https://github.com/upx/upx/releases/download/v3.91/upx-3.91-amd64_linux.tar.bz2 \
-    && xzlist="3.92 3.93 3.94 3.95 3.96 4.0.0 4.0.1 4.0.2 4.1.0 4.2.0 4.2.1 4.2.2 4.2.3" \
-    && for v in $xzlist; do wget -q https://github.com/upx/upx/releases/download/v${v}/upx-${v}-amd64_linux.tar.xz; done \
+    && xzversions="3.92 3.93 3.94 3.95 3.96 4.0.0 4.0.1 4.0.2 4.1.0 4.2.0 4.2.1 4.2.2 4.2.3" \
+    && for v in $xzversions; do wget -q https://github.com/upx/upx/releases/download/v${v}/upx-${v}-amd64_linux.tar.xz; done \
     && for f in ./upx-*.tar.*; do tar -xoaf $f; done \
-    && for v in 3.91 $xzlist; do d=upx-${v}-amd64_linux; ./$d/upx -qq -d $d/upx -o /usr/local/bin/upx-${v}; done \
+    && for v in 3.91 $xzversions; do d=upx-${v}-amd64_linux; ./$d/upx -qq -d $d/upx -o /usr/local/bin/upx-${v}; done \
     && rm -r ./upx-*.tar.* ./upx-*linux \
     && true
 
-# create default user upx:upx 2000:2000
+# create default container user upx:upx 2000:2000
 RUN useradd upx -U --uid 2000 --shell /bin/bash -m \
     && cd /home/upx && chmod 00700 . \
-    # prepare ~/.cache and ~/.local for possible tmpfs mounts
+    # prepare ~/.cache, ~/.config and ~/.local for possible tmpfs mounts
     && mkdir -p .cache/tmp .local/bin src/upx \
     && for d in ccache fontconfig go-build mesa_shader_cache tmp wine zig; do mkdir -p .cache/$d; done \
+    && for d in fish git helix kak nvim; do mkdir -p .config/$d; done \
     && for d in bin include lib share state; do mkdir -p .local/$d; done \
     && ln -s .cache/wine .wine && ln -s .cache/tmp tmp \
+    # symlink upx-stubtools
     && ln -s /usr/local/bin/bin-upx-20221212 .local/bin/bin-upx \
-    && echo 'm() { make "$@"; }' >> .bash_aliases \
-    && echo 'source /usr/share/bash-completion/completions/make' >> .bash_aliases \
-    && echo 'complete -F _make m' >> .bash_aliases \
+    # some convenience settings according to upx developer preferences
+    && echo "alias md=mkdir" >> .bashrc \
+    && echo "alias rd=rmdir" >> .bashrc \
+    && echo 'mdd() { mkdir "$1" && cd "$1"; }' >> .bashrc \
+    && echo 'm() { make "$@"; }' >> .bashrc \
+    && echo 'source /usr/share/bash-completion/completions/make' >> .bashrc \
+    && echo 'complete -F _make m' >> .bashrc \
+    && echo 'eval "$(zoxide init bash)"' >> .bashrc \
+    && echo "alias zz=zi\nalias y=z\nalias yy=zi" >> .bashrc \
+    && echo "alias cd..='cd ..'" >> .bashrc \
+    && echo "alias ..='cd ..'" >> .bashrc \
+    && echo "alias .='cd ..'" >> .bashrc \
     && chown -R upx:upx . \
     && true
 USER upx

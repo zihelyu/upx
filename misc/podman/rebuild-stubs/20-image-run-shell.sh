@@ -24,8 +24,9 @@ if [[ 1 == 1 ]]; then
     # INFO: SELinux users *may* have to add ":z" to the volume mount flags; check the docs!
     flags+=( -v "${argv0dir}/../../..:/home/upx/src/upx" )
     flags+=( -w /home/upx/src/upx )     # set working directory
-    flags+=( --tmpfs /home/upx/.cache:rw,exec ) # mount a writeable tmpfs
-    flags+=( --tmpfs /home/upx/.local:rw,exec ) # mount a writeable tmpfs
+    flags+=( --tmpfs /home/upx/.cache:rw,exec )  # mount a writeable tmpfs
+    flags+=( --tmpfs /home/upx/.config:rw,exec ) # mount a writeable tmpfs
+    flags+=( --tmpfs /home/upx/.local:rw,exec )  # mount a writeable tmpfs
 else
     # run as user root 0:0
     # ONLY FOR DEBUGGING THE IMAGE
