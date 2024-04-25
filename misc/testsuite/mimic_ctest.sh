@@ -60,6 +60,9 @@ set_on_off() {
 }
 
 set -x
+if [[ "${emu[0]}" == *valgrind* ]]; then true; # valgrind is SLOW
+    [[ -n $UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST ]] || UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON
+fi
 set_on_off UPX_CONFIG_DISABLE_SELF_PACK_TEST
 set_on_off UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST
 set_on_off UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST

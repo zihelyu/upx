@@ -506,7 +506,7 @@ if(NOT UPX_CONFIG_DISABLE_SELF_PACK_TEST)
     # TODO later: check if we can somehow run these tests in parallel groups
     if(NOT UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST)
         foreach(method IN ITEMS nrv2b nrv2d nrv2e lzma)
-            foreach(level IN ITEMS 1 2 3 4 5 6 7 )
+            foreach(level IN ITEMS 1 2 3 4 5 6 7)
                 set(s "${method}-${level}")
                 upx_add_serial_test(upx-self-pack-${s}    upx --${method} -${level} --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-${s}${exe})
                 upx_add_serial_test(upx-list-${s}         upx -l upx-packed-${s}${exe})
