@@ -99,7 +99,7 @@ all_errors=
 
 export UPX="--prefer-ucl --no-color --no-progress"
 export UPX_DEBUG_DISABLE_GITREV_WARNING=1
-export UPX_DEBUG_DOCTEST_VERBOSE=0
+export UPX_DEBUG_DOCTEST_DISABLE=1 # already checked above
 
 case $UPX_TESTSUITE_LEVEL in
     [0-8]) ;;

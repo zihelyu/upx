@@ -162,6 +162,7 @@ jobs:
         run: |
           if command -v valgrind >/dev/null; then
             export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
+            export UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON # valgrind is SLOW
             env -C build/extra/gcc/debug     bash "$PWD"/misc/testsuite/mimic_ctest.sh
             env -C build/extra/gcc/release   bash "$PWD"/misc/testsuite/mimic_ctest.sh
             # clang/debug does not work before valgrind-3.20, see https://bugs.kde.org/show_bug.cgi?id=452758
@@ -173,6 +174,7 @@ jobs:
         run: |
           if command -v valgrind >/dev/null; then
             export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
+            export UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON # valgrind is SLOW
             env -C build/extra/gcc-m32/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
             env -C build/extra/gcc-m32/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
           fi
@@ -597,5 +599,6 @@ jobs:
           apk add coreutils valgrind
           export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
           upx_exe_runner="$upx_exe_runner --suppressions=$PWD/misc/valgrind/musl.supp"
+          export UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON # valgrind is SLOW
           env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
           env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/release bash "$PWD"/misc/testsuite/mimic_ctest.sh

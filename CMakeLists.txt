@@ -52,7 +52,8 @@ endif()
 
 # test config options (see below)
 # IMPORTANT NOTE: self-pack test can only work if the host executable format is supported by UPX!
-option(UPX_CONFIG_DISABLE_SELF_PACK_TEST "Do not test packing UPX with itself" OFF)
+option(UPX_CONFIG_DISABLE_SELF_PACK_TEST  "Do not test packing UPX with itself" OFF)
+option(UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST "Do not run exhaustive test"          OFF)
 
 #***********************************************************************
 # init
@@ -501,6 +502,24 @@ if(NOT UPX_CONFIG_DISABLE_SELF_PACK_TEST)
     upx_add_serial_test(upx-run-packed-nrv2e   ${emu} ./upx-packed-nrv2e${exe} --version-short)
     upx_add_serial_test(upx-run-packed-lzma    ${emu} ./upx-packed-lzma${exe}  --version-short)
     endif()
+
+    # TODO later: check if we can somehow run these tests in parallel groups
+    if(NOT UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST)
+        foreach(method IN ITEMS nrv2b nrv2d nrv2e lzma)
+            foreach(level IN ITEMS 1 2 3 4 5 6 7 )
+                set(s "${method}-${level}")
+                upx_add_serial_test(upx-self-pack-${s}    upx --${method} -${level} --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-${s}${exe})
+                upx_add_serial_test(upx-list-${s}         upx -l upx-packed-${s}${exe})
+                upx_add_serial_test(upx-fileinfo-${s}     upx --fileinfo upx-packed-${s}${exe})
+                upx_add_serial_test(upx-test-${s}         upx -t upx-packed-${s}${exe})
+                upx_add_serial_test(upx-unpack-pack-${s}  upx -d upx-packed-${s}${exe} ${fo} -o upx-unpacked-${s}${exe})
+                upx_add_serial_test(upx-compare-${s}      "${CMAKE_COMMAND}" -E compare_files upx-unpacked${exe} upx-unpacked-${s}${exe})
+                if(NOT UPX_CONFIG_DISABLE_RUN_PACKED_TEST)
+                upx_add_serial_test(upx-run-packed-${s}   ${emu} ./upx-packed-${s}${exe} --version-short)
+                endif()
+            endforeach()
+        endforeach()
+    endif () # UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST
 endif() # UPX_CONFIG_DISABLE_SELF_PACK_TEST
 endif() # CMAKE_CROSSCOMPILING
 

@@ -61,10 +61,13 @@ set_on_off() {
 
 set -x
 set_on_off UPX_CONFIG_DISABLE_SELF_PACK_TEST
+set_on_off UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST
 set_on_off UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST
 set_on_off UPX_CONFIG_DISABLE_RUN_PACKED_TEST
 
-export UPX="--no-color --no-progress"
+export UPX="--prefer-ucl --no-color --no-progress"
+export UPX_DEBUG_DISABLE_GITREV_WARNING=1
+export UPX_DEBUG_DOCTEST_DISABLE=1 # already checked above
 
 "${run_upx[@]}" --version
 "${run_upx[@]}" --version-short
@@ -116,18 +119,37 @@ cmp -s upx-unpacked${exe} upx-unpacked-nrv2e${exe}
 cmp -s upx-unpacked${exe} upx-unpacked-lzma${exe}
 
 if [[ $UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST == OFF ]]; then
-"${emu[@]}" ./upx-unpacked${exe} --version-short
+    "${emu[@]}" ./upx-unpacked${exe} --version-short
 fi
 
 if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST == OFF ]]; then
-"${emu[@]}" ./upx-packed${exe}       --version-short
-"${emu[@]}" ./upx-packed-fa${exe}    --version-short
-"${emu[@]}" ./upx-packed-fn${exe}    --version-short
-"${emu[@]}" ./upx-packed-fr${exe}    --version-short
-"${emu[@]}" ./upx-packed-nrv2b${exe} --version-short
-"${emu[@]}" ./upx-packed-nrv2d${exe} --version-short
-"${emu[@]}" ./upx-packed-nrv2e${exe} --version-short
-"${emu[@]}" ./upx-packed-lzma${exe}  --version-short
+    "${emu[@]}" ./upx-packed${exe}       --version-short
+    "${emu[@]}" ./upx-packed-fa${exe}    --version-short
+    "${emu[@]}" ./upx-packed-fn${exe}    --version-short
+    "${emu[@]}" ./upx-packed-fr${exe}    --version-short
+    "${emu[@]}" ./upx-packed-nrv2b${exe} --version-short
+    "${emu[@]}" ./upx-packed-nrv2d${exe} --version-short
+    "${emu[@]}" ./upx-packed-nrv2e${exe} --version-short
+    "${emu[@]}" ./upx-packed-lzma${exe}  --version-short
+fi
+
+if [[ $UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST == OFF ]]; then
+    set +x
+    for method in nrv2b nrv2d nrv2e lzma; do
+        for level in 1 2 3 4 5 6 7; do
+            s="${method}-${level}"
+            echo "========== $s =========="
+            "${run_upx[@]}" -qq --${method} -${level} --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-${s}${exe}
+            "${run_upx[@]}" -qq -l upx-packed-${s}${exe}
+            "${run_upx[@]}" -qq --fileinfo upx-packed-${s}${exe}
+            "${run_upx[@]}" -qq -t upx-packed-${s}${exe}
+            "${run_upx[@]}" -qq -d upx-packed-${s}${exe} ${fo} -o upx-unpacked-${s}${exe}
+            cmp -s upx-unpacked${exe} upx-unpacked-${s}${exe}
+            if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST == OFF ]]; then
+                "${emu[@]}" ./upx-packed-${s}${exe} --version-short
+            fi
+        done
+    done
 fi
 
 echo "All done."

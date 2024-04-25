@@ -170,8 +170,7 @@ create_files() {
 
 export UPX="--prefer-ucl --no-color --no-progress"
 export UPX_DEBUG_DISABLE_GITREV_WARNING=1
-export UPX_DEBUG_DOCTEST_VERBOSE=0
-export NO_COLOR=1
+export UPX_DEBUG_DOCTEST_DISABLE=1 # already checked above
 
 testsuite_header() {
     local x='==========='; x="$x$x$x$x$x$x$x"
