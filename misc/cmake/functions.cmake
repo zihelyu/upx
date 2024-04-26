@@ -362,11 +362,21 @@ endfunction()
 # test
 #***********************************************************************
 
-function(upx_add_serial_test) # ARGV
+function(upx_add_test) # ARGV
     set(name "${ARGV0}")
     list(REMOVE_AT ARGV 0)
     add_test(NAME "${name}" COMMAND ${ARGV})
-    set_tests_properties("${name}" PROPERTIES RUN_SERIAL TRUE) # run these tests sequentially
+endfunction()
+
+function(upx_test_depends) # ARGV
+    set(name "${ARGV0}")
+    list(REMOVE_AT ARGV 0)
+    get_property(prop TEST "${name}" PROPERTY DEPENDS)
+    if(prop MATCHES "^(NOTFOUND)?$")
+        set_tests_properties("${name}" PROPERTIES DEPENDS "${ARGV}")
+    else()
+        set_tests_properties("${name}" PROPERTIES DEPENDS "${prop};${ARGV}")
+    endif()
 endfunction()
 
 # vim:set ft=cmake ts=4 sw=4 tw=0 et:

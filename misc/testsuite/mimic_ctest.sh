@@ -93,7 +93,7 @@ fo="--force-overwrite"
 "${run_upx[@]}" -3               "${upx_self_exe}" ${fo} -o upx-packed${exe}
 "${run_upx[@]}" -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed-fa${exe}
 "${run_upx[@]}" -3 --no-filter   "${upx_self_exe}" ${fo} -o upx-packed-fn${exe}
-"${run_upx[@]}" -3 --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-fr${exe}
+"${run_upx[@]}" -3 --all-filters --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-fr${exe}
 "${run_upx[@]}" -3 --nrv2b       "${upx_self_exe}" ${fo} -o upx-packed-nrv2b${exe}
 "${run_upx[@]}" -3 --nrv2d       "${upx_self_exe}" ${fo} -o upx-packed-nrv2d${exe}
 "${run_upx[@]}" -3 --nrv2e       "${upx_self_exe}" ${fo} -o upx-packed-nrv2e${exe}
@@ -142,7 +142,7 @@ if [[ $UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST == OFF ]]; then
         for level in 1 2 3 4 5 6 7; do
             s="${method}-${level}"
             echo "========== $s =========="
-            "${run_upx[@]}" -qq --${method} -${level} --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-${s}${exe}
+            "${run_upx[@]}" -qq --${method} -${level} --all-filters --debug-use-random-filter "${upx_self_exe}" ${fo} -o upx-packed-${s}${exe}
             "${run_upx[@]}" -qq -l upx-packed-${s}${exe}
             "${run_upx[@]}" -qq --fileinfo upx-packed-${s}${exe}
             "${run_upx[@]}" -qq -t upx-packed-${s}${exe}

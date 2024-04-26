@@ -264,6 +264,7 @@ int upx_rand(void) noexcept { return ::rand(); }
 
 void upx_rand_init(void) noexcept {
     unsigned seed = 0;
+    seed ^= UPX_VERSION_HEX;
 #if (!HAVE_GETTIMEOFDAY || (ACC_OS_DOS32 && defined(__DJGPP__))) && !defined(__wasi__)
     seed ^= (unsigned) time(nullptr);
     seed ^= ((unsigned) clock()) << 12;

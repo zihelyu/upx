@@ -138,15 +138,15 @@ jobs:
           (cd build/extra/gcc/release && DESTDIR="$PWD/Install with make"  make install)
       - name: 'Run ctest tests'
         run: |
-          make -C build/extra/gcc/debug test
-          make -C build/extra/gcc/release test
-          make -C build/extra/clang/debug test
-          make -C build/extra/clang/release test
+          make build/extra/gcc/debug+test
+          make build/extra/gcc/release+test
+          make build/extra/clang/debug+test
+          make build/extra/clang/release+test
       - name: 'Run ctest tests 32-bit'
         if: ${{ matrix.use_m32 }}
         run: |
-          make -C build/extra/gcc-m32/debug test
-          make -C build/extra/gcc-m32/release test
+          make build/extra/gcc-m32/debug+test
+          make build/extra/gcc-m32/release+test
       - name: 'Mimic ctest tests'
         run: |
           env -C build/extra/gcc/debug     bash "$PWD"/misc/testsuite/mimic_ctest.sh
@@ -276,8 +276,8 @@ jobs:
           (cd build/extra/clang/release && DESTDIR="$PWD/Install with make"  make install)
       - name: 'Run ctest tests'
         run: |
-          make -C build/extra/clang/debug test
-          make -C build/extra/clang/release test
+          make build/extra/clang/debug+test
+          make build/extra/clang/release+test
           for f in ./build/extra/*/*/upx; do echo "===== $f"; $f --sysinfo -v; done
       - name: 'Mimic ctest tests'
         run: |
@@ -339,8 +339,8 @@ jobs:
       - name: 'Run ctest tests'
         if: ${{ matrix.vsarch != 'amd64_arm64' }}
         run: |
-          ctest --test-dir build/debug   -C Debug
-          ctest --test-dir build/release -C Release
+          ctest --test-dir build/debug   --parallel 8 -C Debug
+          ctest --test-dir build/release --parallel 8 -C Release
       - name: 'Run test suite build/release'
         if: ${{ matrix.vsarch != 'amd64_arm64' }}
         shell: bash
@@ -577,8 +577,8 @@ jobs:
       - name: 'Run ctest tests'
         if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' }}
         run: |
-          make -C build/zig/${ZIG_TARGET}${ZIG_PIC}/debug test
-          make -C build/zig/${ZIG_TARGET}${ZIG_PIC}/release test
+          make build/zig/${ZIG_TARGET}${ZIG_PIC}/debug+test
+          make build/zig/${ZIG_TARGET}${ZIG_PIC}/release+test
       - name: 'Mimic ctest tests'
         if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' }}
         run: |

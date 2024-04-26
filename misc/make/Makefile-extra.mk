@@ -12,23 +12,6 @@ $(call check_defined,run_config run_build)
 $(call check_undefined,run_config_and_build)
 
 #***********************************************************************
-# build and test
-#***********************************************************************
-
-CTEST = ctest
-
-build/debug+test:     $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST)
-build/%/debug+test:   $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST)
-build/release+test:   $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST)
-build/%/release+test: $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST)
-build/%/all+test:     $$(dir $$@)debug+test $$(dir $$@)release+test PHONY ;
-
-# shortcuts
-debug+test:   build/debug+test PHONY
-release+test: build/release+test PHONY
-all+test build/all+test: build/debug+test build/release+test PHONY
-
-#***********************************************************************
 # extra builds: some pre-defined build configurations
 #***********************************************************************
 
