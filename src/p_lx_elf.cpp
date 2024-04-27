@@ -320,7 +320,7 @@ PackLinuxElf32::PackLinuxElf32help1(InputFile *f)
     sz_elf_hdrs = sz_phdrs + sizeof(Elf32_Ehdr);
 
     if (f && Elf32_Ehdr::ET_DYN!=e_type) {
-        unsigned const len = sz_phdrs + e_phoff;
+        unsigned const len = file_size;  // (sz_phdrs + e_phoff) except --preserve-build-id
         alloc_file_image(file_image, len);
         f->seek(0, SEEK_SET);
         f->readx(file_image, len);
@@ -1031,7 +1031,7 @@ PackLinuxElf64::PackLinuxElf64help1(InputFile *f)
     sz_elf_hdrs = sz_phdrs + sizeof(Elf64_Ehdr);
 
     if (f && Elf64_Ehdr::ET_DYN!=e_type) {
-        unsigned const len = sz_phdrs + e_phoff;
+        unsigned const len = file_size;  // (sz_phdrs + e_phoff) except --preserve-build-id
         alloc_file_image(file_image, len);
         f->seek(0, SEEK_SET);
         f->readx(file_image, len);
@@ -4031,10 +4031,9 @@ void PackLinuxElf32::pack1(OutputFile * /*fo*/, Filter &ft)
     if (opt->o_unix.preserve_build_id) {
         // set this so we can use elf_find_section_name
         e_shnum = get_te16(&ehdri.e_shnum);
-        MemBuffer mb_shdri;
         if (!shdri) {
-            mb_shdri.alloc(e_shnum * sizeof(Elf32_Shdr));
-            shdri = (Elf32_Shdr *)mb_shdri.getVoidPtr();
+            mb_shdr.alloc(e_shnum * sizeof(Elf32_Shdr));
+            shdri = (Elf32_Shdr *)mb_shdr.getVoidPtr();
             e_shoff = get_te32(&ehdri.e_shoff);
             fi->seek(e_shoff, SEEK_SET);
             fi->readx(shdri, e_shnum * sizeof(Elf32_Shdr));
@@ -4921,10 +4920,9 @@ void PackLinuxElf64::pack1(OutputFile * /*fo*/, Filter &ft)
     if (opt->o_unix.preserve_build_id) {
         // set this so we can use elf_find_section_name
         e_shnum = get_te16(&ehdri.e_shnum);
-        MemBuffer mb_shdri;
         if (!shdri) {
-            mb_shdri.alloc(e_shnum * sizeof(Elf64_Shdr));
-            shdri = (Elf64_Shdr *)mb_shdri.getVoidPtr();
+            mb_shdr.alloc(e_shnum * sizeof(Elf64_Shdr));
+            shdri = (Elf64_Shdr *)mb_shdr.getVoidPtr();
             e_shoff = get_te64(&ehdri.e_shoff);
             fi->seek(e_shoff, SEEK_SET);
             fi->readx(shdri, e_shnum * sizeof(Elf64_Shdr));
