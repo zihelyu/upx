@@ -18,7 +18,7 @@ RUN dpkg --add-architecture i386 \
         elfutils execstack fd-find file fish fzf g++ gawk gdb gojq ht htop hyperfine jq ksh \
         libzstd-dev lsb-release lz4 lzip lzop minify mksh moreutils musl neovim ninja-build \
         p7zip parallel patch patchelf patchutils pax-utils proot \
-        python3 python3-pyasn1 python3-pycryptodome python3-zstd \
+        python3 python3-pyasn1 python3-pycryptodome python3-yaml python3-zstd \
         re2c ripgrep rsync screen universal-ctags unzip yash yq \
         zip zlib1g-dev zoxide zsh zstd \
         # extra packages for compiling with "gcc -m32" and "gcc -mx32":
@@ -72,7 +72,7 @@ RUN useradd upx -U --uid 2000 --shell /bin/bash -m \
     && cd /home/upx && chmod 00700 . \
     # prepare ~/.cache, ~/.config and ~/.local for possible tmpfs mounts
     && mkdir -p .cache/tmp .local/bin src/upx \
-    && for d in ccache fontconfig go-build mesa_shader_cache tmp wine zig; do mkdir -p .cache/$d; done \
+    && for d in ccache fontconfig go-build mesa_shader_cache parallel tmp wine zig; do mkdir -p .cache/$d; done \
     && for d in fish git helix kak nvim; do mkdir -p .config/$d; done \
     && for d in bin include lib share state; do mkdir -p .local/$d; done \
     && ln -s .cache/wine .wine && ln -s .cache/tmp tmp \

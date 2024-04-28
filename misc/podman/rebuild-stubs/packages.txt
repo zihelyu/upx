@@ -2,7 +2,7 @@ Packages:
 +++-=============================-=================================-============-================================================================================
 Desired=Unknown/Install/Remove/Purge/Hold
 ii  7zip                          23.01+dfsg-11                     amd64        7-Zip file archiver with a high compression ratio
-ii  apt                           2.7.12                            amd64        commandline package manager
+ii  apt                           2.7.14build2                      amd64        commandline package manager
 ii  aria2                         1.37.0+debian-1build3             amd64        High speed download utility
 ii  base-files                    13ubuntu10                        amd64        Debian base system miscellaneous files
 ii  base-passwd                   3.6.3build1                       amd64        Debian base system master password and group files
@@ -24,7 +24,7 @@ ii  ccache                        4.9.1-1                           amd64       
 ii  chrpath                       0.16-2build1                      amd64        Tool to edit the rpath in ELF binaries
 ii  cmake                         3.28.3-1build7                    amd64        cross-platform, open-source make system
 ii  cmake-data                    3.28.3-1build7                    all          CMake data files (modules, templates and documentation)
-ii  coreutils                     9.4-2ubuntu4                      amd64        GNU core utilities
+ii  coreutils                     9.4-3ubuntu6                      amd64        GNU core utilities
 ii  cpio                          2.15+dfsg-1ubuntu2                amd64        GNU cpio -- a program to manage archives of files
 ii  cpp                           4:13.2.0-7ubuntu1                 amd64        GNU C preprocessor (cpp)
 ii  cpp-13                        13.2.0-23ubuntu4                  amd64        GNU C preprocessor
@@ -66,7 +66,7 @@ ii  gdb                           15.0.50.20240403-0ubuntu1         amd64       
 ii  git                           1:2.43.0-1ubuntu7                 amd64        fast, scalable, distributed revision control system
 ii  git-man                       1:2.43.0-1ubuntu7                 all          fast, scalable, distributed revision control system (manual pages)
 ii  gojq                          0.12.13-1                         amd64        pure Go implementation of jq (program)
-ii  gpgv                          2.4.4-2ubuntu7                    amd64        GNU privacy guard - signature verification tool
+ii  gpgv                          2.4.4-2ubuntu17                   amd64        GNU privacy guard - signature verification tool
 ii  grep                          3.11-4build1                      amd64        GNU grep, egrep and fgrep
 ii  groff-base                    1.23.0-3build2                    amd64        GNU troff text-formatting system (base system components)
 ii  gzip                          1.12-1ubuntu3                     amd64        GNU compression utilities
@@ -90,7 +90,7 @@ ii  lib32stdc++-13-dev            13.2.0-23ubuntu4                  amd64       
 ii  lib32stdc++6                  14-20240412-0ubuntu1              amd64        GNU Standard C++ Library v3 (32 bit Version)
 ii  lib32ubsan1                   14-20240412-0ubuntu1              amd64        UBSan -- undefined behaviour sanitizer (32bit)
 ii  libacl1:amd64                 2.3.2-1build1                     amd64        access control list - shared library
-ii  libapt-pkg6.0:amd64           2.7.12                            amd64        package management runtime library
+ii  libapt-pkg6.0t64:amd64        2.7.14build2                      amd64        package management runtime library
 ii  libarchive13t64:amd64         3.7.2-2                           amd64        Multi-format archive and compression library (shared library)
 ii  libaria2-0:amd64              1.37.0+debian-1build3             amd64        C++ library interface to aria2
 ii  libasan8:amd64                14-20240412-0ubuntu1              amd64        AddressSanitizer -- a fast memory error detector
@@ -188,7 +188,7 @@ ii  libnettle8t64:amd64           3.9.1-2.2build1                   amd64       
 ii  libnghttp2-14:amd64           1.59.0-1build4                    amd64        library implementing HTTP/2 protocol (shared library)
 ii  libnl-3-200:amd64             3.7.0-0.3build1                   amd64        library for dealing with netlink sockets
 ii  libnl-genl-3-200:amd64        3.7.0-0.3build1                   amd64        library for dealing with netlink sockets - generic netlink
-ii  libnpth0:amd64                1.6-3build2                       amd64        replacement for GNU Pth using system threads
+ii  libnpth0t64:amd64             1.6-3.1build1                     amd64        replacement for GNU Pth using system threads
 ii  libonig5:amd64                6.9.9-1build1                     amd64        regular expressions library
 ii  libp11-kit0:amd64             0.25.3-4ubuntu2                   amd64        library for loading and coordinating access to PKCS#11 modules - runtime
 ii  libpam-modules-bin            1.5.3-5ubuntu5                    amd64        Pluggable Authentication Modules for PAM - helper binaries
@@ -351,13 +351,12 @@ ii  zoxide                        0.9.3-1                           amd64       
 ii  zsh                           5.9-6ubuntu2                      amd64        shell with lots of features
 ii  zsh-common                    5.9-6ubuntu2                      all          architecture independent files for Zsh
 ii  zstd                          1.5.5+dfsg2-2build1               amd64        fast lossless compression algorithm -- CLI tool
-rc  libgnutls30:amd64             3.8.3-1ubuntu1                    amd64        GNU TLS library - main runtime library
 | Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
 |/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
 ||/ Name                          Version                           Architecture Description
 
 Packages sorted by Installed-Size:
-   876372 ===== TOTAL (351 packages)
+   874046 ===== TOTAL (350 packages)
     72249 gcc-13-x86-64-linux-gnu                  amd64
     37841 g++-13-x86-64-linux-gnu                  amd64
     36493 cmake                                    amd64
@@ -405,7 +404,7 @@ Packages sorted by Installed-Size:
      4879 libhwasan0                               amd64
      4341 ncurses-term                             all
      4244 minify                                   amd64
-     4104 apt                                      amd64
+     4103 apt                                      amd64
      3983 gojq                                     amd64
      3956 python3-pycryptodome                     amd64
      3949 libglib2.0-0t64                          amd64
@@ -420,7 +419,7 @@ Packages sorted by Installed-Size:
      3403 libaria2-0                               amd64
      3382 fd-find                                  amd64
      3349 libubsan1                                amd64
-     3240 libapt-pkg6.0                            amd64
+     3244 libapt-pkg6.0t64                         amd64
      3157 libx32ubsan1                             amd64
      3111 ksh93u+m                                 amd64
      3110 libstdc++6                               amd64
@@ -435,7 +434,6 @@ Packages sorted by Installed-Size:
      2419 passwd                                   amd64
      2348 libgnutls30t64                           amd64
      2346 libbinutils                              amd64
-     2336 libgnutls30                              amd64
      2191 ht                                       amd64
      2182 libc-bin                                 amd64
      2161 git-man                                  all
@@ -536,8 +534,8 @@ Packages sorted by Installed-Size:
       344 grep                                     amd64
       340 sed                                      amd64
       337 libhogweed6t64                           amd64
+      337 gpgv                                     amd64
       336 libncurses6                              amd64
-      332 gpgv                                     amd64
       328 cpio                                     amd64
       314 libudev1                                 amd64
       310 libctf-nobfd0                            amd64
@@ -680,9 +678,9 @@ Packages sorted by Installed-Size:
        45 libatomic1                               amd64
        44 python3-zstd                             amd64
        43 libx32atomic1                            amd64
+       42 libnpth0t64                              amd64
        41 libxdmcp6                                amd64
        41 libkeyutils1                             amd64
-       40 libnpth0                                 amd64
        39 lib32atomic1                             amd64
        38 libdebconfclient0                        amd64
        37 gcc                                      amd64

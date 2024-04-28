@@ -201,7 +201,7 @@ function(upx_cache_bool_vars) # ARGV
         elseif(DEFINED ${var_name})                 # defined via "cmake -DXXX=YYY"
             set(value "${${var_name}}")
         elseif(DEFINED ENV{${var_name}})            # check environment
-            if("$ENV{${var_name}}" MATCHES "^(0|1|OFF|ON|FALSE|TRUE)$")
+            if("$ENV{${var_name}}" MATCHES "^(0|1|OFF|ON|FALSE|TRUE|off|on|false|true)$")
                 set(value "$ENV{${var_name}}")
                 set(UPX_CACHE_ORIGIN_FROM_ENV_${var_name} TRUE CACHE INTERNAL "" FORCE) # for status message below
             endif()

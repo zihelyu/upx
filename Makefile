@@ -55,13 +55,14 @@ build/%/all:   $$(dir $$@)debug $$(dir $$@)release PHONY ;
 # test
 #***********************************************************************
 
+CTEST = ctest
 CTEST_JOBS ?= 8
-CTEST = ctest --parallel $(CTEST_JOBS)
+CTEST_FLAGS = --output-on-failure --parallel $(CTEST_JOBS)
 
-build/debug+test:     $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST)
-build/%/debug+test:   $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST)
-build/release+test:   $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST)
-build/%/release+test: $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST)
+build/debug+test:     $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST) -C Debug $(CTEST_FLAGS)
+build/%/debug+test:   $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST) -C Debug $(CTEST_FLAGS)
+build/release+test:   $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST) -C Release $(CTEST_FLAGS)
+build/%/release+test: $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST) -C Release $(CTEST_FLAGS)
 build/%/all+test:     $$(dir $$@)debug+test $$(dir $$@)release+test PHONY ;
 
 # shortcuts
@@ -69,8 +70,7 @@ debug+test:   build/debug+test PHONY
 release+test: build/release+test PHONY
 all+test build/all+test: build/debug+test build/release+test PHONY
 
-# by default do test debug and release builds
-test:: build/all+test PHONY
+test: $$(patsubst %+test,%,$$(.DEFAULT_GOAL))+test PHONY
 
 #
 # END of Makefile

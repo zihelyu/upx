@@ -18,6 +18,10 @@ set(exe "${CMAKE_EXECUTABLE_SUFFIX}")
 set(upx_self_exe "$<TARGET_FILE:upx>")
 set(fo "--force-overwrite")
 
+#
+# basic tests
+#
+
 upx_add_test(upx-self-pack          upx -3               "${upx_self_exe}" ${fo} -o upx-packed${exe})
 upx_add_test(upx-self-pack-fa       upx -3 --all-filters "${upx_self_exe}" ${fo} -o upx-packed-fa${exe})
 upx_add_test(upx-self-pack-fn       upx -3 --no-filter   "${upx_self_exe}" ${fo} -o upx-packed-fn${exe})
@@ -93,7 +97,11 @@ if(NOT UPX_CONFIG_DISABLE_RUN_PACKED_TEST)
     upx_test_depends(upx-run-packed-lzma    upx-self-pack-lzma)
 endif()
 
-if(NOT UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST)
+#
+# exhaustive tests
+#
+
+if(NOT UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS)
     foreach(method IN ITEMS nrv2b nrv2d nrv2e lzma)
         foreach(level IN ITEMS 1 2 3 4 5 6 7)
             set(s "${method}-${level}")
@@ -114,7 +122,7 @@ if(NOT UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST)
             endif()
         endforeach()
     endforeach()
-endif () # UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST
+endif () # UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS
 
 # clean up
 set(emu "")

@@ -47,26 +47,32 @@ if ! "${run_upx[@]}" --help >/dev/null;  then echo "UPX-ERROR: FATAL: upx --help
 
 #***********************************************************************
 # see CMakeLists.txt
+#
+# IDEA: create a Makefile and use "make -j" so that these tests can
+#   run in parallel much like "ctest --parallel 8"
 #***********************************************************************
 
-set_on_off() {
+# similar to cmake function upx_cache_bool_vars()
+set_cmake_bool_vars() {
+    local default_value="$1"; shift
     local var_name
     for var_name do
         case "${!var_name}" in
-            "" | "0" | "FALSE" | "OFF") eval $var_name=OFF ;;
-            *) eval $var_name=ON ;;
+            0 | FALSE | OFF | false | off) eval "export $var_name=OFF" ;;
+            1 | TRUE | ON | true | on) eval "export $var_name=ON" ;;
+            *) eval "export $var_name=$default_value" ;;
         esac
     done
 }
 
 set -x
 if [[ "${emu[0]}" == *valgrind* ]]; then true; # valgrind is SLOW
-    [[ -n $UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST ]] || UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON
+    [[ -n $UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS ]] || UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON
 fi
-set_on_off UPX_CONFIG_DISABLE_SELF_PACK_TEST
-set_on_off UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST
-set_on_off UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST
-set_on_off UPX_CONFIG_DISABLE_RUN_PACKED_TEST
+set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_SELF_PACK_TEST
+set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS
+set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST
+set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_RUN_PACKED_TEST
 
 export UPX="--prefer-ucl --no-color --no-progress"
 export UPX_DEBUG_DISABLE_GITREV_WARNING=1
@@ -121,11 +127,11 @@ cmp -s upx-unpacked${exe} upx-unpacked-nrv2d${exe}
 cmp -s upx-unpacked${exe} upx-unpacked-nrv2e${exe}
 cmp -s upx-unpacked${exe} upx-unpacked-lzma${exe}
 
-if [[ $UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST == OFF ]]; then
+if [[ $UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST != ON ]]; then
     "${emu[@]}" ./upx-unpacked${exe} --version-short
 fi
 
-if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST == OFF ]]; then
+if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST != ON ]]; then
     "${emu[@]}" ./upx-packed${exe}       --version-short
     "${emu[@]}" ./upx-packed-fa${exe}    --version-short
     "${emu[@]}" ./upx-packed-fn${exe}    --version-short
@@ -136,7 +142,7 @@ if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST == OFF ]]; then
     "${emu[@]}" ./upx-packed-lzma${exe}  --version-short
 fi
 
-if [[ $UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST == OFF ]]; then
+if [[ $UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS != ON ]]; then
     set +x
     for method in nrv2b nrv2d nrv2e lzma; do
         for level in 1 2 3 4 5 6 7; do
@@ -148,11 +154,12 @@ if [[ $UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST == OFF ]]; then
             "${run_upx[@]}" -qq -t upx-packed-${s}${exe}
             "${run_upx[@]}" -qq -d upx-packed-${s}${exe} ${fo} -o upx-unpacked-${s}${exe}
             cmp -s upx-unpacked${exe} upx-unpacked-${s}${exe}
-            if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST == OFF ]]; then
+            if [[ $UPX_CONFIG_DISABLE_RUN_PACKED_TEST != ON ]]; then
                 "${emu[@]}" ./upx-packed-${s}${exe} --version-short
             fi
         done
     done
 fi
 
+echo "run_upx='${run_upx[*]}'"
 echo "All done."

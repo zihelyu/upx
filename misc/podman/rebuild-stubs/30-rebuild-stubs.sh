@@ -4,6 +4,7 @@ set -e; set -o pipefail
 argv0=$0; argv0abs="$(readlink -fn "$argv0")"; argv0dir="$(dirname "$argv0abs")"
 
 # rebuild stubs from source code
+#   (also see 20-image-run-shell.sh for more container usage examples)
 # using a rootless Podman container
 # Copyright (C) Markus Franz Xaver Johannes Oberhumer
 

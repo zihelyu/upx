@@ -142,41 +142,24 @@ jobs:
           make build/extra/gcc/release+test
           make build/extra/clang/debug+test
           make build/extra/clang/release+test
-      - name: 'Run ctest tests 32-bit'
-        if: ${{ matrix.use_m32 }}
-        run: |
-          make build/extra/gcc-m32/debug+test
-          make build/extra/gcc-m32/release+test
+          if test "${{ matrix.use_m32 }}" = "true"; then
+            make build/extra/gcc-m32/debug+test
+            make build/extra/gcc-m32/release+test
+          fi
       - name: 'Mimic ctest tests'
         run: |
-          env -C build/extra/gcc/debug     bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/extra/gcc/release   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/extra/clang/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/extra/clang/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
-      - name: 'Mimic ctest tests 32-bit'
-        if: ${{ matrix.use_m32 }}
-        run: |
-          env -C build/extra/gcc-m32/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/extra/gcc-m32/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
+          targets="gcc/debug gcc/release clang/debug clang/release"
+          test "${{ matrix.use_m32 }}" = "true" && targets="$targets gcc-m32/debug gcc-m32/release"
+          parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $targets
       - name: 'Mimic ctest tests with Valgrind'
         run: |
           if command -v valgrind >/dev/null; then
             export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
-            export UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON # valgrind is SLOW
-            env -C build/extra/gcc/debug     bash "$PWD"/misc/testsuite/mimic_ctest.sh
-            env -C build/extra/gcc/release   bash "$PWD"/misc/testsuite/mimic_ctest.sh
+            export UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON # valgrind is SLOW
             # clang/debug does not work before valgrind-3.20, see https://bugs.kde.org/show_bug.cgi?id=452758
-            ##env -C build/extra/clang/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-            env -C build/extra/clang/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          fi
-      - name: 'Mimic ctest tests 32-bit with Valgrind'
-        if: ${{ matrix.use_m32 }}
-        run: |
-          if command -v valgrind >/dev/null; then
-            export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
-            export UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON # valgrind is SLOW
-            env -C build/extra/gcc-m32/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-            env -C build/extra/gcc-m32/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
+            targets="gcc/debug gcc/release clang/release"
+            test "${{ matrix.use_m32 }}" = "true" && targets="$targets gcc-m32/debug gcc-m32/release"
+            parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $targets
           fi
       - name: 'Run file system test suite'
         run: |
@@ -510,7 +493,8 @@ jobs:
         if: ${{ job.container }}
         shell: sh
         run: |
-          apk update && apk upgrade && apk add bash cmake file git make tar xz
+          apk update && apk upgrade && apk add bash cmake file git make parallel tar xz
+          mkdir -p ~/.parallel && touch ~/.parallel/will-cite
           # set PATH like in Ubuntu
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
           # this seems to be needed when running in a container (beause of UID mismatch??)
@@ -583,22 +567,22 @@ jobs:
         if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' }}
         run: |
           apk add coreutils
-          env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
+          parallel -k 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' \
+            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release
       - name: ${{ format('Mimic ctest tests with QEMU {0}', matrix.qemu) }}
         if: ${{ matrix.qemu }}
         run: |
           qemu="${{ matrix.qemu }}"
           apk add coreutils "${qemu%% *}"
           export upx_exe_runner="$qemu"
-          env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
+          parallel -k 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' \
+            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release
       - name: 'Mimic ctest tests with Valgrind'
         if: ${{ matrix.zig_target == 'x86_64-linux-musl' }}
         run: |
           apk add coreutils valgrind
           export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
           upx_exe_runner="$upx_exe_runner --suppressions=$PWD/misc/valgrind/musl.supp"
-          export UPX_CONFIG_DISABLE_EXHAUSTIVE_TEST=ON # valgrind is SLOW
-          env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/zig/${ZIG_TARGET}${ZIG_PIC}/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
+          export UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON # valgrind is SLOW
+          parallel -k 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' \
+            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release

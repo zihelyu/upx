@@ -31,7 +31,7 @@ build/debug+test build/release+test build/all+test: PHONY; $(MAKE) -C $(top_srcd
 debug release all:                                  PHONY; $(MAKE) -C $(top_srcdir) $@
 debug+test release+test all+test:                   PHONY; $(MAKE) -C $(top_srcdir) $@
 
-test:: build/all+test PHONY
+test: $$(patsubst %+test,%,$$(.DEFAULT_GOAL))+test PHONY
 
 #***********************************************************************
 # make run-testsuite
