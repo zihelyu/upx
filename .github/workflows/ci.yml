@@ -138,28 +138,23 @@ jobs:
           (cd build/extra/gcc/release && DESTDIR="$PWD/Install with make"  make install)
       - name: 'Run ctest tests'
         run: |
-          make build/extra/gcc/debug+test
-          make build/extra/gcc/release+test
-          make build/extra/clang/debug+test
-          make build/extra/clang/release+test
-          if test "${{ matrix.use_m32 }}" = "true"; then
-            make build/extra/gcc-m32/debug+test
-            make build/extra/gcc-m32/release+test
-          fi
+          jobs="gcc/debug gcc/release clang/debug clang/release"
+          test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
+          CTEST_JOBS=4 parallel -k 'make build/extra/{}+test' ::: $jobs
       - name: 'Mimic ctest tests'
         run: |
-          targets="gcc/debug gcc/release clang/debug clang/release"
-          test "${{ matrix.use_m32 }}" = "true" && targets="$targets gcc-m32/debug gcc-m32/release"
-          parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $targets
+          jobs="gcc/debug gcc/release clang/debug clang/release"
+          test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
+          parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
       - name: 'Mimic ctest tests with Valgrind'
         run: |
           if command -v valgrind >/dev/null; then
             export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
             export UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON # valgrind is SLOW
             # clang/debug does not work before valgrind-3.20, see https://bugs.kde.org/show_bug.cgi?id=452758
-            targets="gcc/debug gcc/release clang/release"
-            test "${{ matrix.use_m32 }}" = "true" && targets="$targets gcc-m32/debug gcc-m32/release"
-            parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $targets
+            jobs="gcc/debug gcc/release clang/release"
+            test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
+            parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
           fi
       - name: 'Run file system test suite'
         run: |
@@ -494,7 +489,7 @@ jobs:
         shell: sh
         run: |
           apk update && apk upgrade && apk add bash cmake file git make parallel tar xz
-          mkdir -p ~/.parallel && touch ~/.parallel/will-cite
+          mkdir -p ~/.parallel && : > ~/.parallel/$(echo 6305-4721 | tr 0-7 leticlwi)
           # set PATH like in Ubuntu
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
           # this seems to be needed when running in a container (beause of UID mismatch??)
@@ -561,8 +556,8 @@ jobs:
       - name: 'Run ctest tests'
         if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' }}
         run: |
-          make build/zig/${ZIG_TARGET}${ZIG_PIC}/debug+test
-          make build/zig/${ZIG_TARGET}${ZIG_PIC}/release+test
+          parallel -k 'make build/zig/{}+test' \
+            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release
       - name: 'Mimic ctest tests'
         if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' }}
         run: |
