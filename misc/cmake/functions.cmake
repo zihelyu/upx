@@ -239,7 +239,7 @@ endfunction()
 
 function(upx_internal_add_definitions_with_prefix) # ARGV; needs include(CheckCCompilerFlag)
     set(flag_prefix "${ARGV0}")
-    if(flag_prefix MATCHES "^empty$") # need "empty" to work around bug in old CMake versions
+    if("${flag_prefix}" MATCHES "^empty$") # need "empty" to work around bug in old CMake versions
         set(flag_prefix "")
     endif()
     list(REMOVE_AT ARGV 0)
@@ -320,7 +320,7 @@ function(upx_compile_source_debug_with_O2) # ARGV
             # MSVC uses some Debug compilation options like -RTC1 that are incompatible with -O2
         else()
             get_source_file_property(prop "${source}" COMPILE_FLAGS)
-            if(prop MATCHES "^(NOTFOUND)?$")
+            if("${prop}" MATCHES "^(NOTFOUND)?$")
                 set_source_files_properties("${source}" PROPERTIES COMPILE_FLAGS "${flags}")
             else()
                 set_source_files_properties("${source}" PROPERTIES COMPILE_FLAGS "${prop} ${flags}")
@@ -372,7 +372,7 @@ function(upx_test_depends) # ARGV
     set(name "${ARGV0}")
     list(REMOVE_AT ARGV 0)
     get_property(prop TEST "${name}" PROPERTY DEPENDS)
-    if(prop MATCHES "^(NOTFOUND)?$")
+    if("${prop}" MATCHES "^(NOTFOUND)?$")
         set_tests_properties("${name}" PROPERTIES DEPENDS "${ARGV}")
     else()
         set_tests_properties("${name}" PROPERTIES DEPENDS "${prop};${ARGV}")
