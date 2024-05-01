@@ -3984,8 +3984,8 @@ void PackLinuxElf32::pack1(OutputFile * /*fo*/, Filter &ft)
     phdr = phdri;
     for (unsigned j=0; j < e_phnum; ++phdr, ++j) {
         unsigned const type = get_te32(&phdr->p_type);
-        if (PT_NOTE32 == type) {
-            unsigned const len = get_te32(&phdr->p_filesz);
+        unsigned const len = get_te32(&phdr->p_filesz);
+        if (PT_NOTE32 == type && len && note_body.getSize()) {
             fi->seek(get_te32(&phdr->p_offset), SEEK_SET);
             fi->readx(&note_body[note_size], len);
             note_size += up4(len);
