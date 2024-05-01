@@ -599,8 +599,12 @@ void PackBvmlinuzI386::pack(OutputFile *fo)
             properties = bswap32(properties);
         linker->defineSymbol("lzma_properties", properties);
         // -2 for properties
-        linker->defineSymbol("lzma_c_len", ph.c_len - 2);
-        linker->defineSymbol("lzma_u_len", ph.u_len);
+        if (linker->findSymbol("lzma_c_len", false)) {
+            linker->defineSymbol("lzma_c_len", ph.c_len - 2);
+        }
+        if (linker->findSymbol("lzma_u_len", false)) {
+            linker->defineSymbol("lzma_u_len", ph.u_len);
+        }
         unsigned const stack = getDecompressorWrkmemSize();
         linker->defineSymbol("lzma_stack_adjust", 0u - stack);
     }
