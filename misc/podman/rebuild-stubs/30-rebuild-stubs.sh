@@ -29,6 +29,7 @@ podman run "${flags[@]}" "$image" bash -c $'
 set -ex; set -o pipefail
 cd /home/upx/src/upx/src/stub
 make maintainer-clean extra-clean
+git status . || true # make sure the stub files got deleted
 make extra-all all
 echo "===== Rebuilt stubs. All done. ====="
 exit 0

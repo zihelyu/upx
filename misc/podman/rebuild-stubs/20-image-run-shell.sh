@@ -23,7 +23,7 @@ if [[ 1 == 1 ]]; then
     # NOTE: we mount the upx top-level directory read-write under /home/upx/src/upx
     # INFO: SELinux users *may* have to add ":z" to the volume mount flags; check the docs!
     flags+=( -v "${argv0dir}/../../..:/home/upx/src/upx" )
-    flags+=( -w /home/upx/src/upx )     # set working directory
+    flags+=( -w /home/upx/src/upx )              # set working directory
     flags+=( --tmpfs /home/upx/.cache:rw,exec )  # mount a writeable tmpfs
     flags+=( --tmpfs /home/upx/.config:rw,exec ) # mount a writeable tmpfs
     flags+=( --tmpfs /home/upx/.local:rw,exec )  # mount a writeable tmpfs

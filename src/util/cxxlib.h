@@ -241,6 +241,13 @@ constexpr bool string_ne(const char *a, const char *b) { return !string_eq(a, b)
 constexpr bool string_gt(const char *a, const char *b) { return string_lt(b, a); }
 constexpr bool string_le(const char *a, const char *b) { return !string_lt(b, a); }
 constexpr bool string_ge(const char *a, const char *b) { return !string_lt(a, b); }
+
+constexpr bool mem_eq(const char *a, const char *b, size_t n) {
+    return n == 0 || (*a == *b && mem_eq(a + 1, b + 1, n - 1));
+}
+constexpr bool mem_eq(const unsigned char *a, const unsigned char *b, size_t n) {
+    return n == 0 || (*a == *b && mem_eq(a + 1, b + 1, n - 1));
+}
 } // namespace compile_time
 
 /*************************************************************************

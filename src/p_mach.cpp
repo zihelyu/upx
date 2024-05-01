@@ -117,7 +117,7 @@ static const Lc_seg_info lc_seg_info[2] = {
 // > 0 : actual size
 // < 0 : neg. of minimum size; total must be (0 mod 4) or (0 mod 8)
 //
-static const signed char lc_cmd_size[] = {
+static const upx_int8_t lc_cmd_size[] = {
 // 2021-12: gcc 11.2.1 does not support 'sizeof' in designated initializer.
 // 2021-12: gcc 11.2.1 does not support [enum] as designator.
 // 2021-12: "clang++-10 -std=c++14":

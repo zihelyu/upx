@@ -50,8 +50,7 @@ jobs:
           curl -sS -L https://github.com/upx/upx-stubtools/releases/download/v20221212/bin-upx-20221212.tar.xz | tar -xJ
       - name: 'Check out code'
         run: |
-          # this seems to be needed when running in a container (beause of UID mismatch??)
-          git config --global --add safe.directory '*'
+          git config --global --add safe.directory '*' # needed when running in a container
           git clone --branch "$GITHUB_REF_NAME" --depth 1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" .
           git submodule update --init -- vendor/lzma-sdk
       - name: 'Rebuild and verify stubs'
@@ -292,7 +291,7 @@ jobs:
         with: { submodules: true }
       - name: 'Check out test suite'
         run:  'git clone --depth=1 https://github.com/upx/upx-testsuite ../deps/upx-testsuite'
-      - name: 'Set up Developer Command Prompt'
+      - name: 'Set up MSVC Developer Command Prompt'
         uses: ilammy/msvc-dev-cmd@v1
         with:
           vsversion: ${{ matrix.vsversion }}
@@ -358,7 +357,7 @@ jobs:
           mkdir -p -v build/$C/$B/{bzip2,ucl,upx,zlib,zstd}
           repository_name="${GITHUB_REPOSITORY##*/}" # basename
           echo "H=d:\\a\\$repository_name\\$repository_name" >> $GITHUB_ENV
-      - name: 'Set up Developer Command Prompt'
+      - name: 'Set up MSVC Developer Command Prompt'
         uses: ilammy/msvc-dev-cmd@v1
         with:
           vsversion: ${{ matrix.vsversion }}
@@ -464,8 +463,8 @@ jobs:
           - { zig_target: mips-linux-musl, zig_flags: -msoft-float, qemu: qemu-mips }
           - { zig_target: mipsel-linux-musl, zig_flags: -msoft-float, qemu: qemu-mipsel }
           - { zig_target: powerpc-linux-musl, qemu: qemu-ppc }
-          # powerpc64: obscure problem with C++ exceptions in UPX doctest checks when *NOT* using -fstack-protector
-          - { zig_target: powerpc64-linux-musl, zig_flags: -fstack-protector, qemu: qemu-ppc64 }
+          # powerpc64: obscure problem with C++ exceptions in UPX doctest checks; use -fPIC to work-around
+          - { zig_target: powerpc64-linux-musl, zig_flags: -fPIC, qemu: qemu-ppc64 }
           - { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le }
           - { zig_target: x86_64-linux-gnu.2.3.4 }
           - { zig_target: x86_64-linux-musl, qemu: qemu-x86_64 }
@@ -492,8 +491,7 @@ jobs:
           mkdir -p ~/.parallel && : > ~/.parallel/$(echo 6305-4721 | tr 0-7 leticlwi)
           # set PATH like in Ubuntu
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-          # this seems to be needed when running in a container (beause of UID mismatch??)
-          git config --global --add safe.directory '*'
+          git config --global --add safe.directory '*' # needed when running in a container
       - name: 'Check out code'
         uses: actions/checkout@v4
         with: { submodules: true }

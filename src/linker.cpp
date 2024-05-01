@@ -592,7 +592,7 @@ void ElfLinkerAMD64::relocate1(const Relocation *rel, byte *location, upx_uint64
     }
 
     if (strcmp(type, "8") == 0) {
-        int displ = (signed char) *location + (int) value;
+        int displ = (upx_int8_t) *location + (int) value;
         if (range_check && (displ < -128 || displ > 127))
             internal_error("target out of range (%d) in reloc %s:%x\n", displ, rel->section->name,
                            rel->offset);
@@ -846,7 +846,7 @@ void ElfLinkerPpc64le::relocate1(const Relocation *rel, byte *location, upx_uint
         // FIXME: displacement overflow?
         set_le32(location, (0xfc000003 & get_le32(location)) + (0x03fffffc & value));
     } else if (strcmp(type, "8") == 0) {
-        int displ = (signed char) *location + (int) value;
+        int displ = (upx_int8_t) *location + (int) value;
         if (range_check && (displ < -128 || displ > 127))
             internal_error("target out of range (%d) in reloc %s:%x\n", displ, rel->section->name,
                            rel->offset);
@@ -896,7 +896,7 @@ void ElfLinkerPpc64::relocate1(const Relocation *rel, byte *location, upx_uint64
         // FIXME: displacement overflow?
         set_be32(location, (0xfc000003 & get_be32(location)) + (0x03fffffc & value));
     } else if (strcmp(type, "8") == 0) {
-        int displ = (signed char) *location + (int) value;
+        int displ = (upx_int8_t) *location + (int) value;
         if (range_check && (displ < -128 || displ > 127))
             internal_error("target out of range (%d) in reloc %s:%x\n", displ, rel->section->name,
                            rel->offset);
@@ -925,7 +925,7 @@ void ElfLinkerX86::relocate1(const Relocation *rel, byte *location, upx_uint64_t
     }
 
     if (strcmp(type, "8") == 0) {
-        int displ = (signed char) *location + (int) value;
+        int displ = (upx_int8_t) *location + (int) value;
         if (range_check && (displ < -128 || displ > 127))
             internal_error("target out of range (%d,%d,%llu) in reloc %s:%x\n", displ, *location,
                            value, rel->section->name, rel->offset);

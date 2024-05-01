@@ -105,6 +105,12 @@ ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_gt("abc", "abz"))
 ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_ge("abc", "abz"))
 ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_le("abc", "abz"))
 
+ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq((const char *) nullptr, nullptr, 0))
+ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq((const byte *) nullptr, nullptr, 0))
+ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq("", "", 0))
+ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq("abc", "abc", 3))
+ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::mem_eq("abc", "abz", 3))
+
 /*************************************************************************
 //
 **************************************************************************/

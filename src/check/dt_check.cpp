@@ -329,6 +329,13 @@ struct TestIntegerWrap {
 // basic exception handling checks to early catch toolchain/qemu/wine/etc problems
 //
 
+struct TestDestructor {
+    explicit TestDestructor(int *pp, int vv) noexcept : p(pp), v(vv) {}
+    virtual noinline ~TestDestructor() noexcept { *p = (*p << 2) + v; }
+    int *p;
+    int v;
+};
+
 static noinline void throwSomeValue(int x) may_throw {
     if (x < 0)
         throw int(x);
@@ -336,12 +343,19 @@ static noinline void throwSomeValue(int x) may_throw {
         throw size_t(x);
 }
 
+static noinline void check_exceptions_2(void (*func)(int), int *x) may_throw {
+    TestDestructor d(x, *x);
+    func(*x);
+}
+
 static noinline void check_basic_cxx_exception_handling(void (*func)(int)) noexcept {
     bool cxx_exception_handling_works = false;
+    int x = 1;
     try {
-        func(42);
+        TestDestructor d(&x, 3);
+        check_exceptions_2(func, &x);
     } catch (const size_t &e) {
-        if (e == 42)
+        if (e == 1 && x == 23)
             cxx_exception_handling_works = true;
     } catch (...) {
     }
@@ -490,13 +504,18 @@ void upx_compiler_sanity_check(void) noexcept {
     COMPILE_TIME_ASSERT_ALIGNED1(upx_charptr_unit_type)
     COMPILE_TIME_ASSERT(sizeof(*((charptr) nullptr)) == 1)
 
-    COMPILE_TIME_ASSERT(sizeof(UPX_VERSION_STRING4) == 4 + 1)
-    assert_noexcept(strlen(UPX_VERSION_STRING4) == 4);
-    COMPILE_TIME_ASSERT(sizeof(UPX_VERSION_YEAR) == 4 + 1)
-    assert_noexcept(strlen(UPX_VERSION_YEAR) == 4);
-    assert_noexcept(memcmp(UPX_VERSION_DATE_ISO, UPX_VERSION_YEAR, 4) == 0);
-    assert_noexcept(
-        memcmp(&UPX_VERSION_DATE[sizeof(UPX_VERSION_DATE) - 1 - 4], UPX_VERSION_YEAR, 4) == 0);
+    {
+        using upx::compile_time::mem_eq;
+        using upx::compile_time::string_len;
+        static_assert(string_len(UPX_VERSION_STRING4) == 4);
+        static_assert(string_len(UPX_VERSION_YEAR) == 4);
+        static_assert(string_len(UPX_VERSION_DATE_ISO) == 10);
+        static_assert(string_len(UPX_VERSION_DATE) == 12 || string_len(UPX_VERSION_DATE) == 13);
+        static_assert(mem_eq(UPX_VERSION_STRING, UPX_VERSION_STRING4, 3));
+        static_assert(mem_eq(UPX_VERSION_DATE_ISO, UPX_VERSION_YEAR, 4));
+        static_assert(mem_eq(&UPX_VERSION_DATE[sizeof(UPX_VERSION_DATE) - 5], UPX_VERSION_YEAR, 4));
+    }
+
     if (gitrev[0]) {
         size_t revlen = strlen(gitrev);
         if (strncmp(gitrev, "ERROR", 5) == 0) {

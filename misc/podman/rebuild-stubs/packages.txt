@@ -30,7 +30,7 @@ ii  cpp                           4:13.2.0-7ubuntu1                 amd64       
 ii  cpp-13                        13.2.0-23ubuntu4                  amd64        GNU C preprocessor
 ii  cpp-13-x86-64-linux-gnu       13.2.0-23ubuntu4                  amd64        GNU C preprocessor for x86_64-linux-gnu
 ii  cpp-x86-64-linux-gnu          4:13.2.0-7ubuntu1                 amd64        GNU C preprocessor (cpp) for the amd64 architecture
-ii  curl                          8.5.0-2ubuntu10                   amd64        command line tool for transferring data with URL syntax
+ii  curl                          8.5.0-2ubuntu10.1                 amd64        command line tool for transferring data with URL syntax
 ii  dash                          0.5.12-6ubuntu5                   amd64        POSIX-compliant shell
 ii  debconf                       1.5.86ubuntu1                     all          Debian configuration management system
 ii  debianutils                   5.17build1                        amd64        Miscellaneous utilities specific to Debian
@@ -78,7 +78,7 @@ ii  init-system-helpers           1.66ubuntu1                       all         
 ii  jq                            1.7.1-3build1                     amd64        lightweight and flexible command-line JSON processor
 ii  ksh                           20240113                          all          transitional package
 ii  ksh93u+m                      1.0.8-1                           amd64        AT&T KornShell
-ii  less                          590-2ubuntu2                      amd64        pager program similar to more
+ii  less                          590-2ubuntu2.1                    amd64        pager program similar to more
 ii  lib32asan8                    14-20240412-0ubuntu1              amd64        AddressSanitizer -- a fast memory error detector (32bit)
 ii  lib32atomic1                  14-20240412-0ubuntu1              amd64        support library providing __atomic built-in functions (32bit)
 ii  lib32gcc-13-dev               13.2.0-23ubuntu4                  amd64        GCC support library (32 bit development files)
@@ -107,15 +107,15 @@ ii  libbrotli1:amd64              1.1.0-2build2                     amd64       
 ii  libbsd0:amd64                 0.12.1-1build1                    amd64        utility functions from BSD systems - shared library
 ii  libbz2-1.0:amd64              1.0.8-5.1                         amd64        high-quality block-sorting file compressor library - runtime
 ii  libbzip3-0:amd64              1.4.0-1                           amd64        better, faster and stronger spiritual successor to bzip2 - runtime
-ii  libc-bin                      2.39-0ubuntu8                     amd64        GNU C Library: Binaries
-ii  libc-dev-bin                  2.39-0ubuntu8                     amd64        GNU C Library: Development binaries
-ii  libc6-dev-i386                2.39-0ubuntu8                     amd64        GNU C Library: 32-bit development libraries for AMD64
-ii  libc6-dev-x32                 2.39-0ubuntu8                     amd64        GNU C Library: X32 ABI Development Libraries for AMD64
-ii  libc6-dev:amd64               2.39-0ubuntu8                     amd64        GNU C Library: Development Libraries and Header Files
-ii  libc6-i386                    2.39-0ubuntu8                     amd64        GNU C Library: 32-bit shared libraries for AMD64
-ii  libc6-x32                     2.39-0ubuntu8                     amd64        GNU C Library: X32 ABI Shared libraries for AMD64
-ii  libc6:amd64                   2.39-0ubuntu8                     amd64        GNU C Library: Shared libraries
-ii  libc6:i386                    2.39-0ubuntu8                     i386         GNU C Library: Shared libraries
+ii  libc-bin                      2.39-0ubuntu8.1                   amd64        GNU C Library: Binaries
+ii  libc-dev-bin                  2.39-0ubuntu8.1                   amd64        GNU C Library: Development binaries
+ii  libc6-dev-i386                2.39-0ubuntu8.1                   amd64        GNU C Library: 32-bit development libraries for AMD64
+ii  libc6-dev-x32                 2.39-0ubuntu8.1                   amd64        GNU C Library: X32 ABI Development Libraries for AMD64
+ii  libc6-dev:amd64               2.39-0ubuntu8.1                   amd64        GNU C Library: Development Libraries and Header Files
+ii  libc6-i386                    2.39-0ubuntu8.1                   amd64        GNU C Library: 32-bit shared libraries for AMD64
+ii  libc6-x32                     2.39-0ubuntu8.1                   amd64        GNU C Library: X32 ABI Shared libraries for AMD64
+ii  libc6:amd64                   2.39-0ubuntu8.1                   amd64        GNU C Library: Shared libraries
+ii  libc6:i386                    2.39-0ubuntu8.1                   i386         GNU C Library: Shared libraries
 ii  libcap-ng0:amd64              0.8.4-2build2                     amd64        alternate POSIX capabilities library
 ii  libcap2:amd64                 1:2.66-5ubuntu2                   amd64        POSIX 1003.1e capabilities (library)
 ii  libcares2:amd64               1.27.0-1.0ubuntu1                 amd64        asynchronous name resolver
@@ -125,8 +125,8 @@ ii  libcrypt-dev:amd64            1:4.4.36-4build1                  amd64       
 ii  libcrypt1:amd64               1:4.4.36-4build1                  amd64        libcrypt shared library
 ii  libctf-nobfd0:amd64           2.42-4ubuntu2                     amd64        Compact C Type Format library (runtime, no BFD dependency)
 ii  libctf0:amd64                 2.42-4ubuntu2                     amd64        Compact C Type Format library (runtime, BFD dependency)
-ii  libcurl3t64-gnutls:amd64      8.5.0-2ubuntu10                   amd64        easy-to-use client-side URL transfer library (GnuTLS flavour)
-ii  libcurl4t64:amd64             8.5.0-2ubuntu10                   amd64        easy-to-use client-side URL transfer library (OpenSSL flavour)
+ii  libcurl3t64-gnutls:amd64      8.5.0-2ubuntu10.1                 amd64        easy-to-use client-side URL transfer library (GnuTLS flavour)
+ii  libcurl4t64:amd64             8.5.0-2ubuntu10.1                 amd64        easy-to-use client-side URL transfer library (OpenSSL flavour)
 ii  libdb5.3t64:amd64             5.3.28+dfsg2-7                    amd64        Berkeley v5.3 Database Libraries [runtime]
 ii  libdebconfclient0:amd64       0.271ubuntu3                      amd64        Debian Configuration Management System (C-implementation library)
 ii  libdebuginfod-common          0.190-1.1build4                   all          configuration to enable the Debian debug info server
@@ -145,7 +145,7 @@ ii  libgdbm-compat4t64:amd64      1.23-5.1build1                    amd64       
 ii  libgdbm6t64:amd64             1.23-5.1build1                    amd64        GNU dbm database routines (runtime version)
 ii  libglib2.0-0t64:amd64         2.80.0-6ubuntu1                   amd64        GLib library of C routines
 ii  libgmp10:amd64                2:6.3.0+dfsg-2ubuntu6             amd64        Multiprecision arithmetic library
-ii  libgnutls30t64:amd64          3.8.3-1.1ubuntu3                  amd64        GNU TLS library - main runtime library
+ii  libgnutls30t64:amd64          3.8.3-1.1ubuntu3.1                amd64        GNU TLS library - main runtime library
 ii  libgomp1:amd64                14-20240412-0ubuntu1              amd64        GCC OpenMP (GOMP) support library
 ii  libgpg-error0:amd64           1.47-3build2                      amd64        GnuPG development runtime library
 ii  libgprofng0:amd64             2.42-4ubuntu2                     amd64        GNU Next Generation profiler (runtime library)
@@ -356,7 +356,7 @@ ii  zstd                          1.5.5+dfsg2-2build1               amd64       
 ||/ Name                          Version                           Architecture Description
 
 Packages sorted by Installed-Size:
-   874046 ===== TOTAL (350 packages)
+   874050 ===== TOTAL (350 packages)
     72249 gcc-13-x86-64-linux-gnu                  amd64
     37841 g++-13-x86-64-linux-gnu                  amd64
     36493 cmake                                    amd64
@@ -432,7 +432,7 @@ Packages sorted by Installed-Size:
      2770 libx32stdc++6                            amd64
      2431 zsh                                      amd64
      2419 passwd                                   amd64
-     2348 libgnutls30t64                           amd64
+     2352 libgnutls30t64                           amd64
      2346 libbinutils                              amd64
      2191 ht                                       amd64
      2182 libc-bin                                 amd64
