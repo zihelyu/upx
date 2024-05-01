@@ -38,14 +38,26 @@
 ;   eax - 0
 ;   ecx - 0
 
-; WARNING: NO CHANGES ARE ALLOWED (except to fix "real bugs")
-; because of triggering anti-virus utilities for
-; i386-dos32, i386-win32, win64.
-; This file has been made read-only as a hint.
+; This file began as a copy of lzma_d.S, then enhanced
+; to allow unpacking of multiple blocks (each preceded by
+; struct b_info), for which the run-time constants
+; lzma_u_len and lzma_c_len can only describe one block.
 */
 
 // init
 section LZMA_DEC00
+
+// "M_LZMA=14" etc failed to assemble.  Workaround.
+#define M_LZMA 14
+#define szb_info (3*4)
+#define sz_unc (0*4)
+#define sz_cpr (1*4)
+#define b_method (0 + 2*4)
+
+        cmpb [b_method - szb_info + esi], M_LZMA
+        je .is_lzma
+        hlt
+.is_lzma:
 
 // ebx = alloca(lzma_stack_adjust);
 
@@ -58,24 +70,34 @@ section LZMA_DEC00
         cmp     esp, ebx
         jnz     .clearstack1
 
-
-        inc     esi                     // skip 2 bytes for properties
-        inc     esi
-
         push    ebx                     // &outSizeProcessed
-        push    offset lzma_u_len       // outSize
+        push [sz_unc - szb_info + esi]  // outSize
         push    edi                     // out
         add     ebx, 4
         push    ebx                     // &inSizeProcessed
-        push    offset lzma_c_len       // inSize
-        push    esi                     // in
+
+        mov eax,[sz_cpr - szb_info + esi]  // inSize, including properties
+        dec eax
+        dec eax
+        push eax  // inSize, after properties
+
+        inc     esi                     // skip 2 bytes for properties
+        inc     esi
+        push    esi                     // inSize,
+
         add     ebx, 4
         push    ebx                     // &CLzmaDecoderState
+        sub eax,eax  // paranoia
         push    eax                     // dummy for call
 
         // hardwired LzmaDecodeProperties()
         mov     dword ptr [ebx], offset lzma_properties // lc, lp, pb, dummy
 
+#undef M_LZMA
+#undef szb_info
+#undef sz_unc
+#undef sz_cpr
+#undef b_method
 
 section LZMA_ELF00
 // Preceded by LEXEC010 which tunes for NRV, including 'pusha'
