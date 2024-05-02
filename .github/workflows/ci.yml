@@ -139,36 +139,50 @@ jobs:
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
           test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
-          CTEST_JOBS=4 parallel -k 'make build/extra/{}+test' ::: $jobs
+          echo "===== parallel jobs: $jobs"
+          CTEST_JOBS=2 parallel -k --lb 'make build/extra/{}+test' ::: $jobs
       - name: 'Mimic ctest tests'
         run: |
           jobs="gcc/debug gcc/release clang/debug clang/release"
           test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
-          parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
       - name: 'Mimic ctest tests with Valgrind'
+        if: true # note: valgrind is SLOW
         run: |
           if command -v valgrind >/dev/null; then
-            export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
             export UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON # valgrind is SLOW
+            export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
             # clang/debug does not work before valgrind-3.20, see https://bugs.kde.org/show_bug.cgi?id=452758
             jobs="gcc/debug gcc/release clang/release"
             test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
-            parallel -k 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
+            echo "===== parallel jobs: $jobs"
+            parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
           fi
       - name: 'Run file system test suite'
         run: |
-          env -C build/extra/gcc/release bash "$PWD"/misc/testsuite/test_symlinks.sh
+          jobs="gcc/debug gcc/release clang/debug clang/release"
+          test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/test_symlinks.sh' ::: $jobs
       - name: 'Run file system test suite with Valgrind'
-        if: false # valgrind is SLOW
+        if: true # note: valgrind is SLOW
         run: |
           if command -v valgrind >/dev/null; then
             export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
-            env -C build/extra/gcc/release bash "$PWD"/misc/testsuite/test_symlinks.sh
+            # clang/debug does not work before valgrind-3.20, see https://bugs.kde.org/show_bug.cgi?id=452758
+            jobs="gcc/debug gcc/release clang/release"
+            test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
+            echo "===== parallel jobs: $jobs"
+            parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/test_symlinks.sh' ::: $jobs
           fi
-      - name: 'Run test suite build/extra/gcc/release'
+      - name: 'Run test suite'
         run: |
           export upx_testsuite_SRCDIR="$(readlink -en ../deps/upx-testsuite)"
-          env -C build/extra/gcc/release bash "$PWD"/misc/testsuite/upx_testsuite_1.sh
+          jobs="gcc/debug gcc/release clang/debug clang/release"
+          test "${{ matrix.use_m32 }}" = "true" && jobs="$jobs gcc-m32/debug gcc-m32/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/upx_testsuite_1.sh' ::: $jobs
 
   job-macos-cmake: # uses cmake + make
     if: true
@@ -199,14 +213,17 @@ jobs:
           test -z "$HOMEBREW_PREFIX" && HOMEBREW_PREFIX="$(brew --prefix)"
           echo "HOMEBREW_PREFIX=$HOMEBREW_PREFIX" >> $GITHUB_ENV
           # testsuite needs working "readlink -en" and "sha256sum -b"
-          if ! test -e "$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin/readlink"; then
+          packages="ninja parallel"
+          test -e "$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin/readlink" || packages="$packages coreutils"
+          if test -n "$packages"; then
             echo "===== brew leaves:"; brew leaves; echo "===== brew list:"; brew list --versions
             # only run "brew update" if needed
-            if ! brew install coreutils; then brew update && brew install coreutils; fi
+            if ! brew install $packages; then brew update && brew install $packages; fi
           fi
+          mkdir -p ~/.parallel && : > ~/.parallel/$(echo 6305-4721 | tr 0-7 leticlwi)
           echo "UPX_DEBUG_FORCE_PACK_MACOS=1" >> $GITHUB_ENV
           case "${{ matrix.os }}" in
-            # FIXME: UPX on macos-13+ is broken => disable run-packed for now
+            # TODO FIXME: UPX on macos-13+ is broken => disable run-packed for now
             macos-13 | macos-14) echo "UPX_CONFIG_DISABLE_RUN_PACKED_TEST=ON" >> $GITHUB_ENV ;;
           esac
       - name: 'Check out code'
@@ -253,26 +270,36 @@ jobs:
           (cd build/extra/clang/release && DESTDIR="$PWD/Install with make"  make install)
       - name: 'Run ctest tests'
         run: |
-          make build/extra/clang/debug+test
-          make build/extra/clang/release+test
-          for f in ./build/extra/*/*/upx; do echo "===== $f"; $f --sysinfo -v; done
+          for f in ./build/extra/*/*/upx; do echo "===== $f"; file $f; $f --sysinfo -v; done
+          jobs="clang/debug clang/release"
+          test -n "${{ matrix.gcc }}" && jobs="$jobs gcc/debug gcc/release"
+          echo "===== parallel jobs: $jobs"
+          CTEST_JOBS=2 parallel -k --lb 'make build/extra/{}+test' ::: $jobs
       - name: 'Mimic ctest tests'
         run: |
           export PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
-          env -C build/extra/clang/debug   bash "$PWD"/misc/testsuite/mimic_ctest.sh
-          env -C build/extra/clang/release bash "$PWD"/misc/testsuite/mimic_ctest.sh
+          jobs="clang/debug clang/release"
+          test -n "${{ matrix.gcc }}" && jobs="$jobs gcc/debug gcc/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
       - name: 'Run file system test suite'
         if: ${{ matrix.testsuite }} # for coreutils readlink
         run: |
           export PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
           export upx_test_file="$PWD"/build/extra/clang/release/upx
-          env -C build/extra/clang/release bash "$PWD"/misc/testsuite/test_symlinks.sh
-      - name: 'Run test suite build/extra/clang/release'
+          jobs="clang/debug clang/release"
+          test -n "${{ matrix.gcc }}" && jobs="$jobs gcc/debug gcc/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/test_symlinks.sh' ::: $jobs
+      - name: 'Run test suite'
         if: ${{ matrix.testsuite }}
         run: |
           export PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
           export upx_testsuite_SRCDIR="$(readlink -en ../deps/upx-testsuite)"
-          env -C build/extra/clang/release bash "$PWD"/misc/testsuite/upx_testsuite_1.sh
+          jobs="clang/debug clang/release"
+          test -n "${{ matrix.gcc }}" && jobs="$jobs gcc/debug gcc/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/extra/{} && bash ../../../../misc/testsuite/upx_testsuite_1.sh' ::: $jobs
 
   job-windows-cmake: # uses cmake + msbuild
     if: true
@@ -467,7 +494,7 @@ jobs:
           # powerpc64: obscure problem with C++ exceptions in UPX doctest checks; use -fPIC to work-around
           - { zig_target: powerpc64-linux-musl, zig_flags: -fPIC, qemu: qemu-ppc64 }
           - { zig_target: powerpc64le-linux-musl, qemu: qemu-ppc64le }
-          - { zig_target: x86_64-linux-gnu.2.3.4 }
+          - { zig_target: x86_64-linux-gnu.2.3.4, qemu: qemu-x86_64 } # can use QEMU because of gcompat
           - { zig_target: x86_64-linux-musl, qemu: qemu-x86_64 }
           # { zig_target: x86_64-linux-musl, qemu: qemu-x86_64, zig_pic: -fPIE }
           # { zig_target: x86_64-macos-none }
@@ -502,6 +529,11 @@ jobs:
           # GitHub Actions magic: set "UPX_GITREV_SHORT" environment value for use in steps below
           rev=$(git rev-parse --short=7 HEAD)
           echo "UPX_GITREV_SHORT=$rev" >> $GITHUB_ENV
+          # TODO FIXME: UPX bug with self-packed upx + gcompat??
+          if [[ "${{ matrix.zig_target }}" == x86_64-linux-gnu.2.3.4 ]]; then
+            echo "UPX_CONFIG_DISABLE_RUN_PACKED_TEST=ON" >> $GITHUB_ENV
+            echo "NEED_GCOMPAT=1" >> $GITHUB_ENV
+          fi
           # update ZIG_TARGET (i386 => x86)
           ZIG_TARGET=${ZIG_TARGET/i386-/x86-}
           echo "ZIG_TARGET=$ZIG_TARGET" >> $GITHUB_ENV
@@ -553,30 +585,45 @@ jobs:
           (cd build/zig/${ZIG_TARGET}${ZIG_PIC}/release && DESTDIR="$PWD/Install with cmake" cmake --install .)
           (cd build/zig/${ZIG_TARGET}${ZIG_PIC}/release && DESTDIR="$PWD/Install with make"  make install)
       - name: 'Run ctest tests'
-        if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' }}
+        if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' || matrix.zig_target == 'x86_64-linux-gnu.2.3.4' }}
         run: |
-          parallel -k 'make build/zig/{}+test' \
-            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release
+          test -z "$NEED_GCOMPAT" || apk add gcompat
+          jobs="${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'make build/zig/{}+test' ::: $jobs
       - name: 'Mimic ctest tests'
-        if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' }}
+        if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' || matrix.zig_target == 'x86_64-linux-gnu.2.3.4' }}
         run: |
-          apk add coreutils
-          parallel -k 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' \
-            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release
+          test -z "$NEED_GCOMPAT" || apk add gcompat
+          jobs="${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
       - name: ${{ format('Mimic ctest tests with QEMU {0}', matrix.qemu) }}
         if: ${{ matrix.qemu }}
         run: |
           qemu="${{ matrix.qemu }}"
           apk add coreutils "${qemu%% *}"
+          test -z "$NEED_GCOMPAT" || apk add gcompat
           export upx_exe_runner="$qemu"
-          parallel -k 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' \
-            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release
+          jobs="${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
       - name: 'Mimic ctest tests with Valgrind'
-        if: ${{ matrix.zig_target == 'x86_64-linux-musl' }}
+        if: ${{ matrix.zig_target == 'x86_64-linux-musl' || matrix.zig_target == 'x86_64-linux-gnu.2.3.4' }}
         run: |
+          export UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON # valgrind is SLOW
           apk add coreutils valgrind
+          test -z "$NEED_GCOMPAT" || apk add gcompat
           export upx_exe_runner="valgrind --leak-check=no --error-exitcode=1 --quiet --gen-suppressions=all"
           upx_exe_runner="$upx_exe_runner --suppressions=$PWD/misc/valgrind/musl.supp"
-          export UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON # valgrind is SLOW
-          parallel -k 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' \
-            ::: ${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release
+          jobs="${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/zig/{} && bash ../../../../misc/testsuite/mimic_ctest.sh' ::: $jobs
+      - name: 'Run file system test suite'
+        if: ${{ matrix.zig_target == 'i386-linux-musl' || matrix.zig_target == 'x86_64-linux-musl' || matrix.zig_target == 'x86_64-linux-gnu.2.3.4' }}
+        run: |
+          apk add coreutils sudo
+          test -z "$NEED_GCOMPAT" || apk add gcompat
+          jobs="${ZIG_TARGET}${ZIG_PIC}/debug ${ZIG_TARGET}${ZIG_PIC}/release"
+          echo "===== parallel jobs: $jobs"
+          parallel -k --lb 'cd build/zig/{} && chmod a+w . && sudo -u nobody bash ../../../../misc/testsuite/test_symlinks.sh' ::: $jobs
