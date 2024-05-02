@@ -105,19 +105,17 @@ struct PackerNames final {
     explicit PackerNames() noexcept = default;
     ~PackerNames() noexcept = default;
 
-    static constexpr size_t MAX_NAMES = 64;
-    static constexpr size_t MAX_METHODS = 8;
-    static constexpr size_t MAX_FILTERS = 16;
+    static constexpr unsigned MAX_NAMES = 64; // arbitrary limit, increase as needed
     struct Entry {
         const char *fname;
         const char *sname;
-        size_t methods_count;
-        size_t filters_count;
-        unsigned methods[MAX_METHODS];
-        unsigned filters[MAX_FILTERS];
+        unsigned methods_count;
+        unsigned filters_count;
+        unsigned methods[PackerBase::MAX_METHODS];
+        unsigned filters[PackerBase::MAX_FILTERS];
     };
     Entry names[MAX_NAMES];
-    size_t names_count = 0;
+    unsigned names_count = 0;
     const Options *o = nullptr;
 
     void add(const PackerBase *pb) {
@@ -129,14 +127,14 @@ struct PackerNames final {
         for (const int *m = pb->getCompressionMethods(M_ALL, 10); *m != M_END; m++) {
             if (*m >= 0) {
                 assert_noexcept(Packer::isValidCompressionMethod(*m));
-                assert_noexcept(e.methods_count < MAX_METHODS);
+                assert_noexcept(e.methods_count < PackerBase::MAX_METHODS);
                 e.methods[e.methods_count++] = *m;
             }
         }
         for (const int *f = pb->getFilters(); f != nullptr && *f != FT_END; f++) {
             if (*f >= 0) {
                 assert_noexcept(Filter::isValidFilter(*f));
-                assert_noexcept(e.filters_count < MAX_FILTERS);
+                assert_noexcept(e.filters_count < PackerBase::MAX_FILTERS);
                 e.filters[e.filters_count++] = *f;
             }
         }
@@ -481,7 +479,7 @@ void show_version(bool one_line) {
     fprintf(f, "Copyright (C) 2015" "-2024 Meta Platforms, Inc. and affiliates\n");
 #endif
 #if (WITH_BZIP2)
-    // see <bzlib.h>
+    // see vendor/bzip2/bzlib.h
     fprintf(f, "Copyright (C) 1996" "-2010 Julian Seward\n");
 #endif
 #if !defined(DOCTEST_CONFIG_DISABLE)

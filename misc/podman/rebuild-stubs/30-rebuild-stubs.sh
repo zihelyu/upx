@@ -27,6 +27,12 @@ fi
 
 podman run "${flags[@]}" "$image" bash -c $'
 set -ex; set -o pipefail
+cd /home/upx/src/upx
+# check whitespace
+[[ -d .git ]] && bash ./misc/scripts/check_whitespace_git.sh
+# rebuild docs
+make -C doc clean all
+# rebuild stubs
 cd /home/upx/src/upx/src/stub
 make maintainer-clean extra-clean
 git status . || true # make sure the stub files got deleted

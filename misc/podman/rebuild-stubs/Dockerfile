@@ -18,7 +18,7 @@ RUN dpkg --add-architecture i386 \
         elfutils execstack fd-find file fish fzf g++ gawk gdb gojq ht htop hyperfine jq ksh \
         libzstd-dev lsb-release lz4 lzip lzop minify mksh moreutils musl neovim ninja-build \
         p7zip parallel patch patchelf patchutils pax-utils proot \
-        python3 python3-pyasn1 python3-pycryptodome python3-yaml python3-zstd \
+        python3 python3-pyasn1 python3-pycryptodome python3-pycurl python3-toml python3-yaml python3-zstd \
         re2c ripgrep rsync screen universal-ctags unzip yash yq \
         zip zlib1g-dev zoxide zsh zstd \
         # extra packages for compiling with "gcc -m32" and "gcc -mx32":

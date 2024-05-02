@@ -314,6 +314,7 @@ ii  python3-argcomplete           3.1.4-1                           all         
 ii  python3-minimal               3.12.3-0ubuntu1                   amd64        minimal subset of the Python language (default python3 version)
 ii  python3-pyasn1                0.4.8-4                           all          ASN.1 library for Python (Python 3 module)
 ii  python3-pycryptodome          3.20.0+dfsg-1                     amd64        cryptographic Python library (Python 3)
+ii  python3-pycurl                7.45.3-1build2                    amd64        Python bindings to libcurl (Python 3)
 ii  python3-pyelftools            0.30-1                            all          pure-python3 library for parsing ELF and DWARF
 ii  python3-toml                  0.10.2-1                          all          library for Tom's Obvious, Minimal Language - Python 3.x
 ii  python3-xmltodict             0.13.0-1                          all          Makes working with XML feel like you are working with JSON (Python 3)
@@ -356,7 +357,7 @@ ii  zstd                          1.5.5+dfsg2-2build1               amd64       
 ||/ Name                          Version                           Architecture Description
 
 Packages sorted by Installed-Size:
-   874050 ===== TOTAL (350 packages)
+   874252 ===== TOTAL (351 packages)
     72249 gcc-13-x86-64-linux-gnu                  amd64
     37841 g++-13-x86-64-linux-gnu                  amd64
     36493 cmake                                    amd64
@@ -577,6 +578,7 @@ Packages sorted by Installed-Size:
       208 libpam0g                                 amd64
       207 libuchardet0                             amd64
       206 proot                                    amd64
+      202 python3-pycurl                           amd64
       200 libselinux1                              amd64
       200 libnghttp2-14                            amd64
       199 execstack                                amd64

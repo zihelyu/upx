@@ -504,6 +504,7 @@ void upx_compiler_sanity_check(void) noexcept {
     COMPILE_TIME_ASSERT_ALIGNED1(upx_charptr_unit_type)
     COMPILE_TIME_ASSERT(sizeof(*((charptr) nullptr)) == 1)
 
+    // check UPX_VERSION_xxx
     {
         using upx::compile_time::mem_eq;
         using upx::compile_time::string_len;
@@ -511,9 +512,15 @@ void upx_compiler_sanity_check(void) noexcept {
         static_assert(string_len(UPX_VERSION_YEAR) == 4);
         static_assert(string_len(UPX_VERSION_DATE_ISO) == 10);
         static_assert(string_len(UPX_VERSION_DATE) == 12 || string_len(UPX_VERSION_DATE) == 13);
-        static_assert(mem_eq(UPX_VERSION_STRING, UPX_VERSION_STRING4, 3));
-        static_assert(mem_eq(UPX_VERSION_DATE_ISO, UPX_VERSION_YEAR, 4));
-        static_assert(mem_eq(&UPX_VERSION_DATE[sizeof(UPX_VERSION_DATE) - 5], UPX_VERSION_YEAR, 4));
+        static_assert(mem_eq(UPX_VERSION_STRING4, UPX_VERSION_STRING, 3));
+        static_assert(mem_eq(UPX_VERSION_YEAR, UPX_VERSION_DATE_ISO, 4));
+        static_assert(mem_eq(UPX_VERSION_YEAR, &UPX_VERSION_DATE[sizeof(UPX_VERSION_DATE) - 5], 4));
+        char buf[16];
+        constexpr long long v = UPX_VERSION_HEX;
+        upx_safe_snprintf(buf, sizeof(buf), "%lld.%lld.%lld", (v >> 16), (v >> 8) & 255, v & 255);
+        assert_noexcept(strcmp(buf, UPX_VERSION_STRING) == 0);
+        upx_safe_snprintf(buf, sizeof(buf), "%lld.%lld%lld", (v >> 16), (v >> 8) & 255, v & 255);
+        assert_noexcept(strcmp(buf, UPX_VERSION_STRING4) == 0);
     }
 
     if (gitrev[0]) {

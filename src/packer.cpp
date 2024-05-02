@@ -1031,16 +1031,14 @@ void Packer::compressWithFilters(byte *i_ptr,
     assert(orig_ft.id == 0);
 
     // prepare methods and filters
-    constexpr int MAX_METHODS = 8;
-    constexpr int MAX_FILTERS = 16;
     int methods[MAX_METHODS];
     int nmethods = prepareMethods(methods, ph.method, getCompressionMethods(M_ALL, ph.level));
-    assert(nmethods > 0);
-    assert(nmethods < MAX_METHODS);
+    assert_noexcept(nmethods > 0);
+    assert_noexcept(nmethods < (int) MAX_METHODS);
     int filters[MAX_FILTERS];
     int nfilters = prepareFilters(filters, filter_strategy, getFilters());
-    assert(nfilters > 0);
-    assert(nfilters < MAX_FILTERS);
+    assert_noexcept(nfilters > 0);
+    assert_noexcept(nfilters < (int) MAX_FILTERS);
 #if 0
     printf("compressWithFilters: m(%d):", nmethods);
     for (int i = 0; i < nmethods; i++)
