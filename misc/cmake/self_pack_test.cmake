@@ -44,7 +44,7 @@ upx_add_test(upx-unpack-nrv2d       upx -d upx-packed-nrv2d${exe} ${fo} -o upx-u
 upx_add_test(upx-unpack-nrv2e       upx -d upx-packed-nrv2e${exe} ${fo} -o upx-unpacked-nrv2e${exe})
 upx_add_test(upx-unpack-lzma        upx -d upx-packed-lzma${exe}  ${fo} -o upx-unpacked-lzma${exe})
 
-# all unpacked files must be identical!
+# all unpacked files must be identical
 upx_add_test(upx-compare-fa         "${CMAKE_COMMAND}" -E compare_files upx-unpacked${exe} upx-unpacked-fa${exe})
 upx_add_test(upx-compare-fn         "${CMAKE_COMMAND}" -E compare_files upx-unpacked${exe} upx-unpacked-fn${exe})
 upx_add_test(upx-compare-fr         "${CMAKE_COMMAND}" -E compare_files upx-unpacked${exe} upx-unpacked-fr${exe})

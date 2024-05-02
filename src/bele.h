@@ -69,6 +69,8 @@ struct LE16;
 struct LE32;
 struct LE64;
 
+namespace bele_detail {
+
 // Note:
 //   void is explicitly allowed (but there is no automatic pointer conversion because of template!)
 //   char is explicitly allowed
@@ -94,10 +96,12 @@ using enable_if_xe32 = std::enable_if_t<is_xe32_type<T>, T>;
 template <class T>
 using enable_if_xe64 = std::enable_if_t<is_xe64_type<T>, T>;
 
-#define REQUIRE_XE16 template <class XE16, class = enable_if_xe16<XE16> >
-#define REQUIRE_XE24 template <class XE24, class = enable_if_xe24<XE24> >
-#define REQUIRE_XE32 template <class XE32, class = enable_if_xe32<XE32> >
-#define REQUIRE_XE64 template <class XE64, class = enable_if_xe64<XE64> >
+} // namespace bele_detail
+
+#define REQUIRE_XE16 template <class XE16, class = bele_detail::enable_if_xe16<XE16> >
+#define REQUIRE_XE24 template <class XE24, class = bele_detail::enable_if_xe24<XE24> >
+#define REQUIRE_XE32 template <class XE32, class = bele_detail::enable_if_xe32<XE32> >
+#define REQUIRE_XE64 template <class XE64, class = bele_detail::enable_if_xe64<XE64> >
 
 #endif // permissive version
 

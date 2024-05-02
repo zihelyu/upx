@@ -10,10 +10,11 @@ argv0=$0; argv0abs=$(readlink -fn "$argv0"); argv0dir=$(dirname "$argv0abs")
 #   $upx_exe                (required, but with convenience fallback "./upx")
 # optional settings:
 #   $upx_exe_runner         (e.g. "qemu-x86_64 -cpu Nehalem" or "valgrind")
+#   $upx_test_file
 #
 
-# IMPORTANT NOTE: do NOT run as user root!!
-# IMPORTANT NOTE: this script only works on Unix!!
+# IMPORTANT NOTE: this script only works on Unix
+# IMPORTANT NOTE: do NOT run as user root!
 umask 0022
 
 # disable on macOS for now, see https://github.com/upx/upx/issues/612
@@ -61,7 +62,7 @@ if ! "${run_upx[@]}" -L >/dev/null 2>&1; then echo "UPX-ERROR: FATAL: upx -L FAI
 if ! "${run_upx[@]}" --help >/dev/null;  then echo "UPX-ERROR: FATAL: upx --help FAILED"; exit 1; fi
 
 #***********************************************************************
-# util
+# util functions
 #***********************************************************************
 
 exit_code=0
@@ -162,17 +163,7 @@ create_files() {
     chmod -R a-w z_dir_4
 }
 
-#***********************************************************************
-#
-#***********************************************************************
-
-#set -x # debug
-
-export UPX="--prefer-ucl --no-color --no-progress"
-export UPX_DEBUG_DISABLE_GITREV_WARNING=1
-export UPX_DEBUG_DOCTEST_DISABLE=1 # already checked above
-
-testsuite_header() {
+print_header() {
     local x='==========='; x="$x$x$x$x$x$x$x"
     echo -e "\n${x}\n${1}\n${x}\n"
 }
@@ -187,19 +178,40 @@ leave_dir() {
     cd ..
 }
 
-# create a tmpdir in current directory
+#***********************************************************************
+# setup
+#***********************************************************************
+
+#set -x # debug
+
+export UPX="--prefer-ucl --no-color --no-progress"
+export UPX_DEBUG_DISABLE_GITREV_WARNING=1
+export UPX_DEBUG_DOCTEST_DISABLE=1 # already checked above
+
+# get $test_file
+if [[ -f $upx_test_file ]]; then
+    test_file="$(readlink -fn "$upx_test_file")"
+else
+    for test_file in /usr/bin/gmake /usr/bin/make /usr/bin/env /bin/ls; do
+        if [[ -f $test_file ]]; then
+            test_file="$(readlink -fn "$test_file")"
+            break
+        fi
+    done
+fi
+ls -l "$test_file"
+file "$test_file" || true
+
+# create and enter a tmpdir in the current directory
 tmpdir="$(mktemp -d tmp-upx-test-XXXXXX)"
 cd "./$tmpdir" || exit 1
 
-for test_file in /usr/bin/make /usr/bin/gmake /usr/bin/env /bin/ls; do
-    if [[ -f $test_file ]]; then
-        test_file="$(readlink -fn "$test_file")"
-        break
-    fi
-done
+#***********************************************************************
+# default
+#***********************************************************************
 
-testsuite_header "default"
-flags="-qq -1 --no-filter"
+print_header "default"
+flags="-qq -2 --no-filter"
 mkdir default
 cd default
 create_files
@@ -261,8 +273,12 @@ assert_symlink_dangling z_symlink_dangling
 leave_dir
 cd ..
 
-testsuite_header "force-overwrite"
-flags="-qq -1 --no-filter --force-overwrite"
+#***********************************************************************
+# force-overwrite
+#***********************************************************************
+
+print_header "force-overwrite"
+flags="-qq -2 --no-filter --force-overwrite"
 mkdir force-overwrite
 cd force-overwrite
 create_files
@@ -324,9 +340,12 @@ assert_symlink_dangling z_symlink_dangling
 leave_dir
 cd ..
 
-if [[ 1 == 1 ]]; then
-testsuite_header "link"
-flags="-qq -1 --no-filter --link"
+#***********************************************************************
+# link
+#***********************************************************************
+
+print_header "link"
+flags="-qq -2 --no-filter --link"
 mkdir link
 cd link
 create_files
@@ -387,7 +406,10 @@ assert_symlink_to_dir   z_symlink_dir
 assert_symlink_dangling z_symlink_dangling
 leave_dir
 cd ..
-fi
+
+#***********************************************************************
+# done
+#***********************************************************************
 
 # clean up
 cd ..
