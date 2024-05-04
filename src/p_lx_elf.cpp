@@ -2196,7 +2196,7 @@ PackLinuxElf32::invert_pt_dynamic(Elf32_Dyn const *dynp, u32_t headway)
         //    (037 & (hash_32 >> gnu_shift))
         // but compilers can be stupid.
         if (31 < gnu_shift) {
-            throwCantPack("bad gnu_shift %d", gnu_shift);
+            throwCantPack("bad gnu_shift %#x", gnu_shift);
         }
         // unsigned const *const gashend = &hasharr[n_bucket];
         // minimum, except:
@@ -8121,7 +8121,7 @@ PackLinuxElf64::invert_pt_dynamic(Elf64_Dyn const *dynp, upx_uint64_t headway)
         //    (077 & (hash_32 >> gnu_shift))
         // but compilers can be stupid.
         if (31 < gnu_shift) {
-            throwCantPack("bad gnu_shift %d", gnu_shift);
+            throwCantPack("bad gnu_shift %#x", gnu_shift);
         }
         // unsigned const *const gashend = &hasharr[n_bucket];
         // minimum, except:
@@ -8238,6 +8238,9 @@ Elf32_Sym const *PackLinuxElf32::elf_lookup(char const *name) const
         unsigned const *const bitmask = &gashtab[4];
         unsigned const *const buckets = &bitmask[n_bitmask];
         unsigned const *const hasharr = &buckets[n_bucket];
+        if (31 < gnu_shift) {
+            throwCantPack("bad gnu_shift %#x", gnu_shift);
+        }
         if ((file_size + file_image) <= (void const *)hasharr) {
             char msg[80]; snprintf(msg, sizeof(msg),
                 "bad n_bucket %#x\n", n_bucket);
@@ -8319,6 +8322,9 @@ Elf64_Sym const *PackLinuxElf64::elf_lookup(char const *name) const
         unsigned     const *const buckets = (unsigned const *)&bitmask[n_bitmask];
         unsigned     const *const hasharr = &buckets[n_bucket];
 
+        if (31 < gnu_shift) {
+            throwCantPack("bad gnu_shift %#x", gnu_shift);
+        }
         if ((file_size + file_image) <= (void const *)hasharr) {
             char msg[80]; snprintf(msg, sizeof(msg),
                 "bad n_bucket %#x\n", n_bucket);
