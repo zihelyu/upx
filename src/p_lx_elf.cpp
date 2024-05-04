@@ -1989,6 +1989,7 @@ void
 PackLinuxElf32::sort_DT32_offsets(Elf32_Dyn const *const dynp0)
 {
     mb_dt_offsets.alloc(sizeof(unsigned) * sizeof(dt_keys)/sizeof(dt_keys[0]));
+    mb_dt_offsets.clear();
     dt_offsets = (unsigned *)mb_dt_offsets.getVoidPtr();
     unsigned n_off = 0, k;
     for (unsigned j=0; ((k = dt_keys[j]),  k); ++j) {
@@ -7909,6 +7910,7 @@ void
 PackLinuxElf64::sort_DT64_offsets(Elf64_Dyn const *const dynp0)
 {
     mb_dt_offsets.alloc(sizeof(unsigned) * sizeof(dt_keys)/sizeof(dt_keys[0]));
+    mb_dt_offsets.clear();
     dt_offsets = (unsigned *)mb_dt_offsets.getVoidPtr();
     unsigned n_off = 0, k;
     for (unsigned j=0; ((k = dt_keys[j]),  k); ++j) {
