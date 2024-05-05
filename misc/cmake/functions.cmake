@@ -113,7 +113,7 @@ function(upx_print_env_var) # ARGV
     foreach(var_name ${ARGV})
         if(DEFINED ENV{${var_name}})
             if(NOT ",$ENV{${var_name}}," STREQUAL ",,")
-                message(STATUS "ENV{${var_name}} = $ENV{${var_name}}")
+                message(STATUS "ENV{${var_name}} = '$ENV{${var_name}}'")
             endif()
         endif()
     endforeach()

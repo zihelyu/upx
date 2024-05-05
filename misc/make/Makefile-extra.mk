@@ -290,8 +290,8 @@ UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,CMAKE_CROSSCOMPILING_EMULATO
 # pass UPX config options; see CMakeLists.txt
 UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_GITREV)
 UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_SANITIZE)
-UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_WSTRICT)
 UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_WERROR)
+UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_WSTRICT)
 UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_SELF_PACK_TEST)
 UPX_CMAKE_CONFIG_FLAGS += $(call __add_cmake_config,UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS)
 # pass UPX extra compile options; see CMakeLists.txt
