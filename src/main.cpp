@@ -1116,7 +1116,7 @@ void main_get_envoptions() {
     if (targc > 1)
         targv = (const char **) upx_calloc(targc + 1, sizeof(char *));
     if (targv == nullptr) {
-        free(env);
+        ::free(env);
         return;
     }
 
@@ -1155,8 +1155,8 @@ void main_get_envoptions() {
         e_envopt(targv[mfx_optind]);
 
     /* clean up */
-    free(targv);
-    free(env);
+    ::free(targv); // NOLINT(bugprone-multi-level-implicit-pointer-conversion)
+    ::free(env);
 #endif /* defined(OPTIONS_VAR) */
 }
 

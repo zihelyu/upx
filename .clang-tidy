@@ -7,9 +7,11 @@ Checks: >
   bugprone-*,
     -bugprone-assignment-in-if-condition,
     -bugprone-branch-clone,
+    -bugprone-casting-through-void,
     -bugprone-easily-swappable-parameters,
     -bugprone-empty-catch,
     -bugprone-implicit-widening-of-multiplication-result,
+    -bugprone-inc-dec-in-conditions,
     -bugprone-macro-parentheses,
     -bugprone-narrowing-conversions,
     -bugprone-reserved-identifier,
@@ -25,6 +27,7 @@ Checks: >
   clang-diagnostic-*,
   performance-*,
     -performance-avoid-endl,
+    -performance-enum-size,
     -performance-unnecessary-value-param,
 FormatStyle: file
 HeaderFilterRegex: '.*'

@@ -859,6 +859,7 @@ public:
         outputlen = 0;
 
         // sort the sections by name before adding them all
+        // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
         upx_qsort(sections, nsections, sizeof(Section *), ImportLinker::compare);
 
         for (unsigned ic = 0; ic < nsections; ic++)
@@ -1041,6 +1042,7 @@ unsigned PeFile::processImports0(ord_mask_t ord_mask) // pass 1
     mb_oimport.clear();
     oimport = mb_oimport;
 
+    // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
     upx_qsort(idlls, dllnum, sizeof(*idlls), UDll::compare);
 
     info("Processing imports: %d DLLs", dllnum);

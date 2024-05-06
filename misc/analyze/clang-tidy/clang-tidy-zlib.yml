@@ -8,6 +8,7 @@ Checks: >
     -bugprone-assignment-in-if-condition,
     -bugprone-easily-swappable-parameters,
     -bugprone-implicit-widening-of-multiplication-result,
+    -bugprone-inc-dec-in-conditions,
     -bugprone-macro-parentheses,
     -bugprone-narrowing-conversions,
     -bugprone-reserved-identifier,

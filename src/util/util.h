@@ -77,7 +77,7 @@ T *NewArray(upx_uint64_t n) may_throw {
     T *array = new T[size_t(n)];
 #if !defined(__SANITIZE_MEMORY__)
     if (array != nullptr && bytes > 0) {
-        memset(array, 0xfb, bytes);
+        memset(array, 0xfb, bytes); // NOLINT(bugprone-multi-level-implicit-pointer-conversion)
         (void) VALGRIND_MAKE_MEM_UNDEFINED(array, bytes);
     }
 #endif
