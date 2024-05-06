@@ -684,8 +684,6 @@ do_xmap(int const fdi, Elf32_Ehdr const *const ehdr, Extent *const xi,
             reloc = ehdr0;
         }
         v_brk = phdr0->p_memsz + ehdr0;
-        DPRINTF("do_xmap munmap [%%p, +%%x)\n", ehdr0, phdr0->p_memsz);
-        munmap((void *)ehdr0, phdr0->p_memsz);
     }
     else { // PT_INTERP
         reloc = xfind_pages(
