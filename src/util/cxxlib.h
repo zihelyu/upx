@@ -178,12 +178,14 @@ template <class Result, class From>
 forceinline Result ptr_static_cast(From *ptr) noexcept {
     static_assert(std::is_pointer_v<Result>);
     static_assert(!std::is_const_v<std::remove_pointer_t<Result> >); // enforce same constness
+    // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
     return static_cast<Result>(static_cast<void *>(ptr));
 }
 template <class Result, class From>
 forceinline Result ptr_static_cast(const From *ptr) noexcept {
     static_assert(std::is_pointer_v<Result>);
     static_assert(std::is_const_v<std::remove_pointer_t<Result> >); // required
+    // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
     return static_cast<Result>(static_cast<const void *>(ptr));
 }
 
