@@ -30,7 +30,7 @@
 
 static unsigned hex(uchar c) { return (c & 0xf) + (c > '9' ? 9 : 0); }
 
-static bool update_capacity(unsigned size, unsigned *capacity) {
+static bool grow_capacity(unsigned size, unsigned *capacity) {
     if (size < *capacity)
         return false;
     if (*capacity == 0)
@@ -41,16 +41,20 @@ static bool update_capacity(unsigned size, unsigned *capacity) {
 }
 
 template <class T>
-static noinline T **realloc_array(T **array, size_t capacity) {
+static T **realloc_array(T **array, size_t capacity) may_throw {
+    assert_noexcept(capacity > 0);
     // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
     void *p = realloc(array, mem_size(sizeof(T *), capacity));
+    assert_noexcept(p != nullptr);
     return static_cast<T **>(p);
 }
 
 template <class T>
-static noinline void free_array(T **array, size_t count) {
-    for (size_t i = 0; i < count; i++)
-        delete array[i];
+static void free_array(T **array, size_t count) noexcept {
+    for (size_t i = 0; i < count; i++) {
+        T *item = upx::atomic_exchange(&array[i], (T *) nullptr);
+        delete item;
+    }
     ::free(array); // NOLINT(bugprone-multi-level-implicit-pointer-conversion)
 }
 
@@ -61,11 +65,11 @@ static noinline void free_array(T **array, size_t count) {
 ElfLinker::Section::Section(const char *n, const void *i, unsigned s, unsigned a)
     : name(nullptr), output(nullptr), size(s), offset(0), p2align(a), next(nullptr) {
     name = strdup(n);
-    assert(name != nullptr);
+    assert_noexcept(name != nullptr);
     input = ::malloc(s + 1);
-    assert(input != nullptr);
+    assert_noexcept(input != nullptr);
     if (s != 0) {
-        assert(i != nullptr);
+        assert_noexcept(i != nullptr);
         memcpy(input, i, s);
     }
     ((char *) input)[s] = 0;
@@ -83,8 +87,8 @@ ElfLinker::Section::~Section() noexcept {
 ElfLinker::Symbol::Symbol(const char *n, Section *s, upx_uint64_t o)
     : name(nullptr), section(s), offset(o) {
     name = strdup(n);
-    assert(name != nullptr);
-    assert(section != nullptr);
+    assert_noexcept(name != nullptr);
+    assert_noexcept(section != nullptr);
 }
 
 ElfLinker::Symbol::~Symbol() noexcept { ::free(name); }
@@ -96,7 +100,7 @@ ElfLinker::Symbol::~Symbol() noexcept { ::free(name); }
 ElfLinker::Relocation::Relocation(const Section *s, unsigned o, const char *t, const Symbol *v,
                                   upx_uint64_t a)
     : section(s), offset(o), type(t), value(v), add(a) {
-    assert(section != nullptr);
+    assert_noexcept(section != nullptr);
 }
 
 /*************************************************************************
@@ -150,7 +154,7 @@ void ElfLinker::init(const void *pdata_v, int plen, unsigned pxtra) {
     input[inputlen] = 0; // NUL terminate
 
     output_capacity = (inputlen ? (inputlen + pxtra) : 0x4000);
-    assert(output_capacity <= (1 << 16)); // LE16 l_info.l_size
+    assert(output_capacity < (1 << 16)); // LE16 l_info.l_size
     output = New(byte, output_capacity);
     outputlen = 0;
     NO_printf("\nElfLinker::init %d @%p\n", output_capacity, output);
@@ -180,8 +184,9 @@ void ElfLinker::init(const void *pdata_v, int plen, unsigned pxtra) {
 }
 
 void ElfLinker::preprocessSections(char *start, char const *end) {
+    assert_noexcept(nsections == 0);
     char *nextl;
-    for (nsections = 0; start < end; start = 1 + nextl) {
+    for (; start < end; start = 1 + nextl) {
         nextl = strchr(start, '\n');
         assert(nextl != nullptr);
         *nextl = '\0'; // a record is a line
@@ -201,8 +206,9 @@ void ElfLinker::preprocessSections(char *start, char const *end) {
 }
 
 void ElfLinker::preprocessSymbols(char *start, char const *end) {
+    assert_noexcept(nsymbols == 0);
     char *nextl;
-    for (nsymbols = 0; start < end; start = 1 + nextl) {
+    for (; start < end; start = 1 + nextl) {
         nextl = strchr(start, '\n');
         assert(nextl != nullptr);
         *nextl = '\0'; // a record is a line
@@ -237,9 +243,10 @@ void ElfLinker::preprocessSymbols(char *start, char const *end) {
 }
 
 void ElfLinker::preprocessRelocations(char *start, char const *end) {
+    assert_noexcept(nrelocations == 0);
     Section *section = nullptr;
     char *nextl;
-    for (nrelocations = 0; start < end; start = 1 + nextl) {
+    for (; start < end; start = 1 + nextl) {
         nextl = strchr(start, '\n');
         assert(nextl != nullptr);
         *nextl = '\0'; // a record is a line
@@ -314,13 +321,11 @@ ElfLinker::Section *ElfLinker::addSection(const char *sname, const void *sdata, 
     NO_printf("addSection: %s len=%d align=%d\n", sname, slen, p2align);
     if (!sdata && (!strcmp("ABS*", sname) || !strcmp("UND*", sname)))
         return nullptr;
-    if (update_capacity(nsections, &nsections_capacity))
-        sections = realloc_array(sections, nsections_capacity);
-    assert(sections);
-    assert(sname);
-    assert(sname[0]);
+    assert(sname && sname[0]);
     assert(sname[strlen(sname) - 1] != ':');
     assert(findSection(sname, false) == nullptr);
+    if (grow_capacity(nsections, &nsections_capacity))
+        sections = realloc_array(sections, nsections_capacity);
     Section *sec = new Section(sname, sdata, slen, p2align);
     sec->sort_id = nsections;
     sections[nsections++] = sec;
@@ -330,13 +335,11 @@ ElfLinker::Section *ElfLinker::addSection(const char *sname, const void *sdata, 
 ElfLinker::Symbol *ElfLinker::addSymbol(const char *name, const char *section,
                                         upx_uint64_t offset) {
     NO_printf("addSymbol: %s %s 0x%llx\n", name, section, offset);
-    if (update_capacity(nsymbols, &nsymbols_capacity))
-        symbols = realloc_array(symbols, nsymbols_capacity);
-    assert(symbols != nullptr);
-    assert(name);
-    assert(name[0]);
+    assert(name && name[0]);
     assert(name[strlen(name) - 1] != ':');
     assert(findSymbol(name, false) == nullptr);
+    if (grow_capacity(nsymbols, &nsymbols_capacity))
+        symbols = realloc_array(symbols, nsymbols_capacity);
     Symbol *sym = new Symbol(name, findSection(section), offset);
     symbols[nsymbols++] = sym;
     return sym;
@@ -344,9 +347,8 @@ ElfLinker::Symbol *ElfLinker::addSymbol(const char *name, const char *section,
 
 ElfLinker::Relocation *ElfLinker::addRelocation(const char *section, unsigned off, const char *type,
                                                 const char *symbol, upx_uint64_t add) {
-    if (update_capacity(nrelocations, &nrelocations_capacity))
+    if (grow_capacity(nrelocations, &nrelocations_capacity))
         relocations = realloc_array(relocations, nrelocations_capacity);
-    assert(relocations != nullptr);
     Relocation *rel = new Relocation(findSection(section), off, type, findSymbol(symbol), add);
     relocations[nrelocations++] = rel;
     return rel;

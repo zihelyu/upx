@@ -250,39 +250,85 @@ struct Z2_X2 : public X2 {
 // util
 **************************************************************************/
 
+TEST_CASE("upx::atomic_exchange") {
+    {
+        upx_int8_t x = -1;
+        upx_int8_t y = upx::atomic_exchange(&x, (upx_int8_t) 2);
+        CHECK_EQ(x, 2);
+        CHECK_EQ(y, -1);
+    }
+    {
+        upx_int16_t x = -1;
+        upx_int16_t y = upx::atomic_exchange(&x, (upx_int16_t) 2);
+        CHECK_EQ(x, 2);
+        CHECK_EQ(y, -1);
+    }
+    {
+        upx_int32_t x = -1;
+        upx_int32_t y = upx::atomic_exchange(&x, (upx_int32_t) 2);
+        CHECK_EQ(x, 2);
+        CHECK_EQ(y, -1);
+    }
+    {
+        size_t x = (size_t) 0 - 1;
+        size_t y = upx::atomic_exchange(&x, (size_t) 2);
+        CHECK_EQ(x, 2);
+        CHECK_EQ(y, (size_t) 0 - 1);
+    }
+    {
+        int dummy = -1;
+        int *x = &dummy;
+        int *y = upx::atomic_exchange(&x, (int *) nullptr);
+        CHECK_EQ(x, nullptr);
+        CHECK_EQ(y, &dummy);
+        CHECK_EQ(dummy, -1);
+    }
+}
+
 TEST_CASE("upx::ObjectDeleter 1") {
     LE16 *o = nullptr; // object
     LE32 *a = nullptr; // array
+    LE64 *m = nullptr; // malloc
     {
-        upx::ObjectDeleter<LE16 **> o_deleter{&o, 1};
+        auto o_deleter = upx::ObjectDeleter(&o, 1);
         o = new LE16;
         assert(o != nullptr);
-        upx::ArrayDeleter<LE32 **> a_deleter{&a, 1};
+        auto a_deleter = upx::ArrayDeleter(&a, 1);
         a = New(LE32, 1);
         assert(a != nullptr);
+        auto m_deleter = upx::MallocDeleter(&m, 1);
+        m = (LE64 *) ::malloc(sizeof(LE64));
+        assert(m != nullptr);
     }
     assert(o == nullptr);
     assert(a == nullptr);
+    assert(m == nullptr);
     // test "const" versions
     {
-        const upx::ObjectDeleter<LE16 **const> o_deleter{&o, 1};
+        const auto o_deleter = upx::ObjectDeleter(&o, 1);
         o = new LE16;
         assert(o != nullptr);
-        const upx::ArrayDeleter<LE32 **const> a_deleter{&a, 1};
+        const auto a_deleter = upx::ArrayDeleter(&a, 1);
         a = New(LE32, 1);
         assert(a != nullptr);
+        const auto m_deleter = upx::MallocDeleter(&m, 1);
+        m = (LE64 *) ::malloc(sizeof(LE64));
+        assert(m != nullptr);
     }
     assert(o == nullptr);
     assert(a == nullptr);
+    assert(m == nullptr);
 }
 
 TEST_CASE("upx::ObjectDeleter 2") {
     constexpr size_t N = 2;
     BE16 *o[N]; // multiple objects
     BE32 *a[N]; // multiple arrays
+    BE64 *m[N]; // multiple mallocs
     {
-        upx::ObjectDeleter<BE16 **> o_deleter{o, 0};
-        upx::ArrayDeleter<BE32 **> a_deleter{a, 0};
+        auto o_deleter = upx::ObjectDeleter(o, 0);
+        auto a_deleter = upx::ArrayDeleter(a, 0);
+        auto m_deleter = upx::MallocDeleter(m, 0);
         for (size_t i = 0; i < N; i++) {
             o[i] = new BE16;
             assert(o[i] != nullptr);
@@ -290,11 +336,15 @@ TEST_CASE("upx::ObjectDeleter 2") {
             a[i] = New(BE32, 1 + i);
             assert(a[i] != nullptr);
             a_deleter.count += 1;
+            m[i] = (BE64 *) ::malloc(sizeof(BE64));
+            assert(m[i] != nullptr);
+            m_deleter.count += 1;
         }
     }
     for (size_t i = 0; i < N; i++) {
         assert(o[i] == nullptr);
         assert(a[i] == nullptr);
+        assert(m[i] == nullptr);
     }
 }
 

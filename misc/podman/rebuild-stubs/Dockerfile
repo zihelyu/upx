@@ -19,7 +19,7 @@ RUN dpkg --add-architecture i386 \
         libzstd-dev lsb-release lz4 lzip lzop minify mksh moreutils musl neovim ninja-build \
         p7zip parallel patch patchelf patchutils pax-utils proot \
         python3 python3-pyasn1 python3-pycryptodome python3-pycurl python3-toml python3-yaml python3-zstd \
-        re2c ripgrep rsync screen universal-ctags unzip yash yq \
+        re2c ripgrep rsync screen strace universal-ctags unzip valgrind yash yq \
         zip zlib1g-dev zoxide zsh zstd \
         # extra packages for compiling with "gcc -m32" and "gcc -mx32":
         g++-multilib gcc-multilib \
@@ -83,8 +83,11 @@ RUN useradd upx -U --uid 2000 --shell /bin/bash -m \
     && echo "alias rd=rmdir" >> .bashrc \
     && echo 'mdd() { mkdir "$1" && cd "$1"; }' >> .bashrc \
     && echo 'm() { make "$@"; }' >> .bashrc \
+    && echo 'tn() { time nice "$@"; }' >> .bashrc \
+    && echo 'tnm() { time nice make "$@"; }' >> .bashrc \
+    && echo 'tnmm() { time nice make -j "$@"; }' >> .bashrc \
     && echo 'source /usr/share/bash-completion/completions/make' >> .bashrc \
-    && echo 'complete -F _make m' >> .bashrc \
+    && echo 'complete -F _make m tnm tnmm' >> .bashrc \
     && echo 'eval "$(zoxide init bash)"' >> .bashrc \
     && echo "alias zz=zi\nalias y=z\nalias yy=zi" >> .bashrc \
     && echo "alias cd..='cd ..'" >> .bashrc \

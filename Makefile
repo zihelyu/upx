@@ -59,10 +59,10 @@ CTEST = ctest
 CTEST_JOBS ?= 8
 CTEST_FLAGS = --output-on-failure --parallel $(CTEST_JOBS)
 
-build/debug+test:     $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST) -C Debug $(CTEST_FLAGS)
-build/%/debug+test:   $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST) -C Debug $(CTEST_FLAGS)
-build/release+test:   $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST) -C Release $(CTEST_FLAGS)
-build/%/release+test: $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST) -C Release $(CTEST_FLAGS)
+build/debug+test:     $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST) $(CTEST_FLAGS) -C Debug
+build/%/debug+test:   $$(dir $$@)debug PHONY; cd "$(dir $@)debug" && $(CTEST) $(CTEST_FLAGS) -C Debug
+build/release+test:   $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST) $(CTEST_FLAGS) -C Release
+build/%/release+test: $$(dir $$@)release PHONY; cd "$(dir $@)release" && $(CTEST) $(CTEST_FLAGS) -C Release
 build/%/all+test:     $$(dir $$@)debug+test $$(dir $$@)release+test PHONY ;
 
 # shortcuts

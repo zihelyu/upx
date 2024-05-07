@@ -66,13 +66,14 @@ set_cmake_bool_vars() {
 }
 
 set -x
-if [[ "${emu[0]}" == *valgrind* ]]; then true; # valgrind is SLOW
-    [[ -n $UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS ]] || UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS=ON
-fi
 set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_SELF_PACK_TEST
-set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS
 set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_RUN_UNPACKED_TEST
 set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_RUN_PACKED_TEST
+if [[ "${emu[0]}" == *valgrind* ]]; then # valgrind is SLOW
+    set_cmake_bool_vars ON  UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS
+else
+    set_cmake_bool_vars OFF UPX_CONFIG_DISABLE_EXHAUSTIVE_TESTS
+fi
 
 export UPX="--prefer-ucl --no-color --no-progress"
 export UPX_DEBUG_DISABLE_GITREV_WARNING=1
