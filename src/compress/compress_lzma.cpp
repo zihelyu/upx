@@ -37,9 +37,6 @@
 #if (ACC_CC_MSC)
 #pragma warning(disable : 4456) // -Wno-shadow
 #endif
-#if (ACC_CC_MSC && (_MSC_VER < 1900))
-#pragma warning(disable : 4127) // warning C4127: conditional expression is constant
-#endif
 
 void lzma_compress_config_t::reset() noexcept {
     pos_bits.reset();
@@ -206,15 +203,12 @@ error:
 // compress - cruft because of pseudo-COM layer
 **************************************************************************/
 
-// ensure proper nullptr usage
-// TODO later: examine why we need this in the first place
-#undef NULL
-// NOLINTBEGIN(clang-analyzer-optin.cplusplus.*)
-#define NULL nullptr
-// NOLINTEND(clang-analyzer-optin.cplusplus.*)
-#if defined(__GNUC__)
-#undef __null
-#define __null nullptr
+#if (ACC_CC_CLANG >= 0x080000)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#elif (ACC_CC_GNUC >= 0x040700)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
 
 #undef MSDOS
@@ -315,6 +309,12 @@ STDMETHODIMP ProgressInfo::SetRatioInfo(const UInt64 *inSize, const UInt64 *outS
 #include <lzma-sdk/C/7zip/Compress/LZMA/LZMAEncoder.cpp>
 #include <lzma-sdk/C/7zip/Compress/RangeCoder/RangeCoderBit.cpp>
 #undef RC_NORMALIZE
+
+#if (ACC_CC_CLANG >= 0x080000)
+#pragma clang diagnostic pop
+#elif (ACC_CC_GNUC >= 0x040700)
+#pragma GCC diagnostic pop
+#endif
 
 int upx_lzma_compress(const upx_bytep src, unsigned src_len, upx_bytep dst, unsigned *dst_len,
                       upx_callback_t *cb, int method, int level,
