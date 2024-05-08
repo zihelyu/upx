@@ -257,35 +257,44 @@ TEST_CASE("upx::ptr_std_atomic_cast") {
     (void) upx::ptr_std_atomic_cast((upx_int32_t *) nullptr);
     (void) upx::ptr_std_atomic_cast((int *) nullptr);
     (void) upx::ptr_std_atomic_cast((long *) nullptr);
+    (void) upx::ptr_std_atomic_cast((ptrdiff_t *) nullptr);
     (void) upx::ptr_std_atomic_cast((size_t *) nullptr);
     (void) upx::ptr_std_atomic_cast((void **) nullptr);
 }
 #endif
 
 TEST_CASE("upx::atomic_exchange") {
+#if defined(__riscv)
+// RISC-V has no support for subword atomic operations and needs libatomic to emulate
+#else
     {
         upx_int8_t x = -1;
         upx_int8_t y = upx::atomic_exchange(&x, (upx_int8_t) 2);
         CHECK_EQ(x, 2);
         CHECK_EQ(y, -1);
+        UNUSED(y);
     }
     {
         upx_int16_t x = -1;
         upx_int16_t y = upx::atomic_exchange(&x, (upx_int16_t) 2);
         CHECK_EQ(x, 2);
         CHECK_EQ(y, -1);
+        UNUSED(y);
     }
     {
         upx_int32_t x = -1;
         upx_int32_t y = upx::atomic_exchange(&x, (upx_int32_t) 2);
         CHECK_EQ(x, 2);
         CHECK_EQ(y, -1);
+        UNUSED(y);
     }
+#endif // __riscv
     {
         size_t x = (size_t) 0 - 1;
         size_t y = upx::atomic_exchange(&x, (size_t) 2);
         CHECK_EQ(x, 2);
         CHECK_EQ(y, (size_t) 0 - 1);
+        UNUSED(y);
     }
     {
         const int buf[2] = {101, 202};
@@ -297,6 +306,7 @@ TEST_CASE("upx::atomic_exchange") {
         p = upx::atomic_exchange(&ptr_array[1], p);
         CHECK_EQ(p, buf + 1);
         assert_noexcept(*ptr_array[0] == 202 && *ptr_array[1] == 101);
+        UNUSED(p);
     }
 }
 

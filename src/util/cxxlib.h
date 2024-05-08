@@ -206,16 +206,20 @@ template <class T>
 forceinline T atomic_exchange(T *ptr, T new_value) noexcept {
     static_assert(std::is_standard_layout_v<T>);
     static_assert(std::is_trivially_copyable_v<T>);
+#if !(WITH_THREADS)
+    T old_value = *ptr;
+    *ptr = new_value;
+    return old_value;
+#else
+    static_assert(sizeof(T) <= sizeof(void *)); // UPX convention: restrict to fundamental types
+    static_assert(alignof(T) == sizeof(T));     // UPX convention: require proper alignment
 #if __has_builtin(__atomic_exchange_n) && defined(__ATOMIC_SEQ_CST)
     return __atomic_exchange_n(ptr, new_value, __ATOMIC_SEQ_CST);
 #elif __has_builtin(__sync_swap)
     return __sync_swap(ptr, new_value);
-#elif WITH_THREADS
-    return std::atomic_exchange(ptr_std_atomic_cast(ptr), new_value);
 #else
-    T old_value = *ptr;
-    *ptr = new_value;
-    return old_value;
+    return std::atomic_exchange(ptr_std_atomic_cast(ptr), new_value);
+#endif
 #endif
 }
 

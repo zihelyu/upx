@@ -225,7 +225,7 @@ build/analyze/clang-tidy-bzip2/debug build/analyze/clang-tidy-bzip2/release: $$(
 build/analyze/clang-tidy-ucl/debug build/analyze/clang-tidy-ucl/release: $$(CLANG_TIDY_BUILD_BASE)/$$(notdir $$@) PHONY
 	$(RUN_CLANG_TIDY_WERROR) -config-file ./misc/analyze/clang-tidy/clang-tidy-ucl.yml   /vendor/ucl/
 build/analyze/clang-tidy-zlib/debug build/analyze/clang-tidy-zlib/release: $$(CLANG_TIDY_BUILD_BASE)/$$(notdir $$@) PHONY
-	$(RUN_CLANG_TIDY_WERROR) -config-file ./misc/analyze/clang-tidy/clang-tidy-zlib.yml  /vendor/zlib/
+	$(RUN_CLANG_TIDY)        -config-file ./misc/analyze/clang-tidy/clang-tidy-zlib.yml  /vendor/zlib/
 build/analyze/clang-tidy-zstd/debug build/analyze/clang-tidy-zstd/release: $$(CLANG_TIDY_BUILD_BASE)/$$(notdir $$@) PHONY
 	$(RUN_CLANG_TIDY)        -config-file ./misc/analyze/clang-tidy/clang-tidy-zstd.yml  /vendor/zstd/
 build/analyze/clang-tidy/debug build/analyze/clang-tidy/release: build/analyze/clang-tidy-upx/$$(notdir $$@)

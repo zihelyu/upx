@@ -23,11 +23,13 @@ Checks: >
   clang-analyzer-*,
     -clang-analyzer-optin.performance.Padding,
     -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+    -clang-analyzer-security.insecureAPI.rand,
     -clang-analyzer-security.insecureAPI.strcpy,
   clang-diagnostic-*,
   performance-*,
     -performance-avoid-endl,
     -performance-enum-size,
+    -performance-no-int-to-ptr,
     -performance-unnecessary-value-param,
 FormatStyle: file
 HeaderFilterRegex: '.*'

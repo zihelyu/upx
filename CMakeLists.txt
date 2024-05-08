@@ -259,7 +259,7 @@ if(NOT UPX_CONFIG_DISABLE_THREADS)
 endif()
 # make sure that threads are indeed fully supported in C++
 if(Threads_FOUND)
-    foreach(f std_lock_guard.cpp)
+    foreach(f std_lock_guard.cpp types_abi.cpp)
         set(CMAKE_TRY_COMPILE_TARGET_TYPE "EXECUTABLE")
         if(NOT UPX_CONFIG_DISABLE_CXX_STANDARD)
             try_compile(result "${CMAKE_CURRENT_BINARY_DIR}"
