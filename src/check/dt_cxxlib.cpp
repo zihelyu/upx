@@ -252,48 +252,31 @@ struct Z2_X2 : public X2 {
 
 #if WITH_THREADS
 TEST_CASE("upx::ptr_std_atomic_cast") {
-    (void) upx::ptr_std_atomic_cast((upx_int8_t *) nullptr);
-    (void) upx::ptr_std_atomic_cast((upx_int16_t *) nullptr);
-    (void) upx::ptr_std_atomic_cast((upx_int32_t *) nullptr);
-    (void) upx::ptr_std_atomic_cast((int *) nullptr);
-    (void) upx::ptr_std_atomic_cast((long *) nullptr);
-    (void) upx::ptr_std_atomic_cast((ptrdiff_t *) nullptr);
-    (void) upx::ptr_std_atomic_cast((size_t *) nullptr);
-    (void) upx::ptr_std_atomic_cast((void **) nullptr);
+    // pointer-size
+    CHECK_EQ(upx::ptr_std_atomic_cast((void **) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((uintptr_t *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((upx_uintptr_t *) nullptr), nullptr);
+#if 1
+    // more fundamental types
+    CHECK_EQ(upx::ptr_std_atomic_cast((char *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((short *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((int *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((long *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((ptrdiff_t *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((size_t *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((upx_int8_t *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((upx_int16_t *) nullptr), nullptr);
+    CHECK_EQ(upx::ptr_std_atomic_cast((upx_int32_t *) nullptr), nullptr);
+#endif
 }
 #endif
 
 TEST_CASE("upx::atomic_exchange") {
-#if defined(__riscv)
-// RISC-V has no support for subword atomic operations and needs libatomic to emulate
-#else
     {
-        upx_int8_t x = -1;
-        upx_int8_t y = upx::atomic_exchange(&x, (upx_int8_t) 2);
+        upx_uintptr_t x = (upx_uintptr_t) 0 - 1;
+        upx_uintptr_t y = upx::atomic_exchange(&x, (upx_uintptr_t) 2);
         CHECK_EQ(x, 2);
-        CHECK_EQ(y, -1);
-        UNUSED(y);
-    }
-    {
-        upx_int16_t x = -1;
-        upx_int16_t y = upx::atomic_exchange(&x, (upx_int16_t) 2);
-        CHECK_EQ(x, 2);
-        CHECK_EQ(y, -1);
-        UNUSED(y);
-    }
-    {
-        upx_int32_t x = -1;
-        upx_int32_t y = upx::atomic_exchange(&x, (upx_int32_t) 2);
-        CHECK_EQ(x, 2);
-        CHECK_EQ(y, -1);
-        UNUSED(y);
-    }
-#endif // __riscv
-    {
-        size_t x = (size_t) 0 - 1;
-        size_t y = upx::atomic_exchange(&x, (size_t) 2);
-        CHECK_EQ(x, 2);
-        CHECK_EQ(y, (size_t) 0 - 1);
+        CHECK_EQ(y, (upx_uintptr_t) 0 - 1);
         UNUSED(y);
     }
     {

@@ -204,6 +204,9 @@ forceinline std::atomic<T> *ptr_std_atomic_cast(T *ptr) noexcept {
 // atomic_exchange
 template <class T>
 forceinline T atomic_exchange(T *ptr, T new_value) noexcept {
+#if 1
+    static_assert(sizeof(T) == sizeof(void *)); // UPX convention: restrict to pointer-size for now
+#endif
     static_assert(std::is_standard_layout_v<T>);
     static_assert(std::is_trivially_copyable_v<T>);
 #if !(WITH_THREADS)
