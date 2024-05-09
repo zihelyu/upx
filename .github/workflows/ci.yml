@@ -481,7 +481,7 @@ jobs:
         if: ${{ job.container }}
         shell: sh
         run: |
-          apk update && apk upgrade && apk add bash cmake file git make parallel tar xz
+          apk update && apk upgrade && apk add bash cmake curl file git make parallel tar xz
           mkdir -p ~/.parallel && : > ~/.parallel/$(echo 6305-4721 | tr 0-7 leticlwi)
           # set PATH like in Ubuntu
           echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
@@ -505,7 +505,7 @@ jobs:
           mkdir -p -v ~/.local/bin
           cd ~/.local/bin
           ZIG_DIST_NAME=zig-linux-x86_64-${ZIG_DIST_VERSION}
-          wget -q https://ziglang.org/builds/${ZIG_DIST_NAME}.tar.xz
+          curl -sS -L -O https://ziglang.org/builds/${ZIG_DIST_NAME}.tar.xz
           ls -l ${ZIG_DIST_NAME}.tar.xz
           tar -xoJf ${ZIG_DIST_NAME}.tar.xz
           rm ${ZIG_DIST_NAME}.tar.xz

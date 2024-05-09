@@ -12,14 +12,14 @@
 #    Abandoned Issues and Pull Request".
 #   https://igorwiese.com/images/papers/Paper_BotSE_19.pdf
 
-name: 'GitHub - Close stale issues'
+name: GitHub - Close stale issues
 on:
-  schedule: [cron: '50 0 * * 1'] # run weekly Monday 00:50 UTC
+  schedule: [cron: "50 0 * * 1"] # run weekly Monday 00:50 UTC
   workflow_dispatch:
 jobs:
   job-close-stale-issues:
     if: github.repository_owner == 'upx' && github.repository == 'upx/upx'
-    name: 'Close stale issues'
+    name: Close stale issues
     runs-on: ubuntu-latest
     permissions:
       issues: write
