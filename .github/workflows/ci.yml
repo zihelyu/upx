@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu:24.04 # glibc-2.39
     #container: debian:12-slim # also works; glibc-2.36
-    #container: debian:testing-slim # also works
+    #container: debian:testing-slim # also works; currently at glibc-2.38
     steps:
       - name: Install packages
         run: |
@@ -34,7 +34,7 @@ jobs:
           dpkg --add-architecture i386
           apt-get update && apt-get upgrade -y
           # install system packages
-          apt-get install -y --no-install-recommends bash ca-certificates curl git libmpc3 make perl-base xz-utils libc6:i386 zlib1g:i386
+          apt-get install -y --no-install-recommends bash ca-certificates curl git libmpc3 make perl-base tar time xz-utils libc6:i386 zlib1g:i386
           # install python2-minimal packages from Debian-11
           mkdir ../deps; cd ../deps; mkdir packages
           curl -sS -L -O https://ftp.debian.org/debian/pool/main/p/python2.7/libpython2.7-minimal_2.7.18-8+deb11u1_amd64.deb
@@ -63,7 +63,7 @@ jobs:
       - run: bash ./misc/scripts/check_whitespace_git.sh
       - name: Check source code formatting
         run: |
-          export UPX_CLANG_FORMAT="$PWD/../deps/bin-upx-20221212/clang-format-15.0.6"
+          export UPX_CLANG_FORMAT="$(readlink -en "$PWD/../deps/bin-upx-20221212/clang-format-15.0.6")"
           make -C src clang-format
           if ! git diff --quiet; then git diff; exit 1; fi
       - name: Rebuild docs
