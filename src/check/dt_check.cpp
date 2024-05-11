@@ -232,6 +232,7 @@ struct CheckIntegral {
         checkU<typename std::add_const<T>::type>();
     }
 };
+
 template <class T>
 struct CheckAlignment {
     static void check(void) noexcept {
@@ -256,16 +257,17 @@ struct CheckAlignment {
         UNUSED(t2);
     }
 };
+
 template <class T>
 struct TestBELE {
     static noinline bool test(void) noexcept {
         CheckIntegral<T>::check();
         CheckAlignment<T>::check();
         // arithmetic checks
-        T allbits = {};
-        assert_noexcept(allbits == 0);
-        allbits += 1;
-        allbits -= 2;
+        T all_bits = {};
+        assert_noexcept(all_bits == 0);
+        all_bits += 1;
+        all_bits -= 2;
         T v1;
         v1 = 1;
         v1 *= 4;
@@ -279,7 +281,7 @@ struct TestBELE {
         assert_noexcept((v1 >= v2));
         assert_noexcept(!(v1 < v2));
         assert_noexcept(!(v1 > v2));
-        v2 ^= allbits;
+        v2 ^= all_bits;
         assert_noexcept(!(v1 == v2));
         assert_noexcept((v1 != v2));
         assert_noexcept((v1 <= v2));
@@ -302,6 +304,25 @@ struct TestBELE {
         if ((v1 ^ v2) != 1)
             return false;
         return true;
+    }
+};
+
+template <class T, bool T_is_signed>
+struct CheckSignedness {
+    template <class U, bool U_is_signed>
+    static inline void checkU(void) noexcept {
+        COMPILE_TIME_ASSERT(sizeof(U) == sizeof(T));
+        COMPILE_TIME_ASSERT(alignof(U) == alignof(T));
+        COMPILE_TIME_ASSERT(U_is_signed ? ((U) 0 - 1 < 0) : ((U) 0 - 1 > 0));
+        constexpr U all_bits = (U) (U(0) - U(1));
+        COMPILE_TIME_ASSERT(U_is_signed ? (all_bits < 0) : (all_bits > 0));
+    }
+    static void check(void) noexcept {
+        checkU<T, T_is_signed>();
+        using signed_type = std::make_signed_t<T>;
+        checkU<signed_type, true>();
+        using unsigned_type = std::make_unsigned_t<T>;
+        checkU<unsigned_type, false>();
     }
 };
 
@@ -501,12 +522,16 @@ void upx_compiler_sanity_check(void) noexcept {
     CheckIntegral<upx_ptraddr_t>::check();
     CheckIntegral<upx_uintptr_t>::check();
 
-    COMPILE_TIME_ASSERT(ptrdiff_t(0) - 1 < 0);
-    COMPILE_TIME_ASSERT(intptr_t(0) - 1 < 0);
-    COMPILE_TIME_ASSERT(size_t(0) - 1 > 0);
-    COMPILE_TIME_ASSERT(uintptr_t(0) - 1 > 0);
-    COMPILE_TIME_ASSERT(upx_ptraddr_t(0) - 1 > 0);
-    COMPILE_TIME_ASSERT(upx_uintptr_t(0) - 1 > 0);
+    CheckSignedness<long long, true>::check();
+    CheckSignedness<ptrdiff_t, true>::check();
+    CheckSignedness<intptr_t, true>::check();
+    CheckSignedness<unsigned long long, false>::check();
+    CheckSignedness<size_t, false>::check();
+    CheckSignedness<uintptr_t, false>::check();
+    CheckSignedness<upx_off_t, true>::check();
+    CheckSignedness<upx_ptraddr_t, false>::check();
+    CheckSignedness<upx_sptraddr_t, true>::check();
+    CheckSignedness<upx_uintptr_t, false>::check();
 
     COMPILE_TIME_ASSERT(sizeof(upx_charptr_unit_type) == 1)
     COMPILE_TIME_ASSERT_ALIGNED1(upx_charptr_unit_type)

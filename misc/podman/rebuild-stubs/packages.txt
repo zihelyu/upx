@@ -144,7 +144,7 @@ ii  libgcc-s1:i386                14-20240412-0ubuntu1              i386        
 ii  libgcrypt20:amd64             1.10.3-2build1                    amd64        LGPL Crypto library - runtime library
 ii  libgdbm-compat4t64:amd64      1.23-5.1build1                    amd64        GNU dbm database routines (legacy support runtime version)
 ii  libgdbm6t64:amd64             1.23-5.1build1                    amd64        GNU dbm database routines (runtime version)
-ii  libglib2.0-0t64:amd64         2.80.0-6ubuntu1                   amd64        GLib library of C routines
+ii  libglib2.0-0t64:amd64         2.80.0-6ubuntu3.1                 amd64        GLib library of C routines
 ii  libgmp10:amd64                2:6.3.0+dfsg-2ubuntu6             amd64        Multiprecision arithmetic library
 ii  libgnutls30t64:amd64          3.8.3-1.1ubuntu3.1                amd64        GNU TLS library - main runtime library
 ii  libgomp1:amd64                14-20240412-0ubuntu1              amd64        GCC OpenMP (GOMP) support library
@@ -186,7 +186,7 @@ ii  libmspack0t64:amd64           0.11-1.1build1                    amd64       
 ii  libncurses6:amd64             6.4+20240113-1ubuntu2             amd64        shared libraries for terminal handling
 ii  libncursesw6:amd64            6.4+20240113-1ubuntu2             amd64        shared libraries for terminal handling (wide character support)
 ii  libnettle8t64:amd64           3.9.1-2.2build1                   amd64        low level cryptographic library (symmetric and one-way cryptos)
-ii  libnghttp2-14:amd64           1.59.0-1build4                    amd64        library implementing HTTP/2 protocol (shared library)
+ii  libnghttp2-14:amd64           1.59.0-1ubuntu0.1                 amd64        library implementing HTTP/2 protocol (shared library)
 ii  libnl-3-200:amd64             3.7.0-0.3build1                   amd64        library for dealing with netlink sockets
 ii  libnl-genl-3-200:amd64        3.7.0-0.3build1                   amd64        library for dealing with netlink sockets - generic netlink
 ii  libnpth0t64:amd64             1.6-3.1build1                     amd64        replacement for GNU Pth using system threads
@@ -361,7 +361,7 @@ ii  zstd                          1.5.5+dfsg2-2build1               amd64       
 ||/ Name                          Version                           Architecture Description
 
 Packages sorted by Installed-Size:
-   964659 ===== TOTAL (355 packages)
+   964903 ===== TOTAL (355 packages)
     76943 valgrind                                 amd64
     72249 gcc-13-x86-64-linux-gnu                  amd64
     37841 g++-13-x86-64-linux-gnu                  amd64
@@ -411,10 +411,10 @@ Packages sorted by Installed-Size:
      4879 libhwasan0                               amd64
      4341 ncurses-term                             all
      4244 minify                                   amd64
+     4193 libglib2.0-0t64                          amd64
      4103 apt                                      amd64
      3983 gojq                                     amd64
      3956 python3-pycryptodome                     amd64
-     3949 libglib2.0-0t64                          amd64
      3849 libgprofng0                              amd64
      3806 liblsan0                                 amd64
      3721 groff-base                               amd64

@@ -145,7 +145,8 @@ typedef acc_int64_t upx_int64_t;
 typedef acc_uint64_t upx_uint64_t;
 typedef acc_uintptr_t upx_uintptr_t;
 // see CHERI ptraddr_t / vaddr_t
-typedef upx_uintptr_t upx_ptraddr_t;
+typedef acc_uintptr_t upx_ptraddr_t;
+typedef acc_intptr_t upx_sptraddr_t;
 
 // UPX convention: use "byte" when dealing with data; use "char/uchar" when dealing
 // with strings; use "upx_uint8_t" when dealing with small integers
