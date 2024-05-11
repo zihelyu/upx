@@ -471,7 +471,7 @@ void show_version(bool one_line) {
     fprintf(f, "Copyright (C) 1995" "-2024 Jean-loup Gailly and Mark Adler\n");
 #endif
 #if (WITH_LZMA)
-    // see vendor/lzma-sdk/lzma.txt
+    // see vendor/lzma-sdk
     fprintf(f, "Copyright (C) 1999" "-2006 Igor Pavlov\n");
 #endif
 #if (WITH_ZSTD)
