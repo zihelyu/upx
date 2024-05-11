@@ -73,7 +73,7 @@ static forceinline constexpr bool use_simple_mcheck() noexcept { return true; }
 //
 **************************************************************************/
 
-MemBuffer::MemBuffer(upx_uint64_t bytes) : MemBufferBase<byte>() {
+MemBuffer::MemBuffer(upx_uint64_t bytes) may_throw : MemBufferBase<byte>() {
     static_assert(element_size == 1);
     alloc(bytes);
     debug_set(debug.last_return_address_alloc, upx_return_address());
@@ -148,11 +148,11 @@ void MemBuffer::fill(unsigned off, unsigned len, int value) {
 **************************************************************************/
 
 // for use_simple_mcheck()
-#define PTR_BITS32(p) ((unsigned) ((upx_uintptr_t) (p) &0xffffffff))
+#define PTR_BITS32(p) ((unsigned) (ptr_get_address(p) & 0xffffffff))
 #define MAGIC1(p)     ((PTR_BITS32(p) ^ 0xfefdbeeb) | 1)
 #define MAGIC2(p)     ((PTR_BITS32(p) ^ 0xfefdbeeb ^ 0x88224411) | 1)
 
-void MemBuffer::checkState() const {
+void MemBuffer::checkState() const may_throw {
     if (!ptr)
         throwInternalError("block not allocated");
     assert(size_in_bytes > 0);
@@ -167,7 +167,7 @@ void MemBuffer::checkState() const {
     }
 }
 
-void MemBuffer::alloc(upx_uint64_t bytes) {
+void MemBuffer::alloc(upx_uint64_t bytes) may_throw {
     // INFO: we don't automatically free a used buffer
     assert(ptr == nullptr);
     assert(size_in_bytes == 0);

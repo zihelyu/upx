@@ -498,7 +498,15 @@ void upx_compiler_sanity_check(void) noexcept {
     CheckIntegral<ptrdiff_t>::check();
     CheckIntegral<size_t>::check();
     CheckIntegral<upx_off_t>::check();
+    CheckIntegral<upx_ptraddr_t>::check();
     CheckIntegral<upx_uintptr_t>::check();
+
+    COMPILE_TIME_ASSERT(ptrdiff_t(0) - 1 < 0);
+    COMPILE_TIME_ASSERT(intptr_t(0) - 1 < 0);
+    COMPILE_TIME_ASSERT(size_t(0) - 1 > 0);
+    COMPILE_TIME_ASSERT(uintptr_t(0) - 1 > 0);
+    COMPILE_TIME_ASSERT(upx_ptraddr_t(0) - 1 > 0);
+    COMPILE_TIME_ASSERT(upx_uintptr_t(0) - 1 > 0);
 
     COMPILE_TIME_ASSERT(sizeof(upx_charptr_unit_type) == 1)
     COMPILE_TIME_ASSERT_ALIGNED1(upx_charptr_unit_type)

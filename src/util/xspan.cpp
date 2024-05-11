@@ -76,9 +76,10 @@ void xspan_check_range(const void *ptr, const void *base, ptrdiff_t size_in_byte
         xspan_fail_range_nullptr();
     if very_unlikely (base == nullptr)
         xspan_fail_range_nullbase();
-#if defined(__SANITIZE_ADDRESS__)
+#if defined(__SANITIZE_ADDRESS__) || 1
     // info: pointers are out of range deliberately during internal doctest checks; see dt_xspan.cpp
-    const acc_intptr_t off = (acc_uintptr_t) ptr - (acc_uintptr_t) base;
+    ACC_COMPILE_TIME_ASSERT(sizeof(intptr_t) == sizeof(upx_ptraddr_t))
+    const intptr_t off = ptr_get_address(ptr) - ptr_get_address(base);
 #else
     const ptrdiff_t off = (const charptr) ptr - (const charptr) base;
 #endif

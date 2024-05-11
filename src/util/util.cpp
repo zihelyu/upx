@@ -144,11 +144,11 @@ TEST_CASE("ptr_diff") {
 }
 
 // check that 2 buffers do not overlap; will throw on error
-void uintptr_check_no_overlap(upx_uintptr_t a, size_t a_size, upx_uintptr_t b, size_t b_size) {
+void ptraddr_check_no_overlap(upx_ptraddr_t a, size_t a_size, upx_ptraddr_t b, size_t b_size) {
     if very_unlikely (a == 0 || b == 0)
         throwCantPack("ptr_check_no_overlap-nullptr");
-    upx_uintptr_t a_end = a + mem_size(1, a_size);
-    upx_uintptr_t b_end = b + mem_size(1, b_size);
+    upx_ptraddr_t a_end = a + mem_size(1, a_size);
+    upx_ptraddr_t b_end = b + mem_size(1, b_size);
     if very_unlikely (a_end < a || b_end < b) // wrap-around
         throwCantPack("ptr_check_no_overlap-overflow");
     // simple, but a little bit mind bending:
@@ -159,13 +159,13 @@ void uintptr_check_no_overlap(upx_uintptr_t a, size_t a_size, upx_uintptr_t b, s
 }
 
 // check that 3 buffers do not overlap; will throw on error
-void uintptr_check_no_overlap(upx_uintptr_t a, size_t a_size, upx_uintptr_t b, size_t b_size,
-                              upx_uintptr_t c, size_t c_size) {
+void ptraddr_check_no_overlap(upx_ptraddr_t a, size_t a_size, upx_ptraddr_t b, size_t b_size,
+                              upx_ptraddr_t c, size_t c_size) {
     if very_unlikely (a == 0 || b == 0 || c == 0)
         throwCantPack("ptr_check_no_overlap-nullptr");
-    upx_uintptr_t a_end = a + mem_size(1, a_size);
-    upx_uintptr_t b_end = b + mem_size(1, b_size);
-    upx_uintptr_t c_end = c + mem_size(1, c_size);
+    upx_ptraddr_t a_end = a + mem_size(1, a_size);
+    upx_ptraddr_t b_end = b + mem_size(1, b_size);
+    upx_ptraddr_t c_end = c + mem_size(1, c_size);
     if very_unlikely (a_end < a || b_end < b || c_end < c) // wrap-around
         throwCantPack("ptr_check_no_overlap-overflow");
     if very_unlikely (a < b_end && b < a_end)

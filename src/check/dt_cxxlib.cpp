@@ -54,6 +54,7 @@ ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_any_v<int, char, long>) )
 ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_any_v<ptrdiff_t, int, long, long long>) )
 ACC_COMPILE_TIME_ASSERT_HEADER(
     (upx::is_same_any_v<size_t, unsigned, unsigned long, unsigned long long>) )
+// TODO later: CHERI
 ACC_COMPILE_TIME_ASSERT_HEADER(
     (upx::is_same_any_v<upx_uintptr_t, unsigned, unsigned long, unsigned long long>) )
 

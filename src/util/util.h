@@ -93,6 +93,10 @@ T *NewArray(upx_uint64_t n) may_throw {
 // ptr util
 **************************************************************************/
 
+// also see CHERI cheri_address_get()
+forceinline upx_ptraddr_t ptr_get_address(const void *p) { return (upx_uintptr_t) p; }
+forceinline upx_ptraddr_t ptr_get_address(upx_uintptr_t p) { return p; }
+
 // ptrdiff_t with nullptr checks and asserted size; will throw on failure
 // NOTE: returns size_in_bytes, not number of elements!
 int ptr_diff_bytes(const void *a, const void *b) may_throw;
@@ -112,19 +116,19 @@ ptr_udiff(const T *a, const U *b) may_throw {
 }
 
 // check that buffers do not overlap; will throw on error
-noinline void uintptr_check_no_overlap(upx_uintptr_t a, size_t a_size, upx_uintptr_t b,
+noinline void ptraddr_check_no_overlap(upx_ptraddr_t a, size_t a_size, upx_ptraddr_t b,
                                        size_t b_size) may_throw;
-noinline void uintptr_check_no_overlap(upx_uintptr_t a, size_t a_size, upx_uintptr_t b,
-                                       size_t b_size, upx_uintptr_t c, size_t c_size) may_throw;
+noinline void ptraddr_check_no_overlap(upx_ptraddr_t a, size_t a_size, upx_ptraddr_t b,
+                                       size_t b_size, upx_ptraddr_t c, size_t c_size) may_throw;
 
 forceinline void ptr_check_no_overlap(const void *a, size_t a_size, const void *b, size_t b_size)
     may_throw {
-    uintptr_check_no_overlap((upx_uintptr_t) a, a_size, (upx_uintptr_t) b, b_size);
+    ptraddr_check_no_overlap(ptr_get_address(a), a_size, ptr_get_address(b), b_size);
 }
 forceinline void ptr_check_no_overlap(const void *a, size_t a_size, const void *b, size_t b_size,
                                       const void *c, size_t c_size) may_throw {
-    uintptr_check_no_overlap((upx_uintptr_t) a, a_size, (upx_uintptr_t) b, b_size,
-                             (upx_uintptr_t) c, c_size);
+    ptraddr_check_no_overlap(ptr_get_address(a), a_size, ptr_get_address(b), b_size,
+                             ptr_get_address(c), c_size);
 }
 
 // invalidate and poison a pointer: point to a non-null invalid address

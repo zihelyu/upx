@@ -30,11 +30,9 @@
 
 #if (ACC_CC_CLANG)
 #pragma clang diagnostic ignored "-Wshadow"
-#endif
-#if (ACC_CC_GNUC >= 0x040200)
+#elif (ACC_CC_GNUC >= 0x040200)
 #pragma GCC diagnostic ignored "-Wshadow"
-#endif
-#if (ACC_CC_MSC)
+#elif (ACC_CC_MSC)
 #pragma warning(disable : 4456) // -Wno-shadow
 #endif
 
