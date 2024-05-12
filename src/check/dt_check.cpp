@@ -313,7 +313,6 @@ struct CheckSignedness {
     static inline void checkU(void) noexcept {
         COMPILE_TIME_ASSERT(sizeof(U) == sizeof(T));
         COMPILE_TIME_ASSERT(alignof(U) == alignof(T));
-        COMPILE_TIME_ASSERT(U_is_signed ? ((U) 0 - 1 < 0) : ((U) 0 - 1 > 0));
         constexpr U all_bits = (U) (U(0) - U(1));
         COMPILE_TIME_ASSERT(U_is_signed ? (all_bits < 0) : (all_bits > 0));
     }
@@ -520,8 +519,14 @@ void upx_compiler_sanity_check(void) noexcept {
     CheckIntegral<size_t>::check();
     CheckIntegral<upx_off_t>::check();
     CheckIntegral<upx_ptraddr_t>::check();
+    CheckIntegral<upx_sptraddr_t>::check();
     CheckIntegral<upx_uintptr_t>::check();
 
+    CheckSignedness<char, false>::check(); // -funsigned-char
+    CheckSignedness<signed char, true>::check();
+    CheckSignedness<unsigned char, false>::check();
+    CheckSignedness<short, true>::check();
+    CheckSignedness<unsigned short, false>::check();
     CheckSignedness<long long, true>::check();
     CheckSignedness<ptrdiff_t, true>::check();
     CheckSignedness<intptr_t, true>::check();

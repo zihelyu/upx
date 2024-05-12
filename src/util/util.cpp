@@ -260,7 +260,9 @@ const char *upx_getenv(const char *envvar) noexcept {
 }
 
 // random value from libc; quality is not important for UPX
-int upx_rand(void) noexcept { return ::rand(); }
+int upx_rand(void) noexcept {
+    return ::rand(); // NOLINT(clang-analyzer-security.insecureAPI.rand)
+}
 
 void upx_rand_init(void) noexcept {
     unsigned seed = 0;
