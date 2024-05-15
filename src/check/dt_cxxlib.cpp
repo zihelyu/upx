@@ -122,10 +122,10 @@ TEST_CASE("std::vector") {
     CHECK(v.end() - v.begin() == N);
     CHECK(&v[0] == &(*(v.begin())));
     // CHECK(&v[0] + N == &(*(v.end()))); // TODO later: is this legal??
-    // TODO later: make sure that this throws
-#if defined(_LIBCPP_HARDENING_MODE_DEBUG) &&                                                       \
+#if defined(_LIBCPP_HARDENING_MODE) && defined(_LIBCPP_HARDENING_MODE_DEBUG) &&                    \
     (_LIBCPP_HARDENING_MODE == _LIBCPP_HARDENING_MODE_DEBUG)
-    CHECK_THROWS((void) &v[N]);
+    // unfortunately this does not throw but aborts
+    ////CHECK_THROWS((void) &v[N]);
 #endif
     UNUSED(v);
 }
@@ -250,6 +250,36 @@ struct Z2_X2 : public X2 {
 /*************************************************************************
 // util
 **************************************************************************/
+
+TEST_CASE("upx::min_max") {
+    static_assert(upx::min(0, 0) == 0);
+    static_assert(upx::min(0, 1) == 0);
+    static_assert(upx::min(1, 0) == 0);
+    static_assert(upx::max(0, 0) == 0);
+    static_assert(upx::max(0, 1) == 1);
+    static_assert(upx::max(1, 0) == 1);
+    static_assert(upx::umin(0u, 0u) == 0u);
+    static_assert(upx::umin(0u, 1u) == 0u);
+    static_assert(upx::umin(1u, 0u) == 0u);
+    static_assert(upx::umax(0u, 0u) == 0u);
+    static_assert(upx::umax(0u, 1u) == 1u);
+    static_assert(upx::umax(1u, 0u) == 1u);
+    CHECK_EQ(upx::align_down(0, 4), 0);
+    CHECK_EQ(upx::align_down(1, 4), 0);
+    CHECK_EQ(upx::align_down(2, 4), 0);
+    CHECK_EQ(upx::align_down(3, 4), 0);
+    CHECK_EQ(upx::align_down(4, 4), 4);
+    CHECK_EQ(upx::align_up(0, 4), 0);
+    CHECK_EQ(upx::align_up(1, 4), 4);
+    CHECK_EQ(upx::align_up(2, 4), 4);
+    CHECK_EQ(upx::align_up(3, 4), 4);
+    CHECK_EQ(upx::align_up(4, 4), 4);
+    CHECK_EQ(upx::align_gap(0, 4), 0);
+    CHECK_EQ(upx::align_gap(1, 4), 3);
+    CHECK_EQ(upx::align_gap(2, 4), 2);
+    CHECK_EQ(upx::align_gap(3, 4), 1);
+    CHECK_EQ(upx::align_gap(4, 4), 0);
+}
 
 #if WITH_THREADS
 TEST_CASE("upx::ptr_std_atomic_cast") {

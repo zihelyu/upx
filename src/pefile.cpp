@@ -2179,8 +2179,6 @@ unsigned PeFile::handleStripRelocs(upx_uint64_t ih_imagebase, upx_uint64_t defau
     return 0;
 }
 
-static unsigned umax(unsigned a, unsigned b) { return (a >= b) ? a : b; }
-
 unsigned PeFile::readSections(unsigned objs, unsigned usize, unsigned ih_filealign,
                               unsigned ih_datasize) {
     const unsigned xtrasize = UPX_MAX(ih_datasize, 65536u) + IDSIZE(PEDIR_IMPORT) +
@@ -2224,7 +2222,7 @@ unsigned PeFile::readSections(unsigned objs, unsigned usize, unsigned ih_fileali
         if (isection[ic].vaddr + jc > ibuf.getSize())
             throwInternalError("buffer too small 1");
         fi->readx(ibuf.subref("bad section %#x", isection[ic].vaddr, jc), jc);
-        ibufgood = umax(ibufgood, jc + isection[ic].vaddr); // FIXME: simplistic
+        ibufgood = upx::umax(ibufgood, jc + isection[ic].vaddr); // FIXME: simplistic
         jc += isection[ic].rawdataptr;
     }
     return overlaystart;

@@ -81,10 +81,17 @@ public:
     static constexpr unsigned MAX_FILTERS = 16; // for getFilters()
 
 protected:
-    InputFile *const fi;                // reference
-    union {                             // unnamed union
-        const upx_int64_t file_size;    // must get set by constructor
-        const upx_uint64_t file_size_u; // (explicitly unsigned to avoid -Wsign-compare casts)
+    InputFile *const fi; // reference
+    // multiple names for "file_size" to avoid casts
+    union {                          // unnamed union
+        const upx_int64_t file_size; // must get set by constructor
+        const upx_uint64_t file_size_u;
+        const upx_int64_t file_size_i64;
+        const upx_uint64_t file_size_u64;
+    };
+    union { // unnamed union
+        const upx_int32_t file_size_i32;
+        const upx_uint32_t file_size_u32;
     };
     PackHeader ph; // must be filled by canUnpack(); also used by UiPacker
 };

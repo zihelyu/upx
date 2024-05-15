@@ -76,8 +76,8 @@ protected:
 
 protected:
     struct Extent {
-        off_t offset;
-        off_t size;
+        upx_off_t offset;
+        upx_off_t size;
     };
     virtual void packExtent(const Extent &x,
         Filter *, OutputFile *,

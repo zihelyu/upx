@@ -1246,7 +1246,9 @@ int upx_main(int argc, char *argv[]) may_throw {
     assert(upx_nrv_init() == 0);
 #endif
     assert(upx_ucl_init() == 0);
+#if (WITH_ZLIB)
     assert(upx_zlib_init() == 0);
+#endif
 #if (WITH_ZSTD)
     assert(upx_zstd_init() == 0);
 #endif

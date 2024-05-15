@@ -62,15 +62,6 @@ PackLinuxI386sh::~PackLinuxI386sh()
 {
 }
 
-static unsigned
-umax(unsigned a, unsigned b)
-{
-    if (a <= b) {
-        return b;
-    }
-    return a;
-}
-
 void
 PackLinuxI386sh::buildLoader(Filter const *ft)
 {
@@ -94,7 +85,7 @@ PackLinuxI386sh::buildLoader(Filter const *ft)
         sizeof(Elf32_Phdr) * get_te16(&((Elf32_Ehdr const *)(void *)buf)->e_phnum);
     if (0 == get_le32(buf + fold_hdrlen)) {
         // inconsistent SIZEOF_HEADERS in *.lds (ld, binutils)
-        fold_hdrlen = umax(0x80, fold_hdrlen);
+        fold_hdrlen = upx::umax(0x80u, fold_hdrlen);
     }
     bool success = fold_ft.filter(buf + fold_hdrlen, sz_fold - fold_hdrlen);
     UNUSED(success);

@@ -36,9 +36,12 @@
 //
 **************************************************************************/
 
-PackerBase::PackerBase(InputFile *f) : fi(f), file_size(f ? f->st_size() : 0) {
+PackerBase::PackerBase(InputFile *f)
+    : fi(f), file_size(f != nullptr ? f->st_size() : 0), file_size_i32(file_size) {
     ph.reset();
-    mem_size_assert(1, file_size);
+    mem_size_assert(1, file_size_u);
+    assert_noexcept(file_size_i32 == file_size);
+    assert_noexcept(file_size_u32 == file_size_u);
 }
 
 Packer::Packer(InputFile *f) : PackerBase(f) { uip = new UiPacker(this); }

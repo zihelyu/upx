@@ -25,13 +25,6 @@
  */
 
 #include "../conf.h"
-#include "compress.h"
-#include "../util/membuffer.h"
-// NOLINTBEGIN(clang-analyzer-optin.performance.Padding)
-#define ZLIB_CONST 1
-#include <zlib/zlib.h>
-#include <zlib/deflate.h>
-// NOLINTEND(clang-analyzer-optin.performance.Padding)
 
 void zlib_compress_config_t::reset() noexcept {
     mem_clear(this);
@@ -39,6 +32,15 @@ void zlib_compress_config_t::reset() noexcept {
     window_bits.reset();
     strategy.reset();
 }
+
+#if WITH_ZLIB
+#include "compress.h"
+#include "../util/membuffer.h"
+// NOLINTBEGIN(clang-analyzer-optin.performance.Padding)
+#define ZLIB_CONST 1
+#include <zlib/zlib.h>
+#include <zlib/deflate.h>
+// NOLINTEND(clang-analyzer-optin.performance.Padding)
 
 static int convert_errno_from_zlib(int zr) {
     switch (zr) {
@@ -306,5 +308,7 @@ TEST_CASE("upx_zlib_decompress") {
     CHECK(r == UPX_E_OUTPUT_OVERRUN);
     UNUSED(r);
 }
+
+#endif // WITH_ZLIB
 
 /* vim:set ts=4 sw=4 et: */

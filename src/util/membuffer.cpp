@@ -97,8 +97,6 @@ void *MemBuffer::subref_impl(const char *errfmt, size_t skip, size_t take) {
     return ptr + skip;
 }
 
-static forceinline constexpr size_t umax(size_t a, size_t b) { return (a >= b) ? a : b; }
-
 /*static*/
 unsigned MemBuffer::getSizeForCompression(unsigned uncompressed_size, unsigned extra) {
     if (uncompressed_size == 0)
@@ -106,9 +104,9 @@ unsigned MemBuffer::getSizeForCompression(unsigned uncompressed_size, unsigned e
     const size_t z = uncompressed_size; // fewer keystrokes and display columns
     size_t bytes = mem_size(1, z);      // check size
     // All literal: 1 bit overhead per literal byte; from UCL documentation
-    bytes = umax(bytes, z + z / 8 + 256);
+    bytes = upx::umax(bytes, z + z / 8 + 256);
     // zstd: ZSTD_COMPRESSBOUND
-    bytes = umax(bytes, z + (z >> 8) + ((z < (128 << 10)) ? (((128 << 10) - z) >> 11) : 0));
+    bytes = upx::umax(bytes, z + (z >> 8) + ((z < (128 << 10)) ? (((128 << 10) - z) >> 11) : 0));
     // add extra and 256 safety for various rounding/alignments
     bytes = mem_size(1, bytes, extra, 256);
     return ACC_ICONV(unsigned, bytes);

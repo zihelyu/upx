@@ -43,6 +43,8 @@
 #include "p_lx_elf.h"
 #include "ui.h"
 
+using upx::umax, upx::umin;
+
 #define PT_LOAD32   Elf32_Phdr::PT_LOAD
 #define PT_LOAD64   Elf64_Phdr::PT_LOAD
 #define PT_NOTE32   Elf32_Phdr::PT_NOTE
@@ -65,18 +67,6 @@ static unsigned const EF_ARM_EABI_VER5 = 0x05000000;
 /*offset  1*/   '.','n','o','t','e','.','g','n','u','.','b','u','i','l','d','-','i','d','\0',
 /*offset 20*/   '.','s','h','s','t','r','t','a','b','\0'
 };
-
-static unsigned
-umin(unsigned a, unsigned b)
-{
-    return (a < b) ? a : b;
-}
-
-static upx_uint64_t
-umin64(upx_uint64_t a, upx_uint64_t b)
-{
-    return (a < b) ? a : b;
-}
 
 static unsigned
 up4(unsigned x)
@@ -357,7 +347,7 @@ PackLinuxElf32::PackLinuxElf32help1(InputFile *f)
             unsigned offset = check_pt_dynamic(phdr);
             dynseg= (Elf32_Dyn *)(offset + file_image);
             invert_pt_dynamic(dynseg,
-                umin(get_te32(&phdr->p_filesz), file_size - offset));
+                umin(get_te32(&phdr->p_filesz), (unsigned)(file_size_u - offset)));
         }
         else if (is_LOAD32(phdr)) {
             check_pt_load(phdr);
@@ -1069,7 +1059,7 @@ PackLinuxElf64::PackLinuxElf64help1(InputFile *f)
             upx_uint64_t offset = check_pt_dynamic(phdr);
             dynseg= (Elf64_Dyn *)(offset + file_image);
             invert_pt_dynamic(dynseg,
-                umin(get_te64(&phdr->p_filesz), file_size - offset));
+                umin(get_te64(&phdr->p_filesz), file_size_u - offset));
         }
         else if (PT_LOAD64==get_te32(&phdr->p_type)) {
             check_pt_load(phdr);
@@ -2699,7 +2689,7 @@ tribool PackLinuxElf32::canPack()
             unsigned offset = check_pt_dynamic(phdr);
             dynseg= (Elf32_Dyn *)(offset + file_image);
             invert_pt_dynamic(dynseg,
-                umin(get_te32(&phdr->p_filesz), file_size - offset));
+                umin(get_te32(&phdr->p_filesz), (unsigned)(file_size_u - offset)));
         }
         else if (is_LOAD32(phdr)) {
             if (!pload_x0
@@ -2773,7 +2763,7 @@ tribool PackLinuxElf32::canPack()
                 for (int j= e_shnum; --j>=0; ++shdr) {
                     unsigned const sh_type = get_te32(&shdr->sh_type);
                     if (Elf32_Shdr::SHF_EXECINSTR & get_te32(&shdr->sh_flags)) {
-                        xct_va = umin(xct_va, get_te32(&shdr->sh_addr));
+                        xct_va = umin((unsigned) xct_va, get_te32(&shdr->sh_addr));
                     }
                     // Hook the first slot of DT_PREINIT_ARRAY or DT_INIT_ARRAY.
                     if (!user_init_rp && (
@@ -3797,7 +3787,7 @@ PackLinuxElf64::generateElfHdr(
         for (int j= e_phnum; --j>=0; ) {
             if (PT_LOAD64 == get_te32(&phdri[j].p_type)) {
                 upx_uint64_t const vaddr = get_te64(&phdri[j].p_vaddr);
-                lo_va_user = umin64(lo_va_user, vaddr);
+                lo_va_user = umin(lo_va_user, vaddr);
             }
         }
         set_te64(                 &h2->phdr[C_BASE].p_vaddr, lo_va_user);
@@ -5108,7 +5098,7 @@ int PackLinuxElf32::pack2(OutputFile *fo, Filter &ft)
                     asl_pack2_Shdrs(fo, pre_xct_top);
                 }
                 else { // Just copy up to xct_off
-                    x.size = umin(x.size, xct_off - x.offset);
+                    x.size = umin(0ull + x.size, 0ull + xct_off - x.offset);
                     if (0) { // DEBUG paranoia
                         fi->seek(x.offset, SEEK_SET);
                         fi->readx(ibuf, x.size);
@@ -5366,7 +5356,7 @@ int PackLinuxElf64::pack2(OutputFile *fo, Filter &ft)
                     asl_pack2_Shdrs(fo, pre_xct_top);
                 }
                 else { // Just copy up to xct_off
-                    x.size = umin(x.size, xct_off - x.offset);
+                    x.size = umin(0ull + x.size, 0ull + xct_off - x.offset);
                     if (0) { // DEBUG paranoia
                         fi->seek(x.offset, SEEK_SET);
                         fi->readx(ibuf, x.size);
@@ -6444,7 +6434,7 @@ void PackLinuxElf64::un_shlib_1(
 
     // Below xct_off is not compressed (for benefit of rtld.)
     fi->seek(0, SEEK_SET);
-    fi->readx(ibuf, umin(blocksize, file_size));
+    fi->readx(ibuf, umin(blocksize, file_size_u32));
 
     // Determine if the extra page with copy of _Shdrs was spliced in.
     // This used to be the result of --android-shlib.
@@ -6457,7 +6447,7 @@ void PackLinuxElf64::un_shlib_1(
     if (e_shoff && e_shnum
             // +36: (sizeof(PackHeader) + sizeof(overlay_offset))
             //    after Shdrs for ARM_ATTRIBUTES
-    &&  (((e_shoff + sizeof(Elf64_Shdr) * e_shnum) + 36) < (upx_uint64_t)file_size)
+    &&  (((e_shoff + sizeof(Elf64_Shdr) * e_shnum) + 36) < file_size_u)
     ) { // possible --android-shlib
         unsigned x = get_te32(&file_image[get_te64(&ehdri.e_entry) - (1+ 4)*sizeof(int)]);
         if (1 & x) { // the clincher
@@ -6644,7 +6634,7 @@ void PackLinuxElf32::un_shlib_1(
 
     // Below xct_off is not compressed (for benefit of rtld.)
     fi->seek(0, SEEK_SET);
-    fi->readx(ibuf, umin(blocksize, file_size));
+    fi->readx(ibuf, umin(blocksize, file_size_u32));
 
     // Determine if the extra page with copy of _Shdrs was spliced in.
     // This used to be the result of --android-shlib.
@@ -6657,7 +6647,7 @@ void PackLinuxElf32::un_shlib_1(
     if (e_shoff && e_shnum
             // +36: (sizeof(PackHeader) + sizeof(overlay_offset))
             //    after Shdrs for ARM_ATTRIBUTES
-    &&  (((e_shoff + sizeof(Elf32_Shdr) * e_shnum) + 36) < (upx_uint32_t)file_size)
+    &&  (((e_shoff + sizeof(Elf32_Shdr) * e_shnum) + 36) < file_size_u32)
     ) { // possible --android-shlib
         unsigned x = get_te32(&file_image[get_te32(&ehdri.e_entry) - (1+ 4)*sizeof(int)]);
         if (1 & x) { // the clincher
@@ -6844,7 +6834,7 @@ void PackLinuxElf32::un_DT_INIT(
     upx_uint32_t dt_relsz(0), dt_rel(0);
     upx_uint32_t const dyn_len = get_te32(&dynhdr->p_filesz);
     upx_uint32_t const dyn_off = get_te32(&dynhdr->p_offset);
-    if ((unsigned long)file_size < (dyn_len + dyn_off)) {
+    if (file_size_u32 < (dyn_len + dyn_off)) {
         char msg[50]; snprintf(msg, sizeof(msg),
                 "bad PT_DYNAMIC .p_filesz %#lx", (long unsigned)dyn_len);
         throwCantUnpack(msg);
@@ -6853,7 +6843,7 @@ void PackLinuxElf32::un_DT_INIT(
     fi->readx(ibuf, dyn_len);
     Elf32_Dyn *dyn = (Elf32_Dyn *)(void *)ibuf;
     dynseg = dyn; invert_pt_dynamic(dynseg,
-        umin(dyn_len, file_size - dyn_off));
+        umin(dyn_len, file_size_u32 - dyn_off));
     for (unsigned j2= 0; j2 < dyn_len; ++dyn, j2 += sizeof(*dyn)) {
         upx_uint32_t const tag = get_te32(&dyn->d_tag);
         upx_uint32_t       val = get_te32(&dyn->d_val);
@@ -7023,7 +7013,7 @@ void PackLinuxElf64::un_DT_INIT(
     upx_uint64_t dt_relasz(0), dt_rela(0);
     upx_uint64_t const dyn_len = get_te64(&dynhdr->p_filesz);
     upx_uint64_t const dyn_off = get_te64(&dynhdr->p_offset);
-    if ((unsigned long)file_size < (dyn_len + dyn_off)) {
+    if (file_size_u < (dyn_len + dyn_off)) {
         char msg[50]; snprintf(msg, sizeof(msg),
                 "bad PT_DYNAMIC .p_filesz %#lx", (long unsigned)dyn_len);
         throwCantUnpack(msg);
@@ -7032,7 +7022,7 @@ void PackLinuxElf64::un_DT_INIT(
     fi->readx(ibuf, dyn_len);
     Elf64_Dyn *dyn = (Elf64_Dyn *)(void *)ibuf;
     dynseg = dyn; invert_pt_dynamic(dynseg,
-        umin(dyn_len, file_size - dyn_off));
+        umin(dyn_len, file_size_u - dyn_off));
     for (unsigned j2= 0; j2 < dyn_len; ++dyn, j2 += sizeof(*dyn)) {
         upx_uint64_t const tag = get_te64(&dyn->d_tag);
         upx_uint64_t       val = get_te64(&dyn->d_val);
@@ -7238,7 +7228,7 @@ void PackLinuxElf64::unpack(OutputFile *fo)
     fi->readx(&bhdr, szb_info);
     ph.u_len = get_te32(&bhdr.sz_unc);
     ph.c_len = get_te32(&bhdr.sz_cpr);
-    if (ph.c_len > (unsigned)file_size || ph.c_len == 0 || ph.u_len == 0
+    if (ph.c_len > file_size_u || ph.c_len == 0 || ph.u_len == 0
     ||  ph.u_len > orig_file_size)
         throwCantUnpack("b_info corrupted");
     ph.filter_cto = bhdr.b_cto8;
@@ -7306,7 +7296,7 @@ void PackLinuxElf64::unpack(OutputFile *fo)
         fi->seek(- (off_t) (szb_info + ph.c_len), SEEK_CUR);
 
         u_phnum = get_te16(&ehdr->e_phnum);
-        if ((umin64(MAX_ELF_HDR_64, ph.u_len) - sizeof(Elf64_Ehdr))/sizeof(Elf64_Phdr) < u_phnum) {
+        if ((umin(MAX_ELF_HDR_64, ph.u_len) - sizeof(Elf64_Ehdr))/sizeof(Elf64_Phdr) < u_phnum) {
             throwCantUnpack("bad compressed e_phnum");
         }
         o_elfhdrs.alloc(sizeof(Elf64_Ehdr) + u_phnum * sizeof(Elf64_Phdr));
@@ -7681,7 +7671,7 @@ PackLinuxElf32::elf_get_offset_from_Phdrs(unsigned addr, Elf32_Phdr const *phdr0
         unsigned const t = addr - get_te32(&phdr->p_vaddr);
         if (t < get_te32(&phdr->p_filesz)) {
             unsigned const p_offset = get_te32(&phdr->p_offset);
-            if ((u32_t)file_size <= p_offset) { // FIXME: weak
+            if (file_size_u <= p_offset) { // FIXME: weak
                 char msg[40]; snprintf(msg, sizeof(msg),
                     "bad Elf32_Phdr[%d].p_offset %x",
                     -1+ e_phnum - j, p_offset);
@@ -7703,9 +7693,9 @@ PackLinuxElf32::check_pt_load(Elf32_Phdr const *const phdr)
     u32_t align  = get_te32(&phdr->p_align);
 
     if ((-1+ align) & (paddr ^ vaddr)
-    ||  (u32_t)file_size <= (u32_t)offset
-    ||  (u32_t)file_size <  (u32_t)offend
-    ||  (u32_t)file_size <  (u32_t)filesz) {
+    ||  file_size_u32 <= (u32_t)offset
+    ||  file_size_u32 <  (u32_t)offend
+    ||  file_size_u32 <  (u32_t)filesz) {
         char msg[50]; snprintf(msg, sizeof(msg), "bad PT_LOAD phdr[%u]",
             (unsigned)(phdr - phdri));
         throwCantPack(msg);
@@ -7789,7 +7779,7 @@ PackLinuxElf32::elf_find_dynamic(unsigned int key) const
     Elf32_Dyn const *dynp= elf_find_dynptr(key);
     if (dynp) {
         unsigned const t= elf_get_offset_from_address(get_te32(&dynp->d_val));
-        if (t && t < (unsigned)file_size) {
+        if (t && t < file_size_u) {
             return t + file_image;
         }
     }
@@ -7802,7 +7792,7 @@ PackLinuxElf64::elf_find_dynamic(unsigned int key) const
     Elf64_Dyn const *dynp= elf_find_dynptr(key);
     if (dynp) {
         upx_uint64_t const t= elf_get_offset_from_address(get_te64(&dynp->d_val));
-        if (t && t < (upx_uint64_t)file_size) {
+        if (t && t < file_size_u) {
             return t + file_image;
         }
     }
@@ -7838,7 +7828,7 @@ PackLinuxElf64::elf_get_offset_from_address(upx_uint64_t addr) const
         upx_uint64_t const t = addr - get_te64(&phdr->p_vaddr);
         if (t < get_te64(&phdr->p_filesz)) {
             upx_uint64_t const p_offset = get_te64(&phdr->p_offset);
-            if ((u64_t)file_size <= p_offset) { // FIXME: weak
+            if (file_size_u <= p_offset) { // FIXME: weak
                 char msg[40]; snprintf(msg, sizeof(msg),
                     "bad Elf64_Phdr[%d].p_offset %#lx",
                     -1+ e_phnum - j, (long unsigned)p_offset);
@@ -7860,9 +7850,9 @@ PackLinuxElf64::check_pt_load(Elf64_Phdr const *const phdr)
     u64_t align  = get_te64(&phdr->p_align);
 
     if ((-1+ align) & (paddr ^ vaddr)
-    ||  (u64_t)file_size <= (u64_t)offset
-    ||  (u64_t)file_size <  (u64_t)offend
-    ||  (u64_t)file_size <  (u64_t)filesz) {
+    ||  file_size_u <= (u64_t)offset
+    ||  file_size_u <  (u64_t)offend
+    ||  file_size_u <  (u64_t)filesz) {
         char msg[50]; snprintf(msg, sizeof(msg), "bad PT_LOAD phdr[%u]",
             (unsigned)(phdr - phdri));
         throwCantPack(msg);
@@ -8072,7 +8062,7 @@ PackLinuxElf64::invert_pt_dynamic(Elf64_Dyn const *dynp, upx_uint64_t headway)
 
         unsigned const v_sym = !x_sym ? 0 : get_te64(&dynp0[-1+ x_sym].d_val);  // UPX_RSIZE_MAX_MEM
         if ((unsigned)(hashend - buckets) < nbucket
-        || !v_sym || (unsigned)file_size <= v_sym
+        || !v_sym || file_size_u <= v_sym
         || ((v_hsh < v_sym) && (v_sym - v_hsh) < sizeof(*buckets)*(2+ nbucket))
         ) {
             char msg[80]; snprintf(msg, sizeof(msg),

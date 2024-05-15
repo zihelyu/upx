@@ -750,40 +750,42 @@ template <class T>
 T *operator+(const LE64 &v, T *ptr) noexcept DELETED_FUNCTION;
 
 /*************************************************************************
-// global overloads
+// some global overloads
 **************************************************************************/
 
-// TODO later: move these to upx namespace in util/cxxlib.h; see conf.h
-inline unsigned ALIGN_DOWN(unsigned a, const BE32 &b) { return ALIGN_DOWN(a, unsigned(b)); }
-inline unsigned ALIGN_DOWN(const BE32 &a, unsigned b) { return ALIGN_DOWN(unsigned(a), b); }
-inline unsigned ALIGN_UP(unsigned a, const BE32 &b) { return ALIGN_UP(a, unsigned(b)); }
-inline unsigned ALIGN_UP(const BE32 &a, unsigned b) { return ALIGN_UP(unsigned(a), b); }
+namespace upx {
 
-inline unsigned ALIGN_DOWN(unsigned a, const LE32 &b) { return ALIGN_DOWN(a, unsigned(b)); }
-inline unsigned ALIGN_DOWN(const LE32 &a, unsigned b) { return ALIGN_DOWN(unsigned(a), b); }
-inline unsigned ALIGN_UP(unsigned a, const LE32 &b) { return ALIGN_UP(a, unsigned(b)); }
-inline unsigned ALIGN_UP(const LE32 &a, unsigned b) { return ALIGN_UP(unsigned(a), b); }
+inline unsigned align_down(unsigned a, const BE32 &b) { return align_down(a, unsigned(b)); }
+inline unsigned align_down(const BE32 &a, unsigned b) { return align_down(unsigned(a), b); }
+inline unsigned align_up(unsigned a, const BE32 &b) { return align_up(a, unsigned(b)); }
+inline unsigned align_up(const BE32 &a, unsigned b) { return align_up(unsigned(a), b); }
 
-// TODO later: introduce upx::umax() and upx::umin()
-inline unsigned UPX_MAX(unsigned a, const BE16 &b) { return UPX_MAX(a, unsigned(b)); }
-inline unsigned UPX_MAX(const BE16 &a, unsigned b) { return UPX_MAX(unsigned(a), b); }
-inline unsigned UPX_MIN(unsigned a, const BE16 &b) { return UPX_MIN(a, unsigned(b)); }
-inline unsigned UPX_MIN(const BE16 &a, unsigned b) { return UPX_MIN(unsigned(a), b); }
+inline unsigned align_down(unsigned a, const LE32 &b) { return align_down(a, unsigned(b)); }
+inline unsigned align_down(const LE32 &a, unsigned b) { return align_down(unsigned(a), b); }
+inline unsigned align_up(unsigned a, const LE32 &b) { return align_up(a, unsigned(b)); }
+inline unsigned align_up(const LE32 &a, unsigned b) { return align_up(unsigned(a), b); }
 
-inline unsigned UPX_MAX(unsigned a, const BE32 &b) { return UPX_MAX(a, unsigned(b)); }
-inline unsigned UPX_MAX(const BE32 &a, unsigned b) { return UPX_MAX(unsigned(a), b); }
-inline unsigned UPX_MIN(unsigned a, const BE32 &b) { return UPX_MIN(a, unsigned(b)); }
-inline unsigned UPX_MIN(const BE32 &a, unsigned b) { return UPX_MIN(unsigned(a), b); }
+inline unsigned max(unsigned a, const BE16 &b) { return max(a, unsigned(b)); }
+inline unsigned max(const BE16 &a, unsigned b) { return max(unsigned(a), b); }
+inline unsigned min(unsigned a, const BE16 &b) { return min(a, unsigned(b)); }
+inline unsigned min(const BE16 &a, unsigned b) { return min(unsigned(a), b); }
 
-inline unsigned UPX_MAX(unsigned a, const LE16 &b) { return UPX_MAX(a, unsigned(b)); }
-inline unsigned UPX_MAX(const LE16 &a, unsigned b) { return UPX_MAX(unsigned(a), b); }
-inline unsigned UPX_MIN(unsigned a, const LE16 &b) { return UPX_MIN(a, unsigned(b)); }
-inline unsigned UPX_MIN(const LE16 &a, unsigned b) { return UPX_MIN(unsigned(a), b); }
+inline unsigned max(unsigned a, const BE32 &b) { return max(a, unsigned(b)); }
+inline unsigned max(const BE32 &a, unsigned b) { return max(unsigned(a), b); }
+inline unsigned min(unsigned a, const BE32 &b) { return min(a, unsigned(b)); }
+inline unsigned min(const BE32 &a, unsigned b) { return min(unsigned(a), b); }
 
-inline unsigned UPX_MAX(unsigned a, const LE32 &b) { return UPX_MAX(a, unsigned(b)); }
-inline unsigned UPX_MAX(const LE32 &a, unsigned b) { return UPX_MAX(unsigned(a), b); }
-inline unsigned UPX_MIN(unsigned a, const LE32 &b) { return UPX_MIN(a, unsigned(b)); }
-inline unsigned UPX_MIN(const LE32 &a, unsigned b) { return UPX_MIN(unsigned(a), b); }
+inline unsigned max(unsigned a, const LE16 &b) { return max(a, unsigned(b)); }
+inline unsigned max(const LE16 &a, unsigned b) { return max(unsigned(a), b); }
+inline unsigned min(unsigned a, const LE16 &b) { return min(a, unsigned(b)); }
+inline unsigned min(const LE16 &a, unsigned b) { return min(unsigned(a), b); }
+
+inline unsigned max(unsigned a, const LE32 &b) { return max(a, unsigned(b)); }
+inline unsigned max(const LE32 &a, unsigned b) { return max(unsigned(a), b); }
+inline unsigned min(unsigned a, const LE32 &b) { return min(a, unsigned(b)); }
+inline unsigned min(const LE32 &a, unsigned b) { return min(unsigned(a), b); }
+
+} // namespace upx
 
 /*************************************************************************
 // misc support

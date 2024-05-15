@@ -230,6 +230,43 @@ struct CheckIntegral {
         }
         checkU<T>();
         checkU<typename std::add_const<T>::type>();
+        {
+            T zero, one, three, four;
+            zero = 0;
+            one = 1;
+            three = 3;
+            four = 4;
+            // min / max
+            assert_noexcept(upx::min(one, four) == 1);
+            assert_noexcept(upx::min(one, four) == one);
+            assert_noexcept(upx::max(one, four) == 4);
+            assert_noexcept(upx::max(one, four) == four);
+            // align
+            assert_noexcept(upx::align_down(zero, four) == 0);
+            assert_noexcept(upx::align_down(zero, four) == zero);
+            assert_noexcept(upx::align_down(one, four) == 0);
+            assert_noexcept(upx::align_down(one, four) == zero);
+            assert_noexcept(upx::align_down(three, four) == 0);
+            assert_noexcept(upx::align_down(three, four) == zero);
+            assert_noexcept(upx::align_down(four, four) == 4);
+            assert_noexcept(upx::align_down(four, four) == four);
+            assert_noexcept(upx::align_up(zero, four) == 0);
+            assert_noexcept(upx::align_up(zero, four) == zero);
+            assert_noexcept(upx::align_up(one, four) == 4);
+            assert_noexcept(upx::align_up(one, four) == four);
+            assert_noexcept(upx::align_up(three, four) == 4);
+            assert_noexcept(upx::align_up(three, four) == four);
+            assert_noexcept(upx::align_up(four, four) == 4);
+            assert_noexcept(upx::align_up(four, four) == four);
+            assert_noexcept(upx::align_gap(zero, four) == 0);
+            assert_noexcept(upx::align_gap(zero, four) == zero);
+            assert_noexcept(upx::align_gap(one, four) == 3);
+            assert_noexcept(upx::align_gap(one, four) == three);
+            assert_noexcept(upx::align_gap(three, four) == 1);
+            assert_noexcept(upx::align_gap(three, four) == one);
+            assert_noexcept(upx::align_gap(four, four) == 0);
+            assert_noexcept(upx::align_gap(four, four) == zero);
+        }
     }
 };
 

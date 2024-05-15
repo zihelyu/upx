@@ -1462,12 +1462,6 @@ void PackMachBase<T>::pack1(OutputFile *const fo, Filter &/*ft*/)  // generate e
 #define WANT_MACH_HEADER_ENUM 1
 #include "p_mach_enum.h"
 
-static unsigned
-umin(unsigned a, unsigned b)
-{
-    return (a <= b) ? a : b;
-}
-
 #define MAX_N_CMDS 256
 
 template <class T>
@@ -1549,7 +1543,7 @@ void PackMachBase<T>::unpack(OutputFile *fo)
                 "bad packed Mach load_command @%#x", ptr_udiff_bytes(ptr, mhdr));
             throwCantUnpack(msg);
         }
-        memcpy(&msegcmd[j], ptr, umin(sizeof(Mach_segment_command), cmdsize));
+        memcpy(&msegcmd[j], ptr, upx::umin(usizeof(Mach_segment_command), cmdsize));
         headway -= cmdsize;
         ptr     += cmdsize;
     }
@@ -1903,7 +1897,7 @@ tribool PackMachBase<T>::canUnpack()
     if (       overlay_offset < sz_mach_headers
     ||  (off_t)overlay_offset >= file_size) {
         infoWarning("file corrupted: %s", fi->getName());
-        MemBuffer buf2(umin(1<<14, file_size));
+        MemBuffer buf2(upx::umin(1u<<14, file_size_u32));
         fi->seek(sz_mach_headers, SEEK_SET);
         fi->readx(buf2, buf2.getSize());
         unsigned const *p = (unsigned const *)&buf2[0];
@@ -1966,7 +1960,7 @@ tribool PackMachBase<T>::canPack()
         throwCantPack("%d < Mach_header.ncmds", MAX_N_CMDS);
     }
     unsigned const sz_mhcmds = (unsigned)mhdri.sizeofcmds;
-    unsigned headway = umin(sz_mhcmds, file_size - sizeof(mhdri));
+    unsigned headway = upx::umin(sz_mhcmds, file_size_u32 - usizeof(mhdri));
     if (headway < sz_mhcmds) {
         char buf[32]; snprintf(buf, sizeof(buf), "bad sizeofcmds %d", sz_mhcmds);
         throwCantPack(buf);

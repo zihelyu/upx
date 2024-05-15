@@ -178,9 +178,11 @@ PackerBase *PackMaster::visitAllPackers(visit_func_t func, InputFile *f, const O
     VISIT(PackVmlinuxPPC64LE);
     VISIT(PackVmlinuxAMD64);
     VISIT(PackVmlinuxI386);
+#if (WITH_ZLIB)
     VISIT(PackVmlinuzI386);
     VISIT(PackBvmlinuzI386);
     VISIT(PackVmlinuzARMEL);
+#endif
 
     //
     // linux

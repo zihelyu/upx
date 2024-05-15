@@ -397,39 +397,6 @@ inline void NO_fprintf(FILE *, const char *, ...) noexcept {}
 
 #define TABLESIZE(table) ((sizeof(table) / sizeof((table)[0])))
 
-// TODO later: move these to upx namespace in util/cxxlib.h; also see bele.h
-template <class T>
-inline T ALIGN_DOWN(const T &a, const T &b) {
-    T r;
-    r = (a / b) * b;
-    return r;
-}
-template <class T>
-inline T ALIGN_UP(const T &a, const T &b) {
-    T r;
-    r = ((a + b - 1) / b) * b;
-    return r;
-}
-template <class T>
-inline T ALIGN_GAP(const T &a, const T &b) {
-    T r;
-    r = ALIGN_UP(a, b) - a;
-    return r;
-}
-
-template <class T>
-inline const T &UPX_MAX(const T &a, const T &b) {
-    if (a < b)
-        return b;
-    return a;
-}
-template <class T>
-inline const T &UPX_MIN(const T &a, const T &b) {
-    if (a < b)
-        return a;
-    return b;
-}
-
 template <class T>
 inline void mem_clear(T *object) noexcept {
     static_assert(std::is_class_v<T>); // UPX convention
@@ -482,6 +449,12 @@ using upx::noncopyable;
 using upx::OptVar;
 using upx::tribool;
 #define usizeof(expr) (upx::UnsignedSizeOf<sizeof(expr)>::value)
+
+#define ALIGN_DOWN(a, b) upx::align_down((a), (b))
+#define ALIGN_UP(a, b)   upx::align_up((a), (b))
+#define ALIGN_GAP(a, b)  upx::align_gap((a), (b))
+#define UPX_MAX(a, b)    upx::max((a), (b))
+#define UPX_MIN(a, b)    upx::min((a), (b))
 
 /*************************************************************************
 // constants
@@ -623,7 +596,9 @@ using upx::tribool;
 
 #define WITH_LZMA 1
 #define WITH_UCL  1
+#ifndef WITH_ZLIB
 #define WITH_ZLIB 1
+#endif
 #if (WITH_UCL)
 #define ucl_compress_config_t REAL_ucl_compress_config_t
 #include <ucl/include/ucl/uclconf.h>

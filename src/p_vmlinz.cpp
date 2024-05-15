@@ -29,6 +29,7 @@
 #define ALLOW_INT_PLUS_MEMBUFFER 1
 #include "conf.h"
 
+#if (WITH_ZLIB)
 #include "p_elf.h"
 #include "file.h"
 #include "filter.h"
@@ -1070,5 +1071,7 @@ void PackVmlinuzARMEL::unpack(OutputFile *fo)
         //fo->write(obuf, ph.u_len);
     }
 }
+
+#endif // WITH_ZLIB
 
 /* vim:set ts=4 sw=4 et: */

@@ -142,7 +142,7 @@ private:                                                                        
 #endif
 
 /*************************************************************************
-// type_traits
+// <type_traits>
 **************************************************************************/
 
 // is_bounded_array: identical to C++20 std::is_bounded_array
@@ -162,6 +162,63 @@ template <class T, class... Ts>
 struct is_same_any : public std::disjunction<std::is_same<T, Ts>...> {};
 template <class T, class... Ts>
 inline constexpr bool is_same_any_v = is_same_any<T, Ts...>::value;
+
+/*************************************************************************
+// <bit> C++20
+**************************************************************************/
+
+template <class T>
+forceinline constexpr bool has_single_bit(T x) noexcept {
+    return x != 0 && (x & (x - 1)) == 0;
+}
+
+/*************************************************************************
+// <algorithm>
+**************************************************************************/
+
+template <class T>
+inline T align_down(const T &x, const T &alignment) noexcept {
+    assert_noexcept(has_single_bit(alignment));
+    T r;
+    r = (x / alignment) * alignment;
+    return r;
+}
+template <class T>
+inline T align_up(const T &x, const T &alignment) noexcept {
+    assert_noexcept(has_single_bit(alignment));
+    T r;
+    r = ((x + (alignment - 1)) / alignment) * alignment;
+    return r;
+}
+template <class T>
+inline T align_gap(const T &x, const T &alignment) noexcept {
+    assert_noexcept(has_single_bit(alignment));
+    T r;
+    r = align_up(x, alignment) - x;
+    return r;
+}
+
+template <class T>
+forceinline constexpr T min(const T &a, const T &b) noexcept {
+    return b < a ? b : a;
+}
+template <class T>
+forceinline constexpr T max(const T &a, const T &b) noexcept {
+    return a < b ? b : a;
+}
+
+template <class T>
+inline constexpr bool is_uminmax_type =
+    is_same_any_v<T, upx_uint16_t, upx_uint32_t, upx_uint64_t, unsigned long, size_t>;
+
+template <class T, class = std::enable_if_t<is_uminmax_type<T>, T> >
+forceinline constexpr T umin(const T &a, const T &b) noexcept {
+    return b < a ? b : a;
+}
+template <class T, class = std::enable_if_t<is_uminmax_type<T>, T> >
+forceinline constexpr T umax(const T &a, const T &b) noexcept {
+    return a < b ? b : a;
+}
 
 /*************************************************************************
 // util

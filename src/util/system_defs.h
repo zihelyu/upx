@@ -47,6 +47,12 @@
 #endif
 #endif
 
+#if !defined(NOMINMAX)
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define NOMINMAX 1
+#endif
+#endif
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 // disable silly warnings about using "deprecated" POSIX functions like fopen()
 #if !defined(_CRT_NONSTDC_NO_DEPRECATE)

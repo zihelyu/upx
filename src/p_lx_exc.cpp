@@ -279,15 +279,6 @@ PackLinuxI386::pack4(OutputFile *fo, Filter &ft)
     fo->rewrite(&elfout, overlay_offset);
 }
 
-static unsigned
-umax(unsigned a, unsigned b)
-{
-    if (a <= b) {
-        return b;
-    }
-    return a;
-}
-
 Linker *PackLinuxI386::newLinker() const
 {
     return new ElfLinkerX86;
@@ -311,7 +302,7 @@ PackLinuxI386::buildLinuxLoader(
          usizeof(l_info);
     if (0 == get_le32(fold_hdrlen + fold)) {
         // inconsistent SIZEOF_HEADERS in *.lds (ld, binutils)
-        fold_hdrlen = umax(0x80, fold_hdrlen);
+        fold_hdrlen = upx::umax(0x80u, fold_hdrlen);
     }
   }
     // This adds the definition to the "library", to be used later.
