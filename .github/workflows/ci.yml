@@ -80,8 +80,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-22.04, use_extra: true, use_wine: true }
           - { os: ubuntu-20.04, use_extra: true }
+          - { os: ubuntu-22.04, use_extra: true, use_wine: true }
+          # GitHub ubuntu-24.04 is BETA; currently i386 programs can abort with "The futex facility returned an unexpected error code"
+          - { os: ubuntu-24.04 } # TODO later: enable extra+wine once the GitHub VM is fixed
     steps:
       - name: Install extra 32-bit and MinGW packages
         if: ${{ matrix.use_extra }}
@@ -434,7 +436,7 @@ jobs:
     needs: [ job-rebuild-and-verify-stubs ]
     name: ${{ format('zigcc {0} {1}', matrix.zig_target, matrix.zig_pic) }}
     runs-on: ubuntu-latest
-    container: alpine:3.19
+    container: alpine:3.20
     strategy:
       fail-fast: false
       matrix:
