@@ -42,6 +42,14 @@
 #define bswap64 upx_bswap64
 #endif
 
+// forward declarations
+struct BE16;
+struct BE32;
+struct BE64;
+struct LE16;
+struct LE32;
+struct LE64;
+
 /*************************************************************************
 // XE - eXtended Endian compatibility
 // try to detect XX16 vs XX32 vs XX64 size mismatches
@@ -60,14 +68,6 @@ typedef void XE32;
 typedef void XE64;
 
 #else // permissive version
-
-// forward declarations
-struct BE16;
-struct BE32;
-struct BE64;
-struct LE16;
-struct LE32;
-struct LE64;
 
 namespace bele_detail {
 
@@ -755,35 +755,81 @@ T *operator+(const LE64 &v, T *ptr) noexcept DELETED_FUNCTION;
 
 namespace upx {
 
-inline unsigned align_down(unsigned a, const BE32 &b) { return align_down(a, unsigned(b)); }
-inline unsigned align_down(const BE32 &a, unsigned b) { return align_down(unsigned(a), b); }
-inline unsigned align_up(unsigned a, const BE32 &b) { return align_up(a, unsigned(b)); }
-inline unsigned align_up(const BE32 &a, unsigned b) { return align_up(unsigned(a), b); }
+#define REQUIRE_UINT32                                                                             \
+    template <class T, class = std::enable_if_t<std::is_same_v<T, upx_uint32_t>, T> >
+#define REQUIRE_UINT64                                                                             \
+    template <class T, class = std::enable_if_t<std::is_same_v<T, upx_uint64_t>, T> >
 
-inline unsigned align_down(unsigned a, const LE32 &b) { return align_down(a, unsigned(b)); }
-inline unsigned align_down(const LE32 &a, unsigned b) { return align_down(unsigned(a), b); }
-inline unsigned align_up(unsigned a, const LE32 &b) { return align_up(a, unsigned(b)); }
-inline unsigned align_up(const LE32 &a, unsigned b) { return align_up(unsigned(a), b); }
+REQUIRE_UINT32
+inline T align_down(const T &a, const BE32 &b) noexcept { return align_down(a, T(b)); }
+REQUIRE_UINT32
+inline T align_down(const BE32 &a, const T &b) noexcept { return align_down(T(a), b); }
+REQUIRE_UINT32
+inline T align_down(const T &a, const LE32 &b) noexcept { return align_down(a, T(b)); }
+REQUIRE_UINT32
+inline T align_down(const LE32 &a, const T &b) noexcept { return align_down(T(a), b); }
 
-inline unsigned max(unsigned a, const BE16 &b) { return max(a, unsigned(b)); }
-inline unsigned max(const BE16 &a, unsigned b) { return max(unsigned(a), b); }
-inline unsigned min(unsigned a, const BE16 &b) { return min(a, unsigned(b)); }
-inline unsigned min(const BE16 &a, unsigned b) { return min(unsigned(a), b); }
+REQUIRE_UINT32
+inline T align_up(const T &a, const LE32 &b) noexcept { return align_up(a, T(b)); }
+REQUIRE_UINT32
+inline T align_up(const LE32 &a, const T &b) noexcept { return align_up(T(a), b); }
+REQUIRE_UINT32
+inline T align_up(const T &a, const BE32 &b) noexcept { return align_up(a, T(b)); }
+REQUIRE_UINT32
+inline T align_up(const BE32 &a, const T &b) noexcept { return align_up(T(a), b); }
 
-inline unsigned max(unsigned a, const BE32 &b) { return max(a, unsigned(b)); }
-inline unsigned max(const BE32 &a, unsigned b) { return max(unsigned(a), b); }
-inline unsigned min(unsigned a, const BE32 &b) { return min(a, unsigned(b)); }
-inline unsigned min(const BE32 &a, unsigned b) { return min(unsigned(a), b); }
+REQUIRE_UINT32
+inline T min(const T &a, const BE16 &b) noexcept { return min(a, T(b)); }
+REQUIRE_UINT32
+inline T min(const BE16 &a, const T &b) noexcept { return min(T(a), b); }
+REQUIRE_UINT32
+inline T min(const T &a, const BE32 &b) noexcept { return min(a, T(b)); }
+REQUIRE_UINT32
+inline T min(const BE32 &a, const T &b) noexcept { return min(T(a), b); }
+REQUIRE_UINT64
+inline T min(const T &a, const BE64 &b) noexcept { return min(a, T(b)); }
+REQUIRE_UINT64
+inline T min(const BE64 &a, const T &b) noexcept { return min(T(a), b); }
+REQUIRE_UINT32
+inline T min(const T &a, const LE16 &b) noexcept { return min(a, T(b)); }
+REQUIRE_UINT32
+inline T min(const LE16 &a, const T &b) noexcept { return min(T(a), b); }
+REQUIRE_UINT32
+inline T min(const T &a, const LE32 &b) noexcept { return min(a, T(b)); }
+REQUIRE_UINT32
+inline T min(const LE32 &a, const T &b) noexcept { return min(T(a), b); }
+REQUIRE_UINT64
+inline T min(const T &a, const LE64 &b) noexcept { return min(a, T(b)); }
+REQUIRE_UINT64
+inline T min(const LE64 &a, const T &b) noexcept { return min(T(a), b); }
 
-inline unsigned max(unsigned a, const LE16 &b) { return max(a, unsigned(b)); }
-inline unsigned max(const LE16 &a, unsigned b) { return max(unsigned(a), b); }
-inline unsigned min(unsigned a, const LE16 &b) { return min(a, unsigned(b)); }
-inline unsigned min(const LE16 &a, unsigned b) { return min(unsigned(a), b); }
+REQUIRE_UINT32
+inline T max(const T &a, const BE16 &b) noexcept { return max(a, T(b)); }
+REQUIRE_UINT32
+inline T max(const BE16 &a, const T &b) noexcept { return max(T(a), b); }
+REQUIRE_UINT32
+inline T max(const T &a, const BE32 &b) noexcept { return max(a, T(b)); }
+REQUIRE_UINT32
+inline T max(const BE32 &a, const T &b) noexcept { return max(T(a), b); }
+REQUIRE_UINT64
+inline T max(const T &a, const BE64 &b) noexcept { return max(a, T(b)); }
+REQUIRE_UINT64
+inline T max(const BE64 &a, const T &b) noexcept { return max(T(a), b); }
+REQUIRE_UINT32
+inline T max(const T &a, const LE16 &b) noexcept { return max(a, T(b)); }
+REQUIRE_UINT32
+inline T max(const LE16 &a, const T &b) noexcept { return max(T(a), b); }
+REQUIRE_UINT32
+inline T max(const T &a, const LE32 &b) noexcept { return max(a, T(b)); }
+REQUIRE_UINT32
+inline T max(const LE32 &a, const T &b) noexcept { return max(T(a), b); }
+REQUIRE_UINT64
+inline T max(const T &a, const LE64 &b) noexcept { return max(a, T(b)); }
+REQUIRE_UINT64
+inline T max(const LE64 &a, const T &b) noexcept { return max(T(a), b); }
 
-inline unsigned max(unsigned a, const LE32 &b) { return max(a, unsigned(b)); }
-inline unsigned max(const LE32 &a, unsigned b) { return max(unsigned(a), b); }
-inline unsigned min(unsigned a, const LE32 &b) { return min(a, unsigned(b)); }
-inline unsigned min(const LE32 &a, unsigned b) { return min(unsigned(a), b); }
+#undef REQUIRE_UINT32
+#undef REQUIRE_UINT64
 
 } // namespace upx
 

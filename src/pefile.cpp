@@ -1417,7 +1417,7 @@ void PeFile::processTls1(Interval *iv, typename tls_traits<LEXX>::cb_value_t ima
     // ... and those dwords should be correctly aligned
     if (use_tls_callbacks)
         sotls = ALIGN_UP(sotls, cb_size) + 2 * cb_size;
-    const unsigned aligned_sotls = ALIGN_UP(sotls, (unsigned) sizeof(LEXX));
+    const unsigned aligned_sotls = ALIGN_UP(sotls, usizeof(LEXX));
 
     // the PE loader wants this stuff uncompressed
     mb_otls.alloc(aligned_sotls);
@@ -2140,7 +2140,7 @@ void PeFile::checkHeaderValues(unsigned subsystem, unsigned mask, unsigned ih_en
         throwCantPack("run a virus scanner on this file!");
 
     const unsigned fam1 = ih_filealign - 1;
-    if (!(1 + fam1) || (1 + fam1) & fam1) { // ih_filealign is not a power of 2
+    if (!upx::has_single_bit(ih_filealign)) { // ih_filealign is not a power of 2
         char buf[32];
         snprintf(buf, sizeof(buf), "bad file alignment %#x", 1 + fam1);
         throwCantPack(buf);
@@ -2338,7 +2338,7 @@ void PeFile::pack0(OutputFile *fo, ht &ih, ht &oh, unsigned subsystem_mask,
         allow_filter = false;
 
     const unsigned oam1 = ih.objectalign - 1;
-    if (!(1 + oam1) || (1 + oam1) & oam1) { // ih.objectalign is not a power of 2
+    if (!upx::has_single_bit(ih.objectalign)) { // ih.objectalign is not a power of 2
         char buf[32];
         snprintf(buf, sizeof(buf), "bad object alignment %#x", 1 + oam1);
         throwCantPack(buf);
@@ -2414,7 +2414,7 @@ void PeFile::pack0(OutputFile *fo, ht &ih, ht &oh, unsigned subsystem_mask,
     if (tlsindex && ((newvsize - ph.c_len - 1024 + oam1) & ~oam1) > tlsindex + 4)
         tlsindex = 0;
 
-    const int oh_filealign = UPX_MIN(ih.filealign, 0x200);
+    const int oh_filealign = UPX_MIN(ih.filealign, 0x200u);
     const unsigned fam1 = oh_filealign - 1;
 
     int identsize = 0;
@@ -2456,9 +2456,9 @@ void PeFile::pack0(OutputFile *fo, ht &ih, ht &oh, unsigned subsystem_mask,
         ((ph.c_len + ic) & 15) == 0 ? ph.c_len : ph.c_len + 16 - ((ph.c_len + ic) & 15);
     obuf.clear(ph.c_len, c_len - ph.c_len);
 
-    const unsigned aligned_sotls = ALIGN_UP(sotls, (unsigned) sizeof(LEXX));
+    const unsigned aligned_sotls = ALIGN_UP(sotls, usizeof(LEXX));
     const unsigned s1size =
-        ALIGN_UP(ic + c_len + codesize, (unsigned) sizeof(LEXX)) + aligned_sotls + soloadconf;
+        ALIGN_UP(ic + c_len + codesize, usizeof(LEXX)) + aligned_sotls + soloadconf;
     const unsigned s1addr = (newvsize - (ic + c_len) + oam1) & ~oam1;
 
     const unsigned ncsection = (s1addr + s1size + oam1) & ~oam1;

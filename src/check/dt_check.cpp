@@ -298,48 +298,119 @@ struct CheckAlignment {
 template <class T>
 struct TestBELE {
     static noinline bool test(void) noexcept {
+        static_assert(upx::is_same_any_v<T, BE16, BE32, BE64, LE16, LE32, LE64>);
+        static_assert(
+            upx::is_same_any_v<typename T::integral_conversion_type, upx_uint32_t, upx_uint64_t>);
         CheckIntegral<T>::check();
         CheckAlignment<T>::check();
         // arithmetic checks
-        T all_bits = {};
-        assert_noexcept(all_bits == 0);
-        all_bits += 1;
-        all_bits -= 2;
-        T v1;
-        v1 = 1;
-        v1 *= 4;
-        v1 /= 2;
-        v1 -= 1;
-        T v2;
-        v2 = 1;
-        assert_noexcept((v1 == v2));
-        assert_noexcept(!(v1 != v2));
-        assert_noexcept((v1 <= v2));
-        assert_noexcept((v1 >= v2));
-        assert_noexcept(!(v1 < v2));
-        assert_noexcept(!(v1 > v2));
-        v2 ^= all_bits;
-        assert_noexcept(!(v1 == v2));
-        assert_noexcept((v1 != v2));
-        assert_noexcept((v1 <= v2));
-        assert_noexcept(!(v1 >= v2));
-        assert_noexcept((v1 < v2));
-        assert_noexcept(!(v1 > v2));
-        v2 += 2;
-        assert_noexcept(v1 == 1);
-        assert_noexcept(v2 == 0);
-        v1 <<= 1;
-        v1 |= v2;
-        v1 >>= 1;
-        v2 &= v1;
-        v2 /= v1;
-        v2 *= v1;
-        v1 += v2;
-        v1 -= v2;
-        assert_noexcept(v1 == 1);
-        assert_noexcept(v2 == 0);
-        if ((v1 ^ v2) != 1)
-            return false;
+        {
+            T all_bits = {}; // == zero
+            assert_noexcept(all_bits == 0);
+            assert_noexcept(!upx::has_single_bit(all_bits));
+            all_bits += 1;
+            assert_noexcept(upx::has_single_bit(all_bits));
+            all_bits -= 2;
+            assert_noexcept(!upx::has_single_bit(all_bits));
+            T v1;
+            v1 = 1;
+            v1 *= 4;
+            v1 /= 2;
+            v1 -= 1;
+            T v2;
+            v2 = 1;
+            assert_noexcept((v1 == v2));
+            assert_noexcept(!(v1 != v2));
+            assert_noexcept((v1 <= v2));
+            assert_noexcept((v1 >= v2));
+            assert_noexcept(!(v1 < v2));
+            assert_noexcept(!(v1 > v2));
+            v2 ^= all_bits;
+            assert_noexcept(!(v1 == v2));
+            assert_noexcept((v1 != v2));
+            assert_noexcept((v1 <= v2));
+            assert_noexcept(!(v1 >= v2));
+            assert_noexcept((v1 < v2));
+            assert_noexcept(!(v1 > v2));
+            v2 += 2;
+            assert_noexcept(v1 == 1);
+            assert_noexcept(v2 == 0);
+            v1 <<= 1;
+            v1 |= v2;
+            v1 >>= 1;
+            v2 &= v1;
+            v2 /= v1;
+            v2 *= v1;
+            v1 += v2;
+            v1 -= v2;
+            assert_noexcept(v1 == 1);
+            assert_noexcept(v2 == 0);
+            if ((v1 ^ v2) != 1)
+                return false;
+        }
+        // min/max
+        {
+            constexpr T a = {}; // == zero
+            typedef typename T::integral_conversion_type U;
+            constexpr U b = 1;
+            assert_noexcept(upx::min(a, a) == 0);
+            assert_noexcept(upx::min(a, a) == a);
+            assert_noexcept(upx::min(a, b) == 0);
+            assert_noexcept(upx::min(a, b) == a);
+            assert_noexcept(upx::min(b, a) == 0);
+            assert_noexcept(upx::min(b, a) == a);
+            assert_noexcept(upx::min(b, b) == 1);
+            assert_noexcept(upx::min(b, b) == b);
+            assert_noexcept(upx::max(a, a) == 0);
+            assert_noexcept(upx::max(a, a) == a);
+            assert_noexcept(upx::max(a, b) == 1);
+            assert_noexcept(upx::max(a, b) == b);
+            assert_noexcept(upx::max(b, a) == 1);
+            assert_noexcept(upx::max(b, a) == b);
+            assert_noexcept(upx::max(b, b) == 1);
+            assert_noexcept(upx::max(b, b) == b);
+            T minus_one_t = {}, minus_two_t = {};
+            minus_one_t -= 1;
+            minus_two_t -= 2;
+            const U minus_one_u = minus_one_t;
+            const U minus_two_u = minus_two_t;
+            assert_noexcept(upx::min(minus_one_t, minus_one_t) == minus_one_t);
+            assert_noexcept(upx::min(minus_one_t, minus_one_t) == minus_one_u);
+            assert_noexcept(upx::min(minus_one_u, minus_one_t) == minus_one_t);
+            assert_noexcept(upx::min(minus_one_u, minus_one_t) == minus_one_u);
+            assert_noexcept(upx::min(minus_one_t, minus_one_u) == minus_one_t);
+            assert_noexcept(upx::min(minus_one_t, minus_one_u) == minus_one_u);
+            assert_noexcept(upx::min(minus_two_t, minus_one_t) == minus_two_t);
+            assert_noexcept(upx::min(minus_two_t, minus_one_t) == minus_two_u);
+            assert_noexcept(upx::min(minus_two_u, minus_one_t) == minus_two_t);
+            assert_noexcept(upx::min(minus_two_u, minus_one_t) == minus_two_u);
+            assert_noexcept(upx::min(minus_two_t, minus_one_u) == minus_two_t);
+            assert_noexcept(upx::min(minus_two_t, minus_one_u) == minus_two_u);
+            assert_noexcept(upx::min(minus_one_t, minus_two_t) == minus_two_t);
+            assert_noexcept(upx::min(minus_one_t, minus_two_t) == minus_two_u);
+            assert_noexcept(upx::min(minus_one_u, minus_two_t) == minus_two_t);
+            assert_noexcept(upx::min(minus_one_u, minus_two_t) == minus_two_u);
+            assert_noexcept(upx::min(minus_one_t, minus_two_u) == minus_two_t);
+            assert_noexcept(upx::min(minus_one_t, minus_two_u) == minus_two_u);
+            assert_noexcept(upx::max(minus_one_t, minus_one_t) == minus_one_t);
+            assert_noexcept(upx::max(minus_one_t, minus_one_t) == minus_one_u);
+            assert_noexcept(upx::max(minus_one_u, minus_one_t) == minus_one_t);
+            assert_noexcept(upx::max(minus_one_u, minus_one_t) == minus_one_u);
+            assert_noexcept(upx::max(minus_one_t, minus_one_u) == minus_one_t);
+            assert_noexcept(upx::max(minus_one_t, minus_one_u) == minus_one_u);
+            assert_noexcept(upx::max(minus_two_t, minus_one_t) == minus_one_t);
+            assert_noexcept(upx::max(minus_two_t, minus_one_t) == minus_one_u);
+            assert_noexcept(upx::max(minus_two_u, minus_one_t) == minus_one_t);
+            assert_noexcept(upx::max(minus_two_u, minus_one_t) == minus_one_u);
+            assert_noexcept(upx::max(minus_two_t, minus_one_u) == minus_one_t);
+            assert_noexcept(upx::max(minus_two_t, minus_one_u) == minus_one_u);
+            assert_noexcept(upx::max(minus_one_t, minus_two_t) == minus_one_t);
+            assert_noexcept(upx::max(minus_one_t, minus_two_t) == minus_one_u);
+            assert_noexcept(upx::max(minus_one_u, minus_two_t) == minus_one_t);
+            assert_noexcept(upx::max(minus_one_u, minus_two_t) == minus_one_u);
+            assert_noexcept(upx::max(minus_one_t, minus_two_u) == minus_one_t);
+            assert_noexcept(upx::max(minus_one_t, minus_two_u) == minus_one_u);
+        }
         return true;
     }
 };

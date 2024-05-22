@@ -236,7 +236,8 @@ void PackW64PeAmd64::defineSymbols(unsigned ncsection, unsigned upxsection, unsi
 
 void PackW64PeAmd64::setOhHeaderSize(const pe_section_t *osection) {
     // SizeOfHeaders
-    oh.headersize = ALIGN_UP(pe_offset + sizeof(oh) + sizeof(*osection) * oh.objects, oh.filealign);
+    oh.headersize =
+        ALIGN_UP(pe_offset + usizeof(oh) + usizeof(*osection) * oh.objects, oh.filealign);
 }
 
 void PackW64PeAmd64::pack(OutputFile *fo) {
