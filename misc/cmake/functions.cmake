@@ -365,7 +365,8 @@ endfunction()
 function(upx_add_test) # ARGV
     set(name "${ARGV0}")
     list(REMOVE_AT ARGV 0)
-    add_test(NAME "${name}" COMMAND ${ARGV})
+    set(wd "${CMAKE_CURRENT_BINARY_DIR}/XTesting/$<CONFIG>")
+    add_test(NAME "${name}" WORKING_DIRECTORY "${wd}" COMMAND ${ARGV})
 endfunction()
 
 function(upx_test_depends) # ARGV

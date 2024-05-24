@@ -65,9 +65,7 @@ upx_cmake_include_hook(2_init)
 
 # Disallow in-source build. Note that you will still have to manually
 # clean up a few files if you accidentally try an in-source build.
-if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-    upx_disallow_in_source_build()
-endif()
+upx_disallow_in_source_build()
 
 # global settings
 if(${CMAKE_VERSION} VERSION_GREATER "3.14.99" AND NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
@@ -432,6 +430,8 @@ upx_add_target_extra_compile_options(${t} UPX_CONFIG_EXTRA_COMPILE_OPTIONS_UPX)
 upx_cmake_include_hook(6_test)
 
 if(NOT UPX_CONFIG_CMAKE_DISABLE_TEST)
+
+add_custom_command(TARGET upx POST_BUILD COMMAND "${CMAKE_COMMAND}" -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/XTesting/$<CONFIG>")
 
 include(CTest)
 if(NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR)
