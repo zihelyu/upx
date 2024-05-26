@@ -83,7 +83,8 @@ jobs:
         include:
           - { os: ubuntu-20.04, use_extra: true }
           - { os: ubuntu-22.04, use_extra: true, use_wine: true }
-          # GitHub ubuntu-24.04 is BETA; currently i386 programs can abort with "The futex facility returned an unexpected error code"
+          # GitHub ubuntu-24.04 is BETA; BUG: currently i386 programs can abort with "The futex facility returned an unexpected error code"
+          #   THIS IS A KNOWN ISSUE: https://github.com/actions/runner-images/issues/9848
           - { os: ubuntu-24.04 } # TODO later: enable extra+wine once the GitHub VM is fixed
     steps:
       - name: Install extra 32-bit and MinGW packages

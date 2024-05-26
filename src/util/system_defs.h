@@ -67,6 +67,12 @@
 #if !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
+#if !defined(_SCL_SECURE_NO_DEPRECATE)
+#define _SCL_SECURE_NO_DEPRECATE 1
+#endif
+#if !defined(_SCL_SECURE_NO_WARNINGS)
+#define _SCL_SECURE_NO_WARNINGS 1
+#endif
 #endif // _WIN32
 
 /* vim:set ts=4 sw=4 et: */
