@@ -47,18 +47,18 @@
 // reserve name "upx" for namespace
 namespace upx {}
 
-ACC_COMPILE_TIME_ASSERT_HEADER(CHAR_BIT == 8)
-ACC_COMPILE_TIME_ASSERT_HEADER(sizeof(short) == 2)
-ACC_COMPILE_TIME_ASSERT_HEADER(sizeof(int) == 4)
-ACC_COMPILE_TIME_ASSERT_HEADER(sizeof(long long) == 8)
+static_assert(CHAR_BIT == 8);
+static_assert(sizeof(short) == 2);
+static_assert(sizeof(int) == 4);
+static_assert(sizeof(long long) == 8);
 // check sane compiler mandatory flags
-ACC_COMPILE_TIME_ASSERT_HEADER(-1 == ~0)      // two's complement - see http://wg21.link/P0907R4
-ACC_COMPILE_TIME_ASSERT_HEADER(0u - 1 == ~0u) // two's complement - see http://wg21.link/P0907R4
-ACC_COMPILE_TIME_ASSERT_HEADER((1u << 31) << 1 == 0)
-ACC_COMPILE_TIME_ASSERT_HEADER(((int) (1u << 31)) >> 31 == -1) // arithmetic right shift
-ACC_COMPILE_TIME_ASSERT_HEADER((-1) >> 31 == -1)               // arithmetic right shift
-ACC_COMPILE_TIME_ASSERT_HEADER(CHAR_MAX == 255)                // -funsigned-char
-ACC_COMPILE_TIME_ASSERT_HEADER((char) (-1) == 255)
+static_assert(-1 == ~0);      // two's complement - see http://wg21.link/P0907R4
+static_assert(0u - 1 == ~0u); // two's complement - see http://wg21.link/P0907R4
+static_assert((1u << 31) << 1 == 0);
+static_assert(((int) (1u << 31)) >> 31 == -1); // arithmetic right shift
+static_assert((-1) >> 31 == -1);               // arithmetic right shift
+static_assert(CHAR_MAX == 255);                // -funsigned-char
+static_assert((char) (-1) == 255);
 
 // enable some more strict warnings for Git developer builds
 #if defined(UPX_CONFIG_DISABLE_WSTRICT) && (UPX_CONFIG_DISABLE_WSTRICT + 0 == 0)
@@ -81,6 +81,12 @@ ACC_COMPILE_TIME_ASSERT_HEADER((char) (-1) == 255)
 #endif
 #endif // UPX_CONFIG_DISABLE_WERROR
 #endif // UPX_CONFIG_DISABLE_WSTRICT
+
+#if __cplusplus >= 202002L // C++20
+#define upx_is_constant_evaluated std::is_constant_evaluated
+#elif __has_builtin(__builtin_is_constant_evaluated) // clang-9, gcc-9
+#define upx_is_constant_evaluated __builtin_is_constant_evaluated
+#endif
 
 // multithreading (UPX currently does not use multithreading)
 #if (WITH_THREADS)
@@ -121,12 +127,6 @@ inline constexpr bool upx_is_integral_v = upx_is_integral<T>::value;
 #define upx_alignas_max alignas(std::max_align_t)
 #endif
 
-#if __cplusplus >= 202002L
-#define upx_is_constant_evaluated std::is_constant_evaluated
-#elif __has_builtin(__builtin_is_constant_evaluated)
-#define upx_is_constant_evaluated __builtin_is_constant_evaluated
-#endif
-
 /*************************************************************************
 // core
 **************************************************************************/
@@ -165,7 +165,7 @@ typedef unsigned char uchar;
 // upx_charptr_unit_type is some opaque type with sizeof(type) == 1
 //// typedef char upx_charptr_unit_type; // also works
 struct alignas(1) upx_charptr_unit_type final { char hidden__; };
-ACC_COMPILE_TIME_ASSERT_HEADER(sizeof(upx_charptr_unit_type) == 1)
+static_assert(sizeof(upx_charptr_unit_type) == 1);
 
 // using the system off_t was a bad idea even back in 199x...
 typedef upx_int64_t upx_off_t;

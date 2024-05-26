@@ -96,51 +96,49 @@ int upx_doctest_check() { return upx_doctest_check(0, nullptr); }
 // compile-time checks
 **************************************************************************/
 
-// need extra parenthesis because the C preprocessor does not understand C++ templates
-ACC_COMPILE_TIME_ASSERT_HEADER((std::is_same<short, upx_int16_t>::value))
-ACC_COMPILE_TIME_ASSERT_HEADER((std::is_same<unsigned short, upx_uint16_t>::value))
-ACC_COMPILE_TIME_ASSERT_HEADER((std::is_same<int, upx_int32_t>::value))
-ACC_COMPILE_TIME_ASSERT_HEADER((std::is_same<unsigned, upx_uint32_t>::value))
-ACC_COMPILE_TIME_ASSERT_HEADER((std::is_same<long long, upx_int64_t>::value))
-ACC_COMPILE_TIME_ASSERT_HEADER((std::is_same<unsigned long long, upx_uint64_t>::value))
+static_assert(std::is_same<short, upx_int16_t>::value);
+static_assert(std::is_same<unsigned short, upx_uint16_t>::value);
+static_assert(std::is_same<int, upx_int32_t>::value);
+static_assert(std::is_same<unsigned, upx_uint32_t>::value);
+static_assert(std::is_same<long long, upx_int64_t>::value);
+static_assert(std::is_same<unsigned long long, upx_uint64_t>::value);
 
-ACC_COMPILE_TIME_ASSERT_HEADER(no_bswap16(0x04030201) == 0x0201)
-ACC_COMPILE_TIME_ASSERT_HEADER(no_bswap32(0x04030201) == 0x04030201)
-ACC_COMPILE_TIME_ASSERT_HEADER(no_bswap64(0x0807060504030201ull) == 0x0807060504030201ull)
+static_assert(no_bswap16(0x04030201) == 0x0201);
+static_assert(no_bswap32(0x04030201) == 0x04030201);
+static_assert(no_bswap64(0x0807060504030201ull) == 0x0807060504030201ull);
 #if !(ACC_CC_MSC) // unfortunately *not* constexpr with current MSVC
-ACC_COMPILE_TIME_ASSERT_HEADER(bswap16(0x04030201) == 0x0102)
-ACC_COMPILE_TIME_ASSERT_HEADER(bswap32(0x04030201) == 0x01020304)
-ACC_COMPILE_TIME_ASSERT_HEADER(bswap64(0x0807060504030201ull) == 0x0102030405060708ull)
-ACC_COMPILE_TIME_ASSERT_HEADER(bswap16(bswap16(0xf4f3f2f1)) == no_bswap16(0xf4f3f2f1))
-ACC_COMPILE_TIME_ASSERT_HEADER(bswap32(bswap32(0xf4f3f2f1)) == no_bswap32(0xf4f3f2f1))
-ACC_COMPILE_TIME_ASSERT_HEADER(bswap64(bswap64(0xf8f7f6f5f4f3f2f1ull)) ==
-                               no_bswap64(0xf8f7f6f5f4f3f2f1ull))
+static_assert(bswap16(0x04030201) == 0x0102);
+static_assert(bswap32(0x04030201) == 0x01020304);
+static_assert(bswap64(0x0807060504030201ull) == 0x0102030405060708ull);
+static_assert(bswap16(bswap16(0xf4f3f2f1)) == no_bswap16(0xf4f3f2f1));
+static_assert(bswap32(bswap32(0xf4f3f2f1)) == no_bswap32(0xf4f3f2f1));
+static_assert(bswap64(bswap64(0xf8f7f6f5f4f3f2f1ull)) == no_bswap64(0xf8f7f6f5f4f3f2f1ull));
 #endif
 
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 0, 8) == 0)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 1, 8) == 1)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 127, 8) == 127)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 128, 8) == -128)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u - 1, 8) == -1)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 256, 8) == 0)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 257, 8) == 1)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 383, 8) == 127)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 384, 8) == -128)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0u + 511, 8) == -1)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0ull + 0, 1) == 0)
-ACC_COMPILE_TIME_ASSERT_HEADER(sign_extend(0ull + 1, 1) == -1)
+static_assert(sign_extend(0u + 0, 8) == 0);
+static_assert(sign_extend(0u + 1, 8) == 1);
+static_assert(sign_extend(0u + 127, 8) == 127);
+static_assert(sign_extend(0u + 128, 8) == -128);
+static_assert(sign_extend(0u - 1, 8) == -1);
+static_assert(sign_extend(0u + 256, 8) == 0);
+static_assert(sign_extend(0u + 257, 8) == 1);
+static_assert(sign_extend(0u + 383, 8) == 127);
+static_assert(sign_extend(0u + 384, 8) == -128);
+static_assert(sign_extend(0u + 511, 8) == -1);
+static_assert(sign_extend(0ull + 0, 1) == 0);
+static_assert(sign_extend(0ull + 1, 1) == -1);
 
-ACC_COMPILE_TIME_ASSERT_HEADER(CHAR_BIT == 8)
+static_assert(CHAR_BIT == 8);
 #if 0 // does not work with MSVC
 #if '\0' - 1 < 0
-ACC_COMPILE_TIME_ASSERT_HEADER(CHAR_MAX == 127)
+static_assert(CHAR_MAX == 127);
 #else
-ACC_COMPILE_TIME_ASSERT_HEADER(CHAR_MAX == 255)
+static_assert(CHAR_MAX == 255);
 #endif
 #if L'\0' - 1 < 0
-ACC_COMPILE_TIME_ASSERT_HEADER((wchar_t) -1 < 0)
+static_assert((wchar_t) -1 < 0);
 #else
-ACC_COMPILE_TIME_ASSERT_HEADER((wchar_t) -1 > 0)
+static_assert((wchar_t) -1 > 0);
 #endif
 #endif
 
@@ -734,6 +732,14 @@ void upx_compiler_sanity_check(void) noexcept {
             0, 0, 0, 0,    0,    0,    0,    0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8, 0,
             0, 0, 0, 0x7f, 0x7e, 0x7d, 0x7c, 0x7b, 0x7a, 0x79, 0x78, 0,    0,    0,    0,    0};
         constexpr const byte *d = dd + 7;
+        static_assert(upx::compile_time::get_be16(d) == 0xfffe);
+        static_assert(upx::compile_time::get_be24(d) == 0xfffefd);
+        static_assert(upx::compile_time::get_be32(d) == 0xfffefdfc);
+        static_assert(upx::compile_time::get_be64(d) == 0xfffefdfcfbfaf9f8ULL);
+        static_assert(upx::compile_time::get_le16(d) == 0xfeff);
+        static_assert(upx::compile_time::get_le24(d) == 0xfdfeff);
+        static_assert(upx::compile_time::get_le32(d) == 0xfcfdfeff);
+        static_assert(upx::compile_time::get_le64(d) == 0xf8f9fafbfcfdfeffULL);
         const N_BELE_RTP::AbstractPolicy *bele;
         assert_noexcept(upx_adler32(d, 4) == 0x09f003f7);
         assert_noexcept(upx_adler32(d, 4, 0) == 0x09ec03f6);
@@ -762,19 +768,19 @@ void upx_compiler_sanity_check(void) noexcept {
         assert_noexcept(get_le32_signed(d) == -50462977);
         assert_noexcept(get_le64(d) == 0xf8f9fafbfcfdfeffULL);
         assert_noexcept(get_le64_signed(d) == -506097522914230529LL);
+        static_assert(get_be24(d) == 0xfffefd);
+        static_assert(get_le24(d) == 0xfdfeff);
 #if defined(upx_is_constant_evaluated)
+        static_assert(get_be24_signed(d) == -259);
+        static_assert(get_le24_signed(d) == -131329);
         static_assert(get_be16(d) == 0xfffe);
         static_assert(get_be16_signed(d) == -2);
-        static_assert(get_be24(d) == 0xfffefd);
-        static_assert(get_be24_signed(d) == -259);
         static_assert(get_be32(d) == 0xfffefdfc);
         static_assert(get_be32_signed(d) == -66052);
         static_assert(get_be64(d) == 0xfffefdfcfbfaf9f8ULL);
         static_assert(get_be64_signed(d) == -283686952306184LL);
         static_assert(get_le16(d) == 0xfeff);
         static_assert(get_le16_signed(d) == -257);
-        static_assert(get_le24(d) == 0xfdfeff);
-        static_assert(get_le24_signed(d) == -131329);
         static_assert(get_le32(d) == 0xfcfdfeff);
         static_assert(get_le32_signed(d) == -50462977);
         static_assert(get_le64(d) == 0xf8f9fafbfcfdfeffULL);

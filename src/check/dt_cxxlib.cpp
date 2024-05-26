@@ -35,82 +35,100 @@
 // compile-time checks
 **************************************************************************/
 
-// need extra parenthesis because the C preprocessor does not understand C++ templates
-ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_all_v<int>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_all_v<int, int>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_all_v<int, int, int>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_all_v<int, char>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_all_v<int, char, int>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_all_v<int, int, char>) )
+static_assert(upx::is_same_all_v<int>);
+static_assert(upx::is_same_all_v<int, int>);
+static_assert(upx::is_same_all_v<int, int, int>);
+static_assert(!upx::is_same_all_v<int, char>);
+static_assert(!upx::is_same_all_v<int, char, int>);
+static_assert(!upx::is_same_all_v<int, int, char>);
 
-ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_any_v<int>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_any_v<int, int>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_any_v<int, char, int>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_any_v<int, int, char>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_any_v<int, char>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_any_v<int, char, char>) )
-ACC_COMPILE_TIME_ASSERT_HEADER((!upx::is_same_any_v<int, char, long>) )
+static_assert(!upx::is_same_any_v<int>);
+static_assert(upx::is_same_any_v<int, int>);
+static_assert(upx::is_same_any_v<int, char, int>);
+static_assert(upx::is_same_any_v<int, int, char>);
+static_assert(!upx::is_same_any_v<int, char>);
+static_assert(!upx::is_same_any_v<int, char, char>);
+static_assert(!upx::is_same_any_v<int, char, long>);
 
-ACC_COMPILE_TIME_ASSERT_HEADER((upx::is_same_any_v<ptrdiff_t, int, long, long long>) )
-ACC_COMPILE_TIME_ASSERT_HEADER(
-    (upx::is_same_any_v<size_t, unsigned, unsigned long, unsigned long long>) )
+static_assert(upx::is_same_any_v<ptrdiff_t, int, long, long long>);
+static_assert(upx::is_same_any_v<size_t, unsigned, unsigned long, unsigned long long>);
 // TODO later: CHERI
-ACC_COMPILE_TIME_ASSERT_HEADER(
-    (upx::is_same_any_v<upx_uintptr_t, unsigned, unsigned long, unsigned long long>) )
+static_assert(upx::is_same_any_v<upx_uintptr_t, unsigned, unsigned long, unsigned long long>);
 
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(int) == sizeof(int))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof('a') == sizeof(char))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof("") == 1)
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof("a") == 2)
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof("ab") == 3)
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(L'a') == sizeof(wchar_t))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(L"") == 1 * sizeof(wchar_t))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(L"a") == 2 * sizeof(wchar_t))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(L"ab") == 3 * sizeof(wchar_t))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(0) == sizeof(int))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(0L) == sizeof(long))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(0LL) == sizeof(long long))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(nullptr) == sizeof(void *))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(sizeof(0)) == sizeof(size_t))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof(usizeof(0)) == sizeof(unsigned))
+static_assert(usizeof(int) == sizeof(int));
+static_assert(usizeof('a') == sizeof(char));
+static_assert(usizeof("") == 1);
+static_assert(usizeof("a") == 2);
+static_assert(usizeof("ab") == 3);
+static_assert(usizeof(L'a') == sizeof(wchar_t));
+static_assert(usizeof(L"") == 1 * sizeof(wchar_t));
+static_assert(usizeof(L"a") == 2 * sizeof(wchar_t));
+static_assert(usizeof(L"ab") == 3 * sizeof(wchar_t));
+static_assert(usizeof(0) == sizeof(int));
+static_assert(usizeof(0L) == sizeof(long));
+static_assert(usizeof(0LL) == sizeof(long long));
+static_assert(usizeof(nullptr) == sizeof(void *));
+static_assert(usizeof(sizeof(0)) == sizeof(size_t));
+static_assert(usizeof(usizeof(0)) == sizeof(unsigned));
 #if 0
 // works, but may trigger clang/gcc warnings "-Wunused-value"
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof((1LL, 1)) == sizeof(int))
-ACC_COMPILE_TIME_ASSERT_HEADER(usizeof((1, 1LL)) == sizeof(long long))
+static_assert(usizeof((1LL, 1)) == sizeof(int));
+static_assert(usizeof((1, 1LL)) == sizeof(long long));
 #endif
 
+static_assert(upx::min<upx_int8_t>(1, 2) == 1);
+static_assert(upx::min<upx_int16_t>(1, 2) == 1);
+static_assert(upx::min(1, 2) == 1);
+static_assert(upx::min(1ll, 2ll) == 1);
+static_assert(upx::max<upx_int8_t>(1, 2) == 2);
+static_assert(upx::max<upx_int16_t>(1, 2) == 2);
+static_assert(upx::max(1, 2) == 2);
+static_assert(upx::max(1ll, 2ll) == 2);
+static_assert(upx::wrapping_add<upx_int8_t>(127, 2) == -127);
+static_assert(upx::wrapping_add<upx_int16_t>(32767, 2) == -32767);
+static_assert(upx::wrapping_add(2147483647, 2) == -2147483647);
+static_assert(upx::wrapping_add(9223372036854775807ll, 2ll) == -9223372036854775807ll);
+static_assert(upx::wrapping_sub<upx_int8_t>(-127, 2) == 127);
+static_assert(upx::wrapping_sub<upx_int16_t>(-32767, 2) == 32767);
+static_assert(upx::wrapping_sub(-2147483647, 2) == 2147483647);
+static_assert(upx::wrapping_sub(-9223372036854775807ll, 2ll) == 9223372036854775807ll);
+
 namespace compile_time = upx::compile_time;
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_len("") == 0)
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_len("a") == 1)
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_len("ab") == 2)
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_len("abc") == 3)
+static_assert(compile_time::string_len("") == 0);
+static_assert(compile_time::string_len("a") == 1);
+static_assert(compile_time::string_len("ab") == 2);
+static_assert(compile_time::string_len("abc") == 3);
 
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_eq("", ""))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_eq("a", ""))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_eq("", "a"))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_eq("abc", "abc"))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_eq("ab", "abc"))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_eq("abc", "ab"))
+static_assert(compile_time::string_eq("", ""));
+static_assert(!compile_time::string_eq("a", ""));
+static_assert(!compile_time::string_eq("", "a"));
+static_assert(compile_time::string_eq("abc", "abc"));
+static_assert(!compile_time::string_eq("ab", "abc"));
+static_assert(!compile_time::string_eq("abc", "ab"));
 
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_lt("", ""))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_lt("a", ""))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_lt("", "a"))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_lt("abc", "abc"))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_lt("ab", "abc"))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_lt("abc", "ab"))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_lt("abc", "aba"))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_lt("abc", "abz"))
+static_assert(!compile_time::string_lt("", ""));
+static_assert(!compile_time::string_lt("a", ""));
+static_assert(compile_time::string_lt("", "a"));
+static_assert(!compile_time::string_lt("abc", "abc"));
+static_assert(compile_time::string_lt("ab", "abc"));
+static_assert(!compile_time::string_lt("abc", "ab"));
+static_assert(!compile_time::string_lt("abc", "aba"));
+static_assert(compile_time::string_lt("abc", "abz"));
 
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_ne("abc", "abz"))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_gt("abc", "abz"))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::string_ge("abc", "abz"))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::string_le("abc", "abz"))
+static_assert(compile_time::string_ne("abc", "abz"));
+static_assert(!compile_time::string_gt("abc", "abz"));
+static_assert(!compile_time::string_ge("abc", "abz"));
+static_assert(compile_time::string_le("abc", "abz"));
 
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq((const char *) nullptr, nullptr, 0))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq((const byte *) nullptr, nullptr, 0))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq("", "", 0))
-ACC_COMPILE_TIME_ASSERT_HEADER(compile_time::mem_eq("abc", "abc", 3))
-ACC_COMPILE_TIME_ASSERT_HEADER(!compile_time::mem_eq("abc", "abz", 3))
+static_assert(compile_time::mem_eq((const char *) nullptr, nullptr, 0));
+static_assert(compile_time::mem_eq((const byte *) nullptr, nullptr, 0));
+static_assert(compile_time::mem_eq("", "", 0));
+static_assert(compile_time::mem_eq("abc", "abc", 3));
+static_assert(!compile_time::mem_eq("abc", "abz", 3));
+
+static_assert(compile_time::bswap16(0x0102) == 0x0201);
+static_assert(compile_time::bswap32(0x01020304) == 0x04030201);
+static_assert(compile_time::bswap64(0x0102030405060708ull) == 0x0807060504030201ull);
 
 /*************************************************************************
 //

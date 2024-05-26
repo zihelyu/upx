@@ -32,7 +32,8 @@
 // NE - Native Endianness (aka Host Endianness aka CPU Endianness)
 // TE - Target Endianness (not used here, see various packers)
 
-static_assert(std::is_same_v<unsigned, upx_uint32_t>);
+static_assert(std::is_same_v<upx_uint32_t, unsigned>);
+static_assert(std::is_same_v<byte, unsigned char>);
 
 #if defined(upx_is_constant_evaluated)
 #define bele_constexpr constexpr
@@ -109,14 +110,9 @@ using enable_if_xe64 = std::enable_if_t<is_xe64_type<T>, T>;
 
 forceinline bele_constexpr unsigned get_ne16(const byte *p) noexcept {
 #if defined(upx_is_constant_evaluated)
-    if (upx_is_constant_evaluated()) {
-        typedef unsigned U;
-#if (ACC_ABI_BIG_ENDIAN)
-        return (U(p[0]) << 8) | (U(p[1]) << 0);
-#else
-        return (U(p[0]) << 0) | (U(p[1]) << 8);
-#endif
-    } else
+    if (upx_is_constant_evaluated())
+        return upx::compile_time::get_ne16(p);
+    else
 #endif
     {
         upx_uint16_t v = 0;
@@ -127,14 +123,9 @@ forceinline bele_constexpr unsigned get_ne16(const byte *p) noexcept {
 
 forceinline bele_constexpr unsigned get_ne32(const byte *p) noexcept {
 #if defined(upx_is_constant_evaluated)
-    if (upx_is_constant_evaluated()) {
-        typedef unsigned U;
-#if (ACC_ABI_BIG_ENDIAN)
-        return (U(p[0]) << 24) | (U(p[1]) << 16) | (U(p[2]) << 8) | (U(p[3]) << 0);
-#else
-        return (U(p[0]) << 0) | (U(p[1]) << 8) | (U(p[2]) << 16) | (U(p[3]) << 24);
-#endif
-    } else
+    if (upx_is_constant_evaluated())
+        return upx::compile_time::get_ne32(p);
+    else
 #endif
     {
         upx_uint32_t v = 0;
@@ -145,16 +136,9 @@ forceinline bele_constexpr unsigned get_ne32(const byte *p) noexcept {
 
 forceinline bele_constexpr upx_uint64_t get_ne64(const byte *p) noexcept {
 #if defined(upx_is_constant_evaluated)
-    if (upx_is_constant_evaluated()) {
-        typedef upx_uint64_t U;
-#if (ACC_ABI_BIG_ENDIAN)
-        return (U(p[0]) << 56) | (U(p[1]) << 48) | (U(p[2]) << 40) | (U(p[3]) << 32) |
-               (U(p[4]) << 24) | (U(p[5]) << 16) | (U(p[6]) << 8) | (U(p[7]) << 0);
-#else
-        return (U(p[0]) << 0) | (U(p[1]) << 8) | (U(p[2]) << 16) | (U(p[3]) << 24) |
-               (U(p[4]) << 32) | (U(p[5]) << 40) | (U(p[6]) << 48) | (U(p[7]) << 56);
-#endif
-    } else
+    if (upx_is_constant_evaluated())
+        return upx::compile_time::get_ne64(p);
+    else
 #endif
     {
         upx_uint64_t v = 0;
@@ -165,37 +149,21 @@ forceinline bele_constexpr upx_uint64_t get_ne64(const byte *p) noexcept {
 
 forceinline bele_constexpr void set_ne16(byte *p, unsigned v) noexcept {
 #if defined(upx_is_constant_evaluated)
-    if (upx_is_constant_evaluated()) {
-#if (ACC_ABI_BIG_ENDIAN)
-        p[0] = byte((v >> 8) & 0xff);
-        p[1] = byte((v >> 0) & 0xff);
-#else
-        p[0] = byte((v >> 0) & 0xff);
-        p[1] = byte((v >> 8) & 0xff);
-#endif
-    } else
+    if (upx_is_constant_evaluated())
+        upx::compile_time::set_ne16(p, upx_uint16_t(v & 0xffff));
+    else
 #endif
     {
-        upx_uint16_t vv = (upx_uint16_t) (v & 0xffff);
+        upx_uint16_t vv = upx_uint16_t(v & 0xffff);
         upx_memcpy_inline(p, &vv, sizeof(vv));
     }
 }
 
 forceinline bele_constexpr void set_ne32(byte *p, unsigned v) noexcept {
 #if defined(upx_is_constant_evaluated)
-    if (upx_is_constant_evaluated()) {
-#if (ACC_ABI_BIG_ENDIAN)
-        p[0] = byte((v >> 24) & 0xff);
-        p[1] = byte((v >> 16) & 0xff);
-        p[2] = byte((v >> 8) & 0xff);
-        p[3] = byte((v >> 0) & 0xff);
-#else
-        p[0] = byte((v >> 0) & 0xff);
-        p[1] = byte((v >> 8) & 0xff);
-        p[2] = byte((v >> 16) & 0xff);
-        p[3] = byte((v >> 24) & 0xff);
-#endif
-    } else
+    if (upx_is_constant_evaluated())
+        upx::compile_time::set_ne32(p, v);
+    else
 #endif
     {
         upx_uint32_t vv = v;
@@ -205,27 +173,9 @@ forceinline bele_constexpr void set_ne32(byte *p, unsigned v) noexcept {
 
 forceinline bele_constexpr void set_ne64(byte *p, upx_uint64_t v) noexcept {
 #if defined(upx_is_constant_evaluated)
-    if (upx_is_constant_evaluated()) {
-#if (ACC_ABI_BIG_ENDIAN)
-        p[0] = byte((v >> 56) & 0xff);
-        p[1] = byte((v >> 48) & 0xff);
-        p[2] = byte((v >> 40) & 0xff);
-        p[3] = byte((v >> 32) & 0xff);
-        p[4] = byte((v >> 24) & 0xff);
-        p[5] = byte((v >> 16) & 0xff);
-        p[6] = byte((v >> 8) & 0xff);
-        p[7] = byte((v >> 0) & 0xff);
-#else
-        p[0] = byte((v >> 0) & 0xff);
-        p[1] = byte((v >> 8) & 0xff);
-        p[2] = byte((v >> 16) & 0xff);
-        p[3] = byte((v >> 24) & 0xff);
-        p[4] = byte((v >> 32) & 0xff);
-        p[5] = byte((v >> 40) & 0xff);
-        p[6] = byte((v >> 48) & 0xff);
-        p[7] = byte((v >> 56) & 0xff);
-#endif
-    } else
+    if (upx_is_constant_evaluated())
+        upx::compile_time::set_ne64(p, v);
+    else
 #endif
     {
         upx_uint64_t vv = v;
@@ -274,7 +224,7 @@ forceinline bele_constexpr void set_ne64(XE64 *p, upx_uint64_t v) noexcept {
 #if __cpp_lib_byteswap >= 202110L
 
 forceinline constexpr unsigned bswap16(unsigned v) noexcept {
-    return std::byteswap((upx_uint16_t) (v & 0xffff));
+    return std::byteswap(upx_uint16_t(v & 0xffff));
 }
 forceinline constexpr unsigned bswap32(unsigned v) noexcept { return std::byteswap(v); }
 forceinline constexpr upx_uint64_t bswap64(upx_uint64_t v) noexcept { return std::byteswap(v); }
@@ -283,30 +233,45 @@ forceinline constexpr upx_uint64_t bswap64(upx_uint64_t v) noexcept { return std
 
 ACC_COMPILE_TIME_ASSERT_HEADER(sizeof(long) == 4)
 
-// unfortunately *not* constexpr with current MSVC
-forceinline /*constexpr*/ unsigned bswap16(unsigned v) noexcept {
-    return (unsigned) _byteswap_ulong(v << 16);
+// _byteswap_XXX is unfortunately *not* constexpr with current MSVC
+forceinline bele_constexpr unsigned bswap16(unsigned v) noexcept {
+#if defined(upx_is_constant_evaluated)
+    if (upx_is_constant_evaluated())
+        return upx::compile_time::bswap16(upx_uint16_t(v & 0xffff));
+    else
+#endif
+        return (unsigned) _byteswap_ulong(v << 16);
 }
-forceinline /*constexpr*/ unsigned bswap32(unsigned v) noexcept {
-    return (unsigned) _byteswap_ulong(v);
+forceinline bele_constexpr unsigned bswap32(unsigned v) noexcept {
+#if defined(upx_is_constant_evaluated)
+    if (upx_is_constant_evaluated())
+        return upx::compile_time::bswap32(v);
+    else
+#endif
+        return (unsigned) _byteswap_ulong(v);
 }
-forceinline /*constexpr*/ upx_uint64_t bswap64(upx_uint64_t v) noexcept {
-    return _byteswap_uint64(v);
+forceinline bele_constexpr upx_uint64_t bswap64(upx_uint64_t v) noexcept {
+#if defined(upx_is_constant_evaluated)
+    if (upx_is_constant_evaluated())
+        return upx::compile_time::bswap64(v);
+    else
+#endif
+        return _byteswap_uint64(v);
 }
 
 #else
 
 forceinline constexpr unsigned bswap16(unsigned v) noexcept {
 #if defined(__riscv) && __riscv_xlen == 64
-    return (unsigned) __builtin_bswap64((upx_uint64_t) v << 48);
+    return (unsigned) __builtin_bswap64(upx_uint64_t(v) << 48);
 #else
-    // return __builtin_bswap16((upx_uint16_t) (v & 0xffff));
+    // return __builtin_bswap16(upx_uint16_t(v & 0xffff));
     return __builtin_bswap32(v << 16);
 #endif
 }
 forceinline constexpr unsigned bswap32(unsigned v) noexcept {
 #if defined(__riscv) && __riscv_xlen == 64
-    return (unsigned) __builtin_bswap64((upx_uint64_t) v << 32);
+    return (unsigned) __builtin_bswap64(upx_uint64_t(v) << 32);
 #else
     return __builtin_bswap32(v);
 #endif
@@ -389,42 +354,26 @@ inline bele_constexpr void set_le64(XE64 *p, upx_uint64_t v) noexcept {
 **************************************************************************/
 
 inline constexpr unsigned get_be24(const byte *p) noexcept {
-    typedef unsigned U;
-    return (U(p[0]) << 16) | (U(p[1]) << 8) | (U(p[2]) << 0);
+    return upx::compile_time::get_be24(p);
 }
-
 inline constexpr unsigned get_le24(const byte *p) noexcept {
-    typedef unsigned U;
-    return (U(p[0]) << 0) | (U(p[1]) << 8) | (U(p[2]) << 16);
+    return upx::compile_time::get_le24(p);
 }
-
-inline constexpr void set_be24(byte *p, unsigned v) noexcept {
-    p[0] = byte((v >> 16) & 0xff);
-    p[1] = byte((v >> 8) & 0xff);
-    p[2] = byte((v >> 0) & 0xff);
-}
-
-inline constexpr void set_le24(byte *p, unsigned v) noexcept {
-    p[0] = byte((v >> 0) & 0xff);
-    p[1] = byte((v >> 8) & 0xff);
-    p[2] = byte((v >> 16) & 0xff);
-}
+inline constexpr void set_be24(byte *p, unsigned v) noexcept { upx::compile_time::set_be24(p, v); }
+inline constexpr void set_le24(byte *p, unsigned v) noexcept { upx::compile_time::set_le24(p, v); }
 
 REQUIRE_XE24
 forceinline bele_constexpr unsigned get_be24(const XE24 *p) noexcept {
     return get_be24(upx::ptr_static_cast<const byte *>(p));
 }
-
 REQUIRE_XE24
 forceinline bele_constexpr unsigned get_le24(const XE24 *p) noexcept {
     return get_le24(upx::ptr_static_cast<const byte *>(p));
 }
-
 REQUIRE_XE24
 forceinline bele_constexpr void set_be24(XE24 *p, unsigned v) noexcept {
     set_be24(upx::ptr_static_cast<byte *>(p), v);
 }
-
 REQUIRE_XE24
 forceinline bele_constexpr void set_le24(XE24 *p, unsigned v) noexcept {
     set_le24(upx::ptr_static_cast<byte *>(p), v);
@@ -594,7 +543,12 @@ struct alignas(1) BE16 final {
     }
 
     bele_constexpr bool operator==(const BE16 &x) const noexcept {
-        return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
+#if defined(upx_is_constant_evaluated)
+        if (upx_is_constant_evaluated())
+            return upx::compile_time::mem_eq(d, x.d, sizeof(d));
+        else
+#endif
+            return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
     }
     bele_constexpr bool operator<(const BE16 &x) const noexcept {
         return unsigned(*this) < unsigned(x);
@@ -656,7 +610,12 @@ struct alignas(1) BE32 final {
     }
 
     bele_constexpr bool operator==(const BE32 &x) const noexcept {
-        return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
+#if defined(upx_is_constant_evaluated)
+        if (upx_is_constant_evaluated())
+            return upx::compile_time::mem_eq(d, x.d, sizeof(d));
+        else
+#endif
+            return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
     }
     bele_constexpr bool operator<(const BE32 &x) const noexcept {
         return unsigned(*this) < unsigned(x);
@@ -718,7 +677,12 @@ struct alignas(1) BE64 final {
     }
 
     bele_constexpr bool operator==(const BE64 &x) const noexcept {
-        return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
+#if defined(upx_is_constant_evaluated)
+        if (upx_is_constant_evaluated())
+            return upx::compile_time::mem_eq(d, x.d, sizeof(d));
+        else
+#endif
+            return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
     }
     bele_constexpr bool operator<(const BE64 &x) const noexcept {
         return upx_uint64_t(*this) < upx_uint64_t(x);
@@ -780,7 +744,12 @@ struct alignas(1) LE16 final {
     }
 
     bele_constexpr bool operator==(const LE16 &x) const noexcept {
-        return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
+#if defined(upx_is_constant_evaluated)
+        if (upx_is_constant_evaluated())
+            return upx::compile_time::mem_eq(d, x.d, sizeof(d));
+        else
+#endif
+            return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
     }
     bele_constexpr bool operator<(const LE16 &x) const noexcept {
         return unsigned(*this) < unsigned(x);
@@ -842,7 +811,12 @@ struct alignas(1) LE32 final {
     }
 
     bele_constexpr bool operator==(const LE32 &x) const noexcept {
-        return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
+#if defined(upx_is_constant_evaluated)
+        if (upx_is_constant_evaluated())
+            return upx::compile_time::mem_eq(d, x.d, sizeof(d));
+        else
+#endif
+            return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
     }
     bele_constexpr bool operator<(const LE32 &x) const noexcept {
         return unsigned(*this) < unsigned(x);
@@ -904,7 +878,12 @@ struct alignas(1) LE64 final {
     }
 
     bele_constexpr bool operator==(const LE64 &x) const noexcept {
-        return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
+#if defined(upx_is_constant_evaluated)
+        if (upx_is_constant_evaluated())
+            return upx::compile_time::mem_eq(d, x.d, sizeof(d));
+        else
+#endif
+            return upx_memcmp_inline(d, x.d, sizeof(d)) == 0;
     }
     bele_constexpr bool operator<(const LE64 &x) const noexcept {
         return upx_uint64_t(*this) < upx_uint64_t(x);
