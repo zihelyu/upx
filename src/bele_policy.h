@@ -33,7 +33,7 @@
 
 #if defined(BELE_CTP)
 // CTP - Compile-Time Polymorphism (templates)
-#define V  static inline
+#define V  static inline bele_constexpr
 #define VV static forceinline_constexpr
 #define S  static int __acc_cdecl_qsort
 #define C  noexcept

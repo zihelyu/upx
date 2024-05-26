@@ -177,23 +177,23 @@ forceinline constexpr bool has_single_bit(T x) noexcept {
 **************************************************************************/
 
 template <class T>
-inline T align_down(const T &x, const T &alignment) noexcept {
-    assert_noexcept(has_single_bit(alignment));
-    T r;
+inline constexpr T align_down(const T &x, const T &alignment) noexcept {
+    // assert_noexcept(has_single_bit(alignment));
+    T r = {};
     r = (x / alignment) * alignment;
     return r;
 }
 template <class T>
-inline T align_up(const T &x, const T &alignment) noexcept {
-    assert_noexcept(has_single_bit(alignment));
-    T r;
+inline constexpr T align_up(const T &x, const T &alignment) noexcept {
+    // assert_noexcept(has_single_bit(alignment));
+    T r = {};
     r = ((x + (alignment - 1)) / alignment) * alignment;
     return r;
 }
 template <class T>
-inline T align_gap(const T &x, const T &alignment) noexcept {
-    assert_noexcept(has_single_bit(alignment));
-    T r;
+inline constexpr T align_gap(const T &x, const T &alignment) noexcept {
+    // assert_noexcept(has_single_bit(alignment));
+    T r = {};
     r = align_up(x, alignment) - x;
     return r;
 }
@@ -232,14 +232,14 @@ struct UnsignedSizeOf {
 
 // a static_cast that does not trigger -Wcast-align warnings
 template <class Result, class From>
-forceinline Result ptr_static_cast(From *ptr) noexcept {
+forceinline constexpr Result ptr_static_cast(From *ptr) noexcept {
     static_assert(std::is_pointer_v<Result>);
     static_assert(!std::is_const_v<std::remove_pointer_t<Result> >); // enforce same constness
     // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
     return static_cast<Result>(static_cast<void *>(ptr));
 }
 template <class Result, class From>
-forceinline Result ptr_static_cast(const From *ptr) noexcept {
+forceinline constexpr Result ptr_static_cast(const From *ptr) noexcept {
     static_assert(std::is_pointer_v<Result>);
     static_assert(std::is_const_v<std::remove_pointer_t<Result> >); // required
     // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)

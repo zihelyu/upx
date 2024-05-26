@@ -591,6 +591,9 @@ void show_sysinfo(const char *options_var) {
         cf_print("__GLIBC_MINOR__", "%lld", __GLIBC_MINOR__ + 0);
 #endif
         // misc compilation options
+#if defined(upx_is_constant_evaluated)
+        cf_print("upx_is_constant_evaluated", "%lld", 1, 3);
+#endif
 #if defined(UPX_CONFIG_DISABLE_WSTRICT)
         cf_print("UPX_CONFIG_DISABLE_WSTRICT", "%lld", UPX_CONFIG_DISABLE_WSTRICT + 0, 3);
 #endif

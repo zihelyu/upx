@@ -119,6 +119,9 @@ static_assert(sizeof(void *) == sizeof(long));
 #endif
 
 // C++ freestanding headers
+#if __cplusplus >= 202002L
+#include <bit>
+#endif
 #include <cstddef>
 #include <exception>
 #include <new>

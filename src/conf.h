@@ -121,6 +121,12 @@ inline constexpr bool upx_is_integral_v = upx_is_integral<T>::value;
 #define upx_alignas_max alignas(std::max_align_t)
 #endif
 
+#if __cplusplus >= 202002L
+#define upx_is_constant_evaluated std::is_constant_evaluated
+#elif __has_builtin(__builtin_is_constant_evaluated)
+#define upx_is_constant_evaluated __builtin_is_constant_evaluated
+#endif
+
 /*************************************************************************
 // core
 **************************************************************************/
@@ -289,6 +295,14 @@ typedef upx_int64_t upx_off_t;
 #endif
 #endif
 
+// some platforms may provide their own system bswapXX() functions, so rename to avoid conflicts
+#undef bswap16
+#undef bswap32
+#undef bswap64
+#define bswap16 upx_bswap16
+#define bswap32 upx_bswap32
+#define bswap64 upx_bswap64
+
 // avoid warnings about shadowing global symbols
 #undef _base
 #undef basename
@@ -347,7 +361,14 @@ inline void NO_fprintf(FILE *, const char *, ...) noexcept attribute_format(2, 3
 inline void NO_printf(const char *, ...) noexcept {}
 inline void NO_fprintf(FILE *, const char *, ...) noexcept {}
 
-#if __has_builtin(__builtin_memcpy_inline)
+#if __has_builtin(__builtin_memcmp)
+#define upx_memcmp_inline __builtin_memcmp
+#elif defined(__clang__) || defined(__GNUC__)
+#define upx_memcmp_inline __builtin_memcmp
+#else
+#define upx_memcmp_inline memcmp
+#endif
+#if __has_builtin(__builtin_memcpy_inline) && 0 // TODO later: clang constexpr limitation?
 #define upx_memcpy_inline __builtin_memcpy_inline
 #elif __has_builtin(__builtin_memcpy)
 #define upx_memcpy_inline __builtin_memcpy

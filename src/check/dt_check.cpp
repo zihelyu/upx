@@ -236,6 +236,8 @@ struct CheckIntegral {
             one = 1;
             three = 3;
             four = 4;
+            assert_noexcept(one == 1);
+            assert_noexcept(four == 4);
             // min / max
             assert_noexcept(upx::min(one, four) == 1);
             assert_noexcept(upx::min(one, four) == one);
@@ -411,6 +413,44 @@ struct TestBELE {
             assert_noexcept(upx::max(minus_one_t, minus_two_u) == minus_one_t);
             assert_noexcept(upx::max(minus_one_t, minus_two_u) == minus_one_u);
         }
+        // constexpr
+        {
+            constexpr T zero = {};
+            constexpr T zero_copy = T::make(zero);
+            assert_noexcept(zero_copy == 0);
+        }
+#if defined(upx_is_constant_evaluated)
+        {
+            typedef typename T::integral_conversion_type U;
+            constexpr T one = T::make(1);
+            static_assert(one == 1);
+            constexpr T four = T::make(one + 3);
+            static_assert(four == 4);
+            constexpr U all_bits_u = (U) T::make(U(0) - U(1));
+            constexpr T all_bits = T::make(all_bits_u);
+            static_assert(all_bits == all_bits_u);
+            static_assert(all_bits == T::make(one - 2));
+            static_assert(one == one);
+            static_assert(!(one == four));
+            static_assert(!(one == all_bits));
+            static_assert(one < four);
+            static_assert(one < all_bits);
+            static_assert(upx::min(one, four) == 1);
+            static_assert(upx::min(one, four) == one);
+            static_assert(upx::min(U(1), four) == 1);
+            static_assert(upx::min(one, U(4)) == 1);
+            static_assert(upx::max(one, four) == 4);
+            static_assert(upx::max(one, four) == four);
+            static_assert(upx::max(U(1), four) == 4);
+            static_assert(upx::max(one, U(4)) == 4);
+            static_assert(upx::align_down(one, four) == 0);
+            static_assert(upx::align_up(one, four) == 4);
+            static_assert(upx::align_gap(one, four) == 3);
+            constexpr T one_copy = T::make(one);
+            static_assert(one_copy == one);
+            static_assert(one_copy == 1);
+        }
+#endif
         return true;
     }
 };
@@ -690,12 +730,11 @@ void upx_compiler_sanity_check(void) noexcept {
     assert_noexcept(TestBELE<BE32>::test());
     assert_noexcept(TestBELE<BE64>::test());
     {
-        alignas(16) static const byte dd[32] = {
+        alignas(16) static constexpr byte dd[32] = {
             0, 0, 0, 0,    0,    0,    0,    0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8, 0,
             0, 0, 0, 0x7f, 0x7e, 0x7d, 0x7c, 0x7b, 0x7a, 0x79, 0x78, 0,    0,    0,    0,    0};
-        const byte *d;
+        constexpr const byte *d = dd + 7;
         const N_BELE_RTP::AbstractPolicy *bele;
-        d = dd + 7;
         assert_noexcept(upx_adler32(d, 4) == 0x09f003f7);
         assert_noexcept(upx_adler32(d, 4, 0) == 0x09ec03f6);
         assert_noexcept(upx_adler32(d, 4, 1) == 0x09f003f7);
@@ -709,6 +748,8 @@ void upx_compiler_sanity_check(void) noexcept {
         assert_noexcept(get_be32(d) == 0xfffefdfc);
         assert_noexcept(bele->get32(d) == 0xfffefdfc);
         assert_noexcept(get_be32_signed(d) == -66052);
+        assert_noexcept(get_be64(d) == 0xfffefdfcfbfaf9f8ULL);
+        assert_noexcept(get_be64_signed(d) == -283686952306184LL);
         bele = &N_BELE_RTP::le_policy;
         assert_noexcept(get_le16(d) == 0xfeff);
         assert_noexcept(bele->get16(d) == 0xfeff);
@@ -719,16 +760,41 @@ void upx_compiler_sanity_check(void) noexcept {
         assert_noexcept(get_le32(d) == 0xfcfdfeff);
         assert_noexcept(bele->get32(d) == 0xfcfdfeff);
         assert_noexcept(get_le32_signed(d) == -50462977);
+        assert_noexcept(get_le64(d) == 0xf8f9fafbfcfdfeffULL);
         assert_noexcept(get_le64_signed(d) == -506097522914230529LL);
+#if defined(upx_is_constant_evaluated)
+        static_assert(get_be16(d) == 0xfffe);
+        static_assert(get_be16_signed(d) == -2);
+        static_assert(get_be24(d) == 0xfffefd);
+        static_assert(get_be24_signed(d) == -259);
+        static_assert(get_be32(d) == 0xfffefdfc);
+        static_assert(get_be32_signed(d) == -66052);
+        static_assert(get_be64(d) == 0xfffefdfcfbfaf9f8ULL);
+        static_assert(get_be64_signed(d) == -283686952306184LL);
+        static_assert(get_le16(d) == 0xfeff);
+        static_assert(get_le16_signed(d) == -257);
+        static_assert(get_le24(d) == 0xfdfeff);
+        static_assert(get_le24_signed(d) == -131329);
+        static_assert(get_le32(d) == 0xfcfdfeff);
+        static_assert(get_le32_signed(d) == -50462977);
+        static_assert(get_le64(d) == 0xf8f9fafbfcfdfeffULL);
+        static_assert(get_le64_signed(d) == -506097522914230529LL);
+#endif
         assert_noexcept(find_be16(d, 2, 0xfffe) == 0);
         assert_noexcept(find_le16(d, 2, 0xfeff) == 0);
         assert_noexcept(find_be32(d, 4, 0xfffefdfc) == 0);
         assert_noexcept(find_le32(d, 4, 0xfcfdfeff) == 0);
-        d += 12;
-        assert_noexcept(get_be16_signed(d) == 32638);
-        assert_noexcept(get_be24_signed(d) == 8355453);
-        assert_noexcept(get_be32_signed(d) == 2138996092);
-        assert_noexcept(get_be64_signed(d) == 9186918263483431288LL);
+        constexpr const byte *e = d + 12;
+        assert_noexcept(get_be16_signed(e) == 32638);
+        assert_noexcept(get_be24_signed(e) == 8355453);
+        assert_noexcept(get_be32_signed(e) == 2138996092);
+        assert_noexcept(get_be64_signed(e) == 9186918263483431288LL);
+#if defined(upx_is_constant_evaluated)
+        static_assert(get_be16_signed(e) == 32638);
+        static_assert(get_be24_signed(e) == 8355453);
+        static_assert(get_be32_signed(e) == 2138996092);
+        static_assert(get_be64_signed(e) == 9186918263483431288LL);
+#endif
     }
 #if DEBUG >= 1
     {
