@@ -395,102 +395,119 @@ constexpr bool mem_eq(const unsigned char *a, const char *b, std::size_t n) noex
     return n == 0 || (*a == *b && mem_eq(a + 1, b + 1, n - 1));
 }
 
+constexpr void mem_set(char *p, char c, std::size_t n) noexcept {
+    (void) (n == 0 || (*p = c, mem_set(p + 1, c, n - 1), 0));
+}
+constexpr void mem_set(unsigned char *p, unsigned char c, std::size_t n) noexcept {
+    (void) (n == 0 || (*p = c, mem_set(p + 1, c, n - 1), 0));
+}
+forceinline constexpr void mem_clear(char *p, std::size_t n) noexcept { mem_set(p, (char) 0, n); }
+forceinline constexpr void mem_clear(unsigned char *p, std::size_t n) noexcept {
+    mem_set(p, (unsigned char) 0, n);
+}
+
 forceinline constexpr upx_uint16_t bswap16(upx_uint16_t v) noexcept {
-    return ((v >> 8) & 0xff) | ((v & 0xff) << 8);
+    typedef unsigned U;
+    return (upx_uint16_t) ((((U) v >> 8) & 0xff) | (((U) v & 0xff) << 8));
 }
 forceinline constexpr upx_uint32_t bswap32(upx_uint32_t v) noexcept {
-    return ((v >> 24) & 0xff) | ((v >> 8) & 0xff00) | ((v & 0xff00) << 8) | ((v & 0xff) << 24);
+    typedef upx_uint32_t U;
+    return (upx_uint32_t) ((((U) v >> 24) & 0xff) | (((U) v >> 8) & 0xff00) |
+                           (((U) v & 0xff00) << 8) | (((U) v & 0xff) << 24));
 }
 forceinline constexpr upx_uint64_t bswap64(upx_uint64_t v) noexcept {
-    return (upx_uint64_t(bswap32(upx_uint32_t(v))) << 32) | bswap32(upx_uint32_t(v >> 32));
+    return (upx_uint64_t) (((upx_uint64_t) bswap32((upx_uint32_t) v) << 32) |
+                           bswap32((upx_uint32_t) (v >> 32)));
 }
 
 forceinline constexpr upx_uint16_t get_be16(const byte *p) noexcept {
-    typedef upx_uint16_t U;
-    return (U(p[0]) << 8) | (U(p[1]) << 0);
+    typedef unsigned U;
+    return (upx_uint16_t) (((U) p[0] << 8) | ((U) p[1] << 0));
 }
 forceinline constexpr upx_uint32_t get_be24(const byte *p) noexcept {
     typedef upx_uint32_t U;
-    return (U(p[0]) << 16) | (U(p[1]) << 8) | (U(p[2]) << 0);
+    return (upx_uint32_t) (((U) p[0] << 16) | ((U) p[1] << 8) | ((U) p[2] << 0));
 }
 forceinline constexpr upx_uint32_t get_be32(const byte *p) noexcept {
     typedef upx_uint32_t U;
-    return (U(p[0]) << 24) | (U(p[1]) << 16) | (U(p[2]) << 8) | (U(p[3]) << 0);
+    return (upx_uint32_t) (((U) p[0] << 24) | ((U) p[1] << 16) | ((U) p[2] << 8) | ((U) p[3] << 0));
 }
 forceinline constexpr upx_uint64_t get_be64(const byte *p) noexcept {
     typedef upx_uint64_t U;
-    return (U(p[0]) << 56) | (U(p[1]) << 48) | (U(p[2]) << 40) | (U(p[3]) << 32) | (U(p[4]) << 24) |
-           (U(p[5]) << 16) | (U(p[6]) << 8) | (U(p[7]) << 0);
+    return (upx_uint64_t) (((U) p[0] << 56) | ((U) p[1] << 48) | ((U) p[2] << 40) |
+                           ((U) p[3] << 32) | ((U) p[4] << 24) | ((U) p[5] << 16) |
+                           ((U) p[6] << 8) | ((U) p[7] << 0));
 }
 
 forceinline constexpr void set_be16(byte *p, upx_uint16_t v) noexcept {
-    p[0] = byte((v >> 8) & 0xff);
-    p[1] = byte((v >> 0) & 0xff);
+    p[0] = (byte) ((v >> 8) & 0xff);
+    p[1] = (byte) ((v >> 0) & 0xff);
 }
 forceinline constexpr void set_be24(byte *p, upx_uint32_t v) noexcept {
-    p[0] = byte((v >> 16) & 0xff);
-    p[1] = byte((v >> 8) & 0xff);
-    p[2] = byte((v >> 0) & 0xff);
+    p[0] = (byte) ((v >> 16) & 0xff);
+    p[1] = (byte) ((v >> 8) & 0xff);
+    p[2] = (byte) ((v >> 0) & 0xff);
 }
 forceinline constexpr void set_be32(byte *p, upx_uint32_t v) noexcept {
-    p[0] = byte((v >> 24) & 0xff);
-    p[1] = byte((v >> 16) & 0xff);
-    p[2] = byte((v >> 8) & 0xff);
-    p[3] = byte((v >> 0) & 0xff);
+    p[0] = (byte) ((v >> 24) & 0xff);
+    p[1] = (byte) ((v >> 16) & 0xff);
+    p[2] = (byte) ((v >> 8) & 0xff);
+    p[3] = (byte) ((v >> 0) & 0xff);
 }
 forceinline constexpr void set_be64(byte *p, upx_uint64_t v) noexcept {
-    p[0] = byte((v >> 56) & 0xff);
-    p[1] = byte((v >> 48) & 0xff);
-    p[2] = byte((v >> 40) & 0xff);
-    p[3] = byte((v >> 32) & 0xff);
-    p[4] = byte((v >> 24) & 0xff);
-    p[5] = byte((v >> 16) & 0xff);
-    p[6] = byte((v >> 8) & 0xff);
-    p[7] = byte((v >> 0) & 0xff);
+    p[0] = (byte) ((v >> 56) & 0xff);
+    p[1] = (byte) ((v >> 48) & 0xff);
+    p[2] = (byte) ((v >> 40) & 0xff);
+    p[3] = (byte) ((v >> 32) & 0xff);
+    p[4] = (byte) ((v >> 24) & 0xff);
+    p[5] = (byte) ((v >> 16) & 0xff);
+    p[6] = (byte) ((v >> 8) & 0xff);
+    p[7] = (byte) ((v >> 0) & 0xff);
 }
 
 forceinline constexpr upx_uint16_t get_le16(const byte *p) noexcept {
-    typedef upx_uint16_t U;
-    return (U(p[0]) << 0) | (U(p[1]) << 8);
+    typedef unsigned U;
+    return (upx_uint16_t) (((U) p[0] << 0) | ((U) p[1] << 8));
 }
 forceinline constexpr upx_uint32_t get_le24(const byte *p) noexcept {
     typedef upx_uint32_t U;
-    return (U(p[0]) << 0) | (U(p[1]) << 8) | (U(p[2]) << 16);
+    return (upx_uint32_t) (((U) p[0] << 0) | ((U) p[1] << 8) | ((U) p[2] << 16));
 }
 forceinline constexpr upx_uint32_t get_le32(const byte *p) noexcept {
     typedef upx_uint32_t U;
-    return (U(p[0]) << 0) | (U(p[1]) << 8) | (U(p[2]) << 16) | (U(p[3]) << 24);
+    return (upx_uint32_t) (((U) p[0] << 0) | ((U) p[1] << 8) | ((U) p[2] << 16) | ((U) p[3] << 24));
 }
 forceinline constexpr upx_uint64_t get_le64(const byte *p) noexcept {
     typedef upx_uint64_t U;
-    return (U(p[0]) << 0) | (U(p[1]) << 8) | (U(p[2]) << 16) | (U(p[3]) << 24) | (U(p[4]) << 32) |
-           (U(p[5]) << 40) | (U(p[6]) << 48) | (U(p[7]) << 56);
+    return (upx_uint64_t) (((U) p[0] << 0) | ((U) p[1] << 8) | ((U) p[2] << 16) | ((U) p[3] << 24) |
+                           ((U) p[4] << 32) | ((U) p[5] << 40) | ((U) p[6] << 48) |
+                           ((U) p[7] << 56));
 }
 
 forceinline constexpr void set_le16(byte *p, upx_uint16_t v) noexcept {
-    p[0] = byte((v >> 0) & 0xff);
-    p[1] = byte((v >> 8) & 0xff);
-}
-forceinline constexpr void set_le32(byte *p, upx_uint32_t v) noexcept {
-    p[0] = byte((v >> 0) & 0xff);
-    p[1] = byte((v >> 8) & 0xff);
-    p[2] = byte((v >> 16) & 0xff);
-    p[3] = byte((v >> 24) & 0xff);
+    p[0] = (byte) ((v >> 0) & 0xff);
+    p[1] = (byte) ((v >> 8) & 0xff);
 }
 forceinline constexpr void set_le24(byte *p, upx_uint32_t v) noexcept {
-    p[0] = byte((v >> 0) & 0xff);
-    p[1] = byte((v >> 8) & 0xff);
-    p[2] = byte((v >> 16) & 0xff);
+    p[0] = (byte) ((v >> 0) & 0xff);
+    p[1] = (byte) ((v >> 8) & 0xff);
+    p[2] = (byte) ((v >> 16) & 0xff);
+}
+forceinline constexpr void set_le32(byte *p, upx_uint32_t v) noexcept {
+    p[0] = (byte) ((v >> 0) & 0xff);
+    p[1] = (byte) ((v >> 8) & 0xff);
+    p[2] = (byte) ((v >> 16) & 0xff);
+    p[3] = (byte) ((v >> 24) & 0xff);
 }
 forceinline constexpr void set_le64(byte *p, upx_uint64_t v) noexcept {
-    p[0] = byte((v >> 0) & 0xff);
-    p[1] = byte((v >> 8) & 0xff);
-    p[2] = byte((v >> 16) & 0xff);
-    p[3] = byte((v >> 24) & 0xff);
-    p[4] = byte((v >> 32) & 0xff);
-    p[5] = byte((v >> 40) & 0xff);
-    p[6] = byte((v >> 48) & 0xff);
-    p[7] = byte((v >> 56) & 0xff);
+    p[0] = (byte) ((v >> 0) & 0xff);
+    p[1] = (byte) ((v >> 8) & 0xff);
+    p[2] = (byte) ((v >> 16) & 0xff);
+    p[3] = (byte) ((v >> 24) & 0xff);
+    p[4] = (byte) ((v >> 32) & 0xff);
+    p[5] = (byte) ((v >> 40) & 0xff);
+    p[6] = (byte) ((v >> 48) & 0xff);
+    p[7] = (byte) ((v >> 56) & 0xff);
 }
 
 forceinline constexpr upx_uint16_t get_ne16(const byte *p) noexcept {

@@ -814,6 +814,32 @@ void upx_compiler_sanity_check(void) noexcept {
         static_assert(get_be64_signed(e) == 9186918263483431288LL);
 #endif
     }
+#if defined(upx_is_constant_evaluated)
+    {
+        constexpr upx_uint16_t v16 = 0x0201;
+        constexpr upx_uint32_t v32 = 0x04030201;
+        constexpr upx_uint64_t v64 = 0x0807060504030201ull;
+        constexpr BE16 be16 = BE16::make(v16);
+        constexpr BE32 be32 = BE32::make(v32);
+        constexpr BE64 be64 = BE64::make(v64);
+        constexpr LE16 le16 = LE16::make(v16);
+        constexpr LE32 le32 = LE32::make(v32);
+        constexpr LE64 le64 = LE64::make(v64);
+        using upx::compile_time::mem_eq;
+        static_assert(mem_eq(be16.d, "\x02\x01", 2));
+        static_assert(mem_eq(be32.d, "\x04\x03\x02\x01", 4));
+        static_assert(mem_eq(be64.d, "\x08\x07\x06\x05\x04\x03\x02\x01", 8));
+        static_assert(mem_eq(le16.d, "\x01\x02", 2));
+        static_assert(mem_eq(le32.d, "\x01\x02\x03\x04", 4));
+        static_assert(mem_eq(le64.d, "\x01\x02\x03\x04\x05\x06\x07\x08", 8));
+        constexpr NE16 ne16 = NE16::make(v16);
+        constexpr NE32 ne32 = NE32::make(v32);
+        constexpr NE64 ne64 = NE64::make(v64);
+        assert_noexcept(memcmp(&v16, ne16.d, 2) == 0);
+        assert_noexcept(memcmp(&v32, ne32.d, 4) == 0);
+        assert_noexcept(memcmp(&v64, ne64.d, 8) == 0);
+    }
+#endif
 #if DEBUG >= 1
     {
         for (int i = 0; i < 256; i++) {
