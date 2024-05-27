@@ -239,7 +239,7 @@ forceinline constexpr T wrapping_sub(const T &a, const T &b) noexcept {
 **************************************************************************/
 
 template <std::size_t Size>
-struct UnsignedSizeOf {
+struct UnsignedSizeOf final {
     static_assert(Size >= 1 && Size <= UPX_RSIZE_MAX_MEM);
     static constexpr unsigned value = unsigned(Size);
 };
@@ -248,9 +248,9 @@ struct UnsignedSizeOf {
 template <class Result, class From>
 forceinline constexpr Result ptr_static_cast(From *ptr) noexcept {
     static_assert(std::is_pointer_v<Result>);
-    static_assert(!std::is_const_v<std::remove_pointer_t<Result> >); // enforce same constness
-    // don't cast through "void *" if types already match
-    typedef std::conditional_t<std::is_same_v<Result, decltype(ptr)>, Result, void *> VoidPtr;
+    // don't cast through "void *" if type is convertible
+    typedef std::conditional_t<std::is_convertible_v<decltype(ptr), Result>, Result, void *>
+        VoidPtr;
     // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
     return static_cast<Result>(static_cast<VoidPtr>(ptr));
 }
@@ -258,8 +258,9 @@ template <class Result, class From>
 forceinline constexpr Result ptr_static_cast(const From *ptr) noexcept {
     static_assert(std::is_pointer_v<Result>);
     static_assert(std::is_const_v<std::remove_pointer_t<Result> >); // required
-    // don't cast through "void *" if types already match
-    typedef std::conditional_t<std::is_same_v<Result, decltype(ptr)>, Result, const void *> VoidPtr;
+    // don't cast through "const void *" if type is convertible
+    typedef std::conditional_t<std::is_convertible_v<decltype(ptr), Result>, Result, const void *>
+        VoidPtr;
     // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
     return static_cast<Result>(static_cast<VoidPtr>(ptr));
 }
@@ -385,6 +386,12 @@ constexpr bool mem_eq(const char *a, const char *b, std::size_t n) noexcept {
     return n == 0 || (*a == *b && mem_eq(a + 1, b + 1, n - 1));
 }
 constexpr bool mem_eq(const unsigned char *a, const unsigned char *b, std::size_t n) noexcept {
+    return n == 0 || (*a == *b && mem_eq(a + 1, b + 1, n - 1));
+}
+constexpr bool mem_eq(const char *a, const unsigned char *b, std::size_t n) noexcept {
+    return n == 0 || (*a == *b && mem_eq(a + 1, b + 1, n - 1));
+}
+constexpr bool mem_eq(const unsigned char *a, const char *b, std::size_t n) noexcept {
     return n == 0 || (*a == *b && mem_eq(a + 1, b + 1, n - 1));
 }
 

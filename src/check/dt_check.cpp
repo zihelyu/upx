@@ -180,6 +180,10 @@ struct CheckIntegral {
             assert_noexcept(x[0] == 0 && x[1] == 0);
             assert_noexcept(y[0] == 0 && y[1] == 0);
             assert_noexcept(z[0] == 0 && z[1] == 0);
+#if defined(upx_is_constant_evaluated)
+            static_assert(c == 0);
+            static_assert(z[0] == 0 && z[1] == 0);
+#endif
         }
         {
             TestU<U> t;
@@ -191,18 +195,18 @@ struct CheckIntegral {
             assert_noexcept(t.z[0] == 0 && t.z[1] == 0);
         }
 #if __cplusplus <= 201703L
-        COMPILE_TIME_ASSERT(std::is_pod<U>::value) // std::is_pod is deprecated in C++20
+        static_assert(std::is_pod<U>::value); // std::is_pod is deprecated in C++20
 #endif
-        COMPILE_TIME_ASSERT(std::is_standard_layout<U>::value)
-        COMPILE_TIME_ASSERT(std::is_trivial<U>::value)
+        static_assert(std::is_standard_layout<U>::value);
+        static_assert(std::is_trivial<U>::value);
         // more checks, these are probably implied by std::is_trivial
-        COMPILE_TIME_ASSERT(std::is_nothrow_default_constructible<U>::value)
-        COMPILE_TIME_ASSERT(std::is_nothrow_destructible<U>::value)
-        COMPILE_TIME_ASSERT(std::is_trivially_copyable<U>::value)
-        COMPILE_TIME_ASSERT(std::is_trivially_default_constructible<U>::value)
+        static_assert(std::is_nothrow_default_constructible<U>::value);
+        static_assert(std::is_nothrow_destructible<U>::value);
+        static_assert(std::is_trivially_copyable<U>::value);
+        static_assert(std::is_trivially_default_constructible<U>::value);
         // UPX extras
-        COMPILE_TIME_ASSERT(upx_is_integral<U>::value)
-        COMPILE_TIME_ASSERT(upx_is_integral_v<U>)
+        static_assert(upx_is_integral<U>::value);
+        static_assert(upx_is_integral_v<U>);
     }
     static void check(void) noexcept {
         {
@@ -286,10 +290,10 @@ struct CheckAlignment {
         COMPILE_TIME_ASSERT_ALIGNED1(Test2)
         Test1 t1[7];
         Test2 t2[7];
-        COMPILE_TIME_ASSERT(sizeof(Test1) == 1 + sizeof(T))
-        COMPILE_TIME_ASSERT(sizeof(t1) == 7 + 7 * sizeof(T))
-        COMPILE_TIME_ASSERT(sizeof(Test2) == 1 + 3 * sizeof(T))
-        COMPILE_TIME_ASSERT(sizeof(t2) == 7 + 21 * sizeof(T))
+        static_assert(sizeof(Test1) == 1 + sizeof(T));
+        static_assert(sizeof(t1) == 7 + 7 * sizeof(T));
+        static_assert(sizeof(Test2) == 1 + 3 * sizeof(T));
+        static_assert(sizeof(t2) == 7 + 21 * sizeof(T));
         UNUSED(t1);
         UNUSED(t2);
     }
@@ -416,6 +420,9 @@ struct TestBELE {
             constexpr T zero = {};
             constexpr T zero_copy = T::make(zero);
             assert_noexcept(zero_copy == 0);
+#if defined(upx_is_constant_evaluated)
+            static_assert(zero_copy == 0);
+#endif
         }
 #if defined(upx_is_constant_evaluated)
         {
@@ -443,7 +450,12 @@ struct TestBELE {
             static_assert(upx::max(one, U(4)) == 4);
             static_assert(upx::align_down(one, four) == 0);
             static_assert(upx::align_up(one, four) == 4);
+            static_assert(upx::align_up(one, four) == four);
             static_assert(upx::align_gap(one, four) == 3);
+            static_assert(upx::align_gap(one, four) == T::make(four - 1));
+            static_assert(upx::align_gap(one, four) == T::make(four - one));
+            static_assert(upx::align_gap(one, four) == T::make(four + one - one - one));
+            static_assert(upx::align_gap(one, four) == T::make(four + one - 2 * one));
             constexpr T one_copy = T::make(one);
             static_assert(one_copy == one);
             static_assert(one_copy == 1);
@@ -457,10 +469,10 @@ template <class T, bool T_is_signed>
 struct CheckSignedness {
     template <class U, bool U_is_signed>
     static inline void checkU(void) noexcept {
-        COMPILE_TIME_ASSERT(sizeof(U) == sizeof(T));
-        COMPILE_TIME_ASSERT(alignof(U) == alignof(T));
+        static_assert(sizeof(U) == sizeof(T));
+        static_assert(alignof(U) == alignof(T));
         constexpr U all_bits = (U) (U(0) - U(1));
-        COMPILE_TIME_ASSERT(U_is_signed ? (all_bits < 0) : (all_bits > 0));
+        static_assert(U_is_signed ? (all_bits < 0) : (all_bits > 0));
     }
     static void check(void) noexcept {
         checkU<T, T_is_signed>();
@@ -620,9 +632,9 @@ void upx_compiler_sanity_check(void) noexcept {
         auto a = +0;
         constexpr auto b = -0;
         const auto &c = -1;
-        COMPILE_TIME_ASSERT((std::is_same<int, decltype(a)>::value))
-        COMPILE_TIME_ASSERT((std::is_same<const int, decltype(b)>::value))
-        COMPILE_TIME_ASSERT((std::is_same<const int &, decltype(c)>::value))
+        static_assert((std::is_same<int, decltype(a)>::value));
+        static_assert((std::is_same<const int, decltype(b)>::value));
+        static_assert((std::is_same<const int &, decltype(c)>::value));
         UNUSED(a);
         UNUSED(b);
         UNUSED(c);
@@ -634,18 +646,18 @@ void upx_compiler_sanity_check(void) noexcept {
 #include "../util/miniacc.h"
 #undef ACCCHK_ASSERT
 
-    COMPILE_TIME_ASSERT(sizeof(char) == 1)
-    COMPILE_TIME_ASSERT(sizeof(short) == 2)
-    COMPILE_TIME_ASSERT(sizeof(int) == 4)
-    COMPILE_TIME_ASSERT(sizeof(long) >= 4)
-    COMPILE_TIME_ASSERT(sizeof(void *) >= 4)
+    static_assert(sizeof(char) == 1);
+    static_assert(sizeof(short) == 2);
+    static_assert(sizeof(int) == 4);
+    static_assert(sizeof(long) >= 4);
+    static_assert(sizeof(void *) >= 4);
 
-    COMPILE_TIME_ASSERT(sizeof(BE16) == 2)
-    COMPILE_TIME_ASSERT(sizeof(BE32) == 4)
-    COMPILE_TIME_ASSERT(sizeof(BE64) == 8)
-    COMPILE_TIME_ASSERT(sizeof(LE16) == 2)
-    COMPILE_TIME_ASSERT(sizeof(LE32) == 4)
-    COMPILE_TIME_ASSERT(sizeof(LE64) == 8)
+    static_assert(sizeof(BE16) == 2);
+    static_assert(sizeof(BE32) == 4);
+    static_assert(sizeof(BE64) == 8);
+    static_assert(sizeof(LE16) == 2);
+    static_assert(sizeof(LE32) == 4);
+    static_assert(sizeof(LE64) == 8);
 
     COMPILE_TIME_ASSERT_ALIGNED1(BE16)
     COMPILE_TIME_ASSERT_ALIGNED1(BE32)
@@ -684,9 +696,9 @@ void upx_compiler_sanity_check(void) noexcept {
     CheckSignedness<upx_sptraddr_t, true>::check();
     CheckSignedness<upx_uintptr_t, false>::check();
 
-    COMPILE_TIME_ASSERT(sizeof(upx_charptr_unit_type) == 1)
+    static_assert(sizeof(upx_charptr_unit_type) == 1);
     COMPILE_TIME_ASSERT_ALIGNED1(upx_charptr_unit_type)
-    COMPILE_TIME_ASSERT(sizeof(*((charptr) nullptr)) == 1)
+    static_assert(sizeof(*((charptr) nullptr)) == 1);
 
     // check UPX_VERSION_xxx
     {

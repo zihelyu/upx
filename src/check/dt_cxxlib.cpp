@@ -120,8 +120,10 @@ static_assert(!compile_time::string_gt("abc", "abz"));
 static_assert(!compile_time::string_ge("abc", "abz"));
 static_assert(compile_time::string_le("abc", "abz"));
 
-static_assert(compile_time::mem_eq((const char *) nullptr, nullptr, 0));
-static_assert(compile_time::mem_eq((const byte *) nullptr, nullptr, 0));
+static_assert(compile_time::mem_eq((const char *) nullptr, (const char *) nullptr, 0));
+static_assert(compile_time::mem_eq((const char *) nullptr, (const byte *) nullptr, 0));
+static_assert(compile_time::mem_eq((const byte *) nullptr, (const char *) nullptr, 0));
+static_assert(compile_time::mem_eq((const byte *) nullptr, (const byte *) nullptr, 0));
 static_assert(compile_time::mem_eq("", "", 0));
 static_assert(compile_time::mem_eq("abc", "abc", 3));
 static_assert(!compile_time::mem_eq("abc", "abz", 3));
@@ -408,6 +410,7 @@ TEST_CASE("upx::ObjectDeleter 2") {
 TEST_CASE("upx::ptr_static_cast") {
     // check that we do not trigger any -Wcast-align warnings
     using upx::ptr_static_cast;
+
     void *vp = nullptr;
     byte *bp = nullptr;
     int *ip = nullptr;
@@ -443,6 +446,110 @@ TEST_CASE("upx::ptr_static_cast") {
     assert((ic == ptr_static_cast<const int *>(bc)));
     assert((ic == ptr_static_cast<int *>(ip)));
     assert((ic == ptr_static_cast<const int *>(ic)));
+}
+
+TEST_CASE("upx::ptr_static_cast constexpr 1") {
+    // check that casts work at compile-time
+    using upx::ptr_static_cast;
+
+    constexpr void *vp = nullptr;
+    constexpr byte *bp = nullptr;
+    constexpr int *ip = nullptr;
+    constexpr double *dp = nullptr;
+    static_assert((vp == ptr_static_cast<void *>(vp)));
+    static_assert((bp == ptr_static_cast<byte *>(bp)));
+    static_assert((ip == ptr_static_cast<int *>(ip)));
+    static_assert((dp == ptr_static_cast<double *>(dp)));
+
+    constexpr const void *vc = nullptr;
+    constexpr const byte *bc = nullptr;
+    constexpr const int *ic = nullptr;
+    constexpr const double *dc = nullptr;
+    static_assert((vc == ptr_static_cast<const void *>(vc)));
+    static_assert((bc == ptr_static_cast<const byte *>(bc)));
+    static_assert((ic == ptr_static_cast<const int *>(ic)));
+    static_assert((dc == ptr_static_cast<const double *>(dc)));
+
+    constexpr void **vpp = nullptr;
+    constexpr byte **bpp = nullptr;
+    constexpr int **ipp = nullptr;
+    constexpr double **dpp = nullptr;
+    static_assert((vpp == ptr_static_cast<void **>(vpp)));
+    static_assert((bpp == ptr_static_cast<byte **>(bpp)));
+    static_assert((ipp == ptr_static_cast<int **>(ipp)));
+    static_assert((dpp == ptr_static_cast<double **>(dpp)));
+
+    constexpr const void **vcp = nullptr;
+    constexpr const byte **bcp = nullptr;
+    constexpr const int **icp = nullptr;
+    constexpr const double **dcp = nullptr;
+    static_assert((vcp == ptr_static_cast<const void **>(vcp)));
+    static_assert((bcp == ptr_static_cast<const byte **>(bcp)));
+    static_assert((icp == ptr_static_cast<const int **>(icp)));
+    static_assert((dcp == ptr_static_cast<const double **>(dcp)));
+
+    constexpr void *const *vpc = nullptr;
+    constexpr byte *const *bpc = nullptr;
+    constexpr int *const *ipc = nullptr;
+    constexpr double *const *dpc = nullptr;
+    static_assert((vpc == ptr_static_cast<void *const *>(vpc)));
+    static_assert((bpc == ptr_static_cast<byte *const *>(bpc)));
+    static_assert((ipc == ptr_static_cast<int *const *>(ipc)));
+    static_assert((dpc == ptr_static_cast<double *const *>(dpc)));
+
+    constexpr const void *const *vcc = nullptr;
+    constexpr const byte *const *bcc = nullptr;
+    constexpr const int *const *icc = nullptr;
+    constexpr const double *const *dcc = nullptr;
+    static_assert((vcc == ptr_static_cast<const void *const *>(vcc)));
+    static_assert((bcc == ptr_static_cast<const byte *const *>(bcc)));
+    static_assert((icc == ptr_static_cast<const int *const *>(icc)));
+    static_assert((dcc == ptr_static_cast<const double *const *>(dcc)));
+}
+
+TEST_CASE("upx::ptr_static_cast constexpr 2") {
+    // check that casts work at compile-time
+    using upx::ptr_static_cast;
+
+    constexpr void *vp = nullptr;
+    constexpr byte *bp = nullptr;
+    constexpr int *ip = nullptr;
+    constexpr double *dp = nullptr;
+    static_assert((vp == static_cast<void *>(vp)));
+    static_assert((vp == static_cast<void *>(bp)));
+    static_assert((vp == static_cast<void *>(ip)));
+    static_assert((vp == static_cast<void *>(dp)));
+    static_assert((vp == ptr_static_cast<void *>(vp)));
+    static_assert((vp == ptr_static_cast<void *>(bp)));
+    static_assert((vp == ptr_static_cast<void *>(ip)));
+    static_assert((vp == ptr_static_cast<void *>(dp)));
+
+    constexpr const void *vc = nullptr;
+    constexpr const byte *bc = nullptr;
+    constexpr const int *ic = nullptr;
+    constexpr const double *dc = nullptr;
+    static_assert((vc == static_cast<const void *>(vp)));
+    static_assert((vc == static_cast<const void *>(bp)));
+    static_assert((vc == static_cast<const void *>(ip)));
+    static_assert((vc == static_cast<const void *>(dp)));
+    static_assert((vc == ptr_static_cast<const void *>(vp)));
+    static_assert((vc == ptr_static_cast<const void *>(dp)));
+    static_assert((vc == ptr_static_cast<const void *>(bp)));
+    static_assert((vc == ptr_static_cast<const void *>(ip)));
+    static_assert((vc == static_cast<const void *>(vc)));
+    static_assert((vc == static_cast<const void *>(bc)));
+    static_assert((vc == static_cast<const void *>(ic)));
+    static_assert((vc == static_cast<const void *>(dc)));
+    static_assert((vc == ptr_static_cast<const void *>(vc)));
+    static_assert((vc == ptr_static_cast<const void *>(dc)));
+    static_assert((vc == ptr_static_cast<const void *>(bc)));
+    static_assert((vc == ptr_static_cast<const void *>(ic)));
+
+    // these are invalid:
+    //// constexpr char *cc1 = static_cast<char *>(bp);
+    //// constexpr char *cc2 = ptr_static_cast<char *>(bp);
+    //// constexpr unsigned *uc1 = static_cast<unsigned *>(ip);
+    //// constexpr unsigned *uc2 = ptr_static_cast<unsigned *>(ip);
 }
 
 TEST_CASE("upx::noncopyable") {
