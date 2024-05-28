@@ -44,7 +44,7 @@ static int F(Filter *f) {
     // scan
     const byte *b = f->buf;
 #endif
-    const unsigned size = umin(f->buf_len, 0u - (~0u << (32 - (6 + W_CTO))));
+    const unsigned size = upx::umin(f->buf_len, 0u - (~0u << (32 - (6 + W_CTO))));
     const unsigned size4 = size - 4;
 
     unsigned ic;
@@ -123,7 +123,7 @@ static int F(Filter *f) {
 #ifdef U
 static int U(Filter *f) {
     byte *b = f->buf;
-    const unsigned size4 = umin(f->buf_len - 4, 0u - (~0u << (32 - (6 + W_CTO))));
+    const unsigned size4 = upx::umin(f->buf_len - 4, 0u - (~0u << (32 - (6 + W_CTO))));
     const unsigned addvalue = f->addvalue;
 
     unsigned ic;

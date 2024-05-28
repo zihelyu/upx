@@ -465,9 +465,6 @@ noreturn void throwAssertFailed(const char *expr, const char *file, int line, co
 
 // C++ support library
 #include "util/cxxlib.h"
-using upx::is_same_any_v;
-using upx::noncopyable;
-using upx::OptVar;
 using upx::tribool;
 #define usizeof(expr) (upx::UnsignedSizeOf<sizeof(expr)>::value)
 
@@ -649,11 +646,11 @@ struct bzip2_compress_config_t final {
 };
 
 struct lzma_compress_config_t final {
-    typedef OptVar<unsigned, 2u, 0u, 4u> pos_bits_t;         // pb
-    typedef OptVar<unsigned, 0u, 0u, 4u> lit_pos_bits_t;     // lp
-    typedef OptVar<unsigned, 3u, 0u, 8u> lit_context_bits_t; // lc
-    typedef OptVar<unsigned, (1u << 22), 1u, (1u << 30)> dict_size_t;
-    typedef OptVar<unsigned, 64u, 5u, 273u> num_fast_bytes_t;
+    typedef upx::OptVar<unsigned, 2u, 0u, 4u> pos_bits_t;         // pb
+    typedef upx::OptVar<unsigned, 0u, 0u, 4u> lit_pos_bits_t;     // lp
+    typedef upx::OptVar<unsigned, 3u, 0u, 8u> lit_context_bits_t; // lc
+    typedef upx::OptVar<unsigned, (1u << 22), 1u, (1u << 30)> dict_size_t;
+    typedef upx::OptVar<unsigned, 64u, 5u, 273u> num_fast_bytes_t;
 
     pos_bits_t pos_bits;                 // pb
     lit_pos_bits_t lit_pos_bits;         // lp
@@ -673,9 +670,9 @@ struct ucl_compress_config_t final : public REAL_ucl_compress_config_t {
 };
 
 struct zlib_compress_config_t final {
-    typedef OptVar<unsigned, 8u, 1u, 9u> mem_level_t;     // ml
-    typedef OptVar<unsigned, 15u, 9u, 15u> window_bits_t; // wb
-    typedef OptVar<unsigned, 0u, 0u, 4u> strategy_t;      // st
+    typedef upx::OptVar<unsigned, 8u, 1u, 9u> mem_level_t;     // ml
+    typedef upx::OptVar<unsigned, 15u, 9u, 15u> window_bits_t; // wb
+    typedef upx::OptVar<unsigned, 0u, 0u, 4u> strategy_t;      // st
 
     mem_level_t mem_level;     // ml
     window_bits_t window_bits; // wb

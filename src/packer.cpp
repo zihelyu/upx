@@ -193,16 +193,16 @@ bool Packer::compress(SPAN_P(byte) i_ptr, unsigned i_len, SPAN_P(byte) o_ptr,
 #endif
     }
     if (M_IS_LZMA(method)) {
-        oassign(cconf.conf_lzma.pos_bits, opt->crp.crp_lzma.pos_bits);
-        oassign(cconf.conf_lzma.lit_pos_bits, opt->crp.crp_lzma.lit_pos_bits);
-        oassign(cconf.conf_lzma.lit_context_bits, opt->crp.crp_lzma.lit_context_bits);
-        oassign(cconf.conf_lzma.dict_size, opt->crp.crp_lzma.dict_size);
-        oassign(cconf.conf_lzma.num_fast_bytes, opt->crp.crp_lzma.num_fast_bytes);
+        upx::oassign(cconf.conf_lzma.pos_bits, opt->crp.crp_lzma.pos_bits);
+        upx::oassign(cconf.conf_lzma.lit_pos_bits, opt->crp.crp_lzma.lit_pos_bits);
+        upx::oassign(cconf.conf_lzma.lit_context_bits, opt->crp.crp_lzma.lit_context_bits);
+        upx::oassign(cconf.conf_lzma.dict_size, opt->crp.crp_lzma.dict_size);
+        upx::oassign(cconf.conf_lzma.num_fast_bytes, opt->crp.crp_lzma.num_fast_bytes);
     }
     if (M_IS_DEFLATE(method)) {
-        oassign(cconf.conf_zlib.mem_level, opt->crp.crp_zlib.mem_level);
-        oassign(cconf.conf_zlib.window_bits, opt->crp.crp_zlib.window_bits);
-        oassign(cconf.conf_zlib.strategy, opt->crp.crp_zlib.strategy);
+        upx::oassign(cconf.conf_zlib.mem_level, opt->crp.crp_zlib.mem_level);
+        upx::oassign(cconf.conf_zlib.window_bits, opt->crp.crp_zlib.window_bits);
+        upx::oassign(cconf.conf_zlib.strategy, opt->crp.crp_zlib.strategy);
     }
     if (uip->ui_pass >= 0)
         uip->ui_pass++;

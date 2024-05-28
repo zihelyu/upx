@@ -50,7 +50,7 @@ TEST_CASE("std::vector") {
 }
 
 /*************************************************************************
-// core util - UPX_CXX_DISABLE_xxx
+// core util: UPX_CXX_DISABLE_xxx, noncopyable
 **************************************************************************/
 
 namespace {
@@ -166,6 +166,23 @@ struct Z2_X2 : public X2 {
 
 } // namespace test_disable_new_delete
 
+TEST_CASE("upx::noncopyable") {
+    struct Test : private upx::noncopyable {
+        int v = 1;
+    };
+    Test t = {};
+    CHECK(t.v == 1);
+#if (ACC_CC_MSC) // MSVC thinks that Test is not std::is_trivially_copyable; true or compiler bug?
+    // @COMPILER_BUG @MSVC_BUG
+    t.v = 0;
+#else
+    mem_clear(&t);
+#endif
+    CHECK(t.v == 0);
+    constexpr Test x = {};
+    static_assert(x.v == 1);
+}
+
 /*************************************************************************
 // <type_traits>
 **************************************************************************/
@@ -191,6 +208,16 @@ static_assert(upx::is_same_any_v<size_t, unsigned, unsigned long, unsigned long 
 static_assert(upx::is_same_any_v<upx_uintptr_t, unsigned, unsigned long, unsigned long long>);
 
 /*************************************************************************
+// <bit>
+**************************************************************************/
+
+static_assert(!upx::has_single_bit(0));
+static_assert(upx::has_single_bit(1));
+static_assert(upx::has_single_bit(2));
+static_assert(!upx::has_single_bit(3));
+static_assert(upx::has_single_bit(4));
+
+/*************************************************************************
 // <algorithm>
 **************************************************************************/
 
@@ -212,25 +239,35 @@ static_assert(upx::align_gap(4, 4) == 0);
 
 static_assert(upx::min<upx_int8_t>(1, 2) == 1);
 static_assert(upx::min<upx_int16_t>(1, 2) == 1);
-static_assert(upx::min(1, 2) == 1);
-static_assert(upx::min(1ll, 2ll) == 1);
+static_assert(upx::min<upx_int32_t>(1, 2) == 1);
+static_assert(upx::min<upx_int64_t>(1, 2) == 1);
 static_assert(upx::max<upx_int8_t>(1, 2) == 2);
 static_assert(upx::max<upx_int16_t>(1, 2) == 2);
+static_assert(upx::max<upx_int32_t>(1, 2) == 2);
+static_assert(upx::max<upx_int64_t>(1, 2) == 2);
+
+static_assert(upx::min(1, 2) == 1);
+static_assert(upx::min(1l, 2l) == 1);
+static_assert(upx::min(1ll, 2ll) == 1);
 static_assert(upx::max(1, 2) == 2);
+static_assert(upx::max(1l, 2l) == 2);
 static_assert(upx::max(1ll, 2ll) == 2);
 
-static_assert(upx::min(0, 0) == 0);
-static_assert(upx::min(0, 1) == 0);
-static_assert(upx::min(1, 0) == 0);
-static_assert(upx::max(0, 0) == 0);
-static_assert(upx::max(0, 1) == 1);
-static_assert(upx::max(1, 0) == 1);
-static_assert(upx::umin(0u, 0u) == 0u);
-static_assert(upx::umin(0u, 1u) == 0u);
-static_assert(upx::umin(1u, 0u) == 0u);
-static_assert(upx::umax(0u, 0u) == 0u);
-static_assert(upx::umax(0u, 1u) == 1u);
-static_assert(upx::umax(1u, 0u) == 1u);
+static_assert(upx::umin<upx_uint8_t>(1, 2) == 1);
+static_assert(upx::umin<upx_uint16_t>(1, 2) == 1);
+static_assert(upx::umin<upx_uint32_t>(1, 2) == 1);
+static_assert(upx::umin<upx_uint64_t>(1, 2) == 1);
+static_assert(upx::umax<upx_uint8_t>(1, 2) == 2);
+static_assert(upx::umax<upx_uint16_t>(1, 2) == 2);
+static_assert(upx::umax<upx_uint32_t>(1, 2) == 2);
+static_assert(upx::umax<upx_uint64_t>(1, 2) == 2);
+
+static_assert(upx::umin(1u, 2u) == 1);
+static_assert(upx::umin(1ul, 2ul) == 1);
+static_assert(upx::umin(1ull, 2ull) == 1);
+static_assert(upx::umax(1u, 2u) == 2);
+static_assert(upx::umax(1ul, 2ul) == 2);
+static_assert(upx::umax(1ull, 2ull) == 2);
 
 static_assert(upx::wrapping_add<upx_int8_t>(127, 2) == -127);
 static_assert(upx::wrapping_add<upx_int16_t>(32767, 2) == -32767);
@@ -240,6 +277,9 @@ static_assert(upx::wrapping_sub<upx_int8_t>(-127, 2) == 127);
 static_assert(upx::wrapping_sub<upx_int16_t>(-32767, 2) == 32767);
 static_assert(upx::wrapping_sub(-2147483647, 2) == 2147483647);
 static_assert(upx::wrapping_sub(-9223372036854775807ll, 2ll) == 9223372036854775807ll);
+
+static_assert(upx::wrapping_add<upx_uint8_t>(255, 2) == 1);
+static_assert(upx::wrapping_sub<upx_uint8_t>(1, 2) == 255);
 
 /*************************************************************************
 // util
@@ -516,23 +556,6 @@ TEST_CASE("upx::ObjectDeleter 2") {
         assert(a[i] == nullptr);
         assert(m[i] == nullptr);
     }
-}
-
-TEST_CASE("upx::noncopyable") {
-    struct Test : private upx::noncopyable {
-        int v = 1;
-    };
-    Test t = {};
-    CHECK(t.v == 1);
-#if (ACC_CC_MSC) // MSVC thinks that Test is not std::is_trivially_copyable; true or compiler bug?
-    // @COMPILER_BUG @MSVC_BUG
-    t.v = 0;
-#else
-    mem_clear(&t);
-#endif
-    CHECK(t.v == 0);
-    constexpr Test x = {};
-    static_assert(x.v == 1);
 }
 
 /*************************************************************************

@@ -97,9 +97,9 @@ int upx_zlib_compress(const upx_bytep src, unsigned src_len, upx_bytep dst, unsi
     zlib_compress_config_t::strategy_t strategy;
     // cconf overrides
     if (lcconf) {
-        oassign(mem_level, lcconf->mem_level);
-        oassign(window_bits, lcconf->window_bits);
-        oassign(strategy, lcconf->strategy);
+        upx::oassign(mem_level, lcconf->mem_level);
+        upx::oassign(window_bits, lcconf->window_bits);
+        upx::oassign(strategy, lcconf->strategy);
     }
 
     z_stream s;

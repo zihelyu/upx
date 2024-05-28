@@ -141,6 +141,17 @@ private:                                                                        
 #define UPX_CXX_DISABLE_NEW_DELETE_NO_VIRTUAL(Klass) private:
 #endif
 
+class noncopyable {
+protected:
+    forceinline constexpr noncopyable() noexcept {}
+#if __cplusplus >= 202002L
+    forceinline constexpr ~noncopyable() noexcept = default;
+#else
+    forceinline ~noncopyable() noexcept = default;
+#endif
+    UPX_CXX_DISABLE_COPY_MOVE(noncopyable)
+};
+
 /*************************************************************************
 // <type_traits>
 **************************************************************************/
@@ -178,21 +189,21 @@ forceinline constexpr bool has_single_bit(T x) noexcept {
 
 template <class T>
 inline constexpr T align_down(const T &x, const T &alignment) noexcept {
-    // assert_noexcept(has_single_bit(alignment));
+    // assert_noexcept(has_single_bit(alignment)); // (not constexpr)
     T r = {};
     r = (x / alignment) * alignment;
     return r;
 }
 template <class T>
 inline constexpr T align_up(const T &x, const T &alignment) noexcept {
-    // assert_noexcept(has_single_bit(alignment));
+    // assert_noexcept(has_single_bit(alignment)); // (not constexpr)
     T r = {};
     r = ((x + (alignment - 1)) / alignment) * alignment;
     return r;
 }
 template <class T>
 inline constexpr T align_gap(const T &x, const T &alignment) noexcept {
-    // assert_noexcept(has_single_bit(alignment));
+    // assert_noexcept(has_single_bit(alignment)); // (not constexpr)
     T r = {};
     r = align_up(x, alignment) - x;
     return r;
@@ -209,7 +220,7 @@ forceinline constexpr T max(const T &a, const T &b) noexcept {
 
 template <class T>
 inline constexpr bool is_uminmax_type =
-    is_same_any_v<T, upx_uint16_t, upx_uint32_t, upx_uint64_t, unsigned long, size_t>;
+    is_same_any_v<T, upx_uint8_t, upx_uint16_t, upx_uint32_t, upx_uint64_t, unsigned long, size_t>;
 
 template <class T, class = std::enable_if_t<is_uminmax_type<T>, T> >
 forceinline constexpr T umin(const T &a, const T &b) noexcept {
@@ -341,17 +352,6 @@ struct MallocDeleter final {
             ::free(item); // free memory from malloc()
         }
     }
-};
-
-class noncopyable {
-protected:
-    forceinline constexpr noncopyable() noexcept {}
-#if __cplusplus >= 202002L
-    forceinline constexpr ~noncopyable() noexcept = default;
-#else
-    forceinline ~noncopyable() noexcept = default;
-#endif
-    UPX_CXX_DISABLE_COPY_MOVE(noncopyable)
 };
 
 /*************************************************************************

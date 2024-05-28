@@ -43,7 +43,7 @@
 #include "p_lx_elf.h"
 #include "ui.h"
 
-using upx::umax, upx::umin;
+using upx::umin;
 
 #define PT_LOAD32   Elf32_Phdr::PT_LOAD
 #define PT_LOAD64   Elf64_Phdr::PT_LOAD
@@ -1304,15 +1304,6 @@ PackLinuxElf64arm::~PackLinuxElf64arm()
 {
 }
 
-static unsigned
-umax(unsigned a, unsigned b)
-{
-    if (a <= b) {
-        return b;
-    }
-    return a;
-}
-
 void PackLinuxElf32x86::addStubEntrySections(Filter const *ft, unsigned m_decompr)
 {
     (void)m_decompr;  // FIXME
@@ -1467,9 +1458,9 @@ PackLinuxElf32::buildLinuxLoader(
     }
     else {
         cprElfHdr1 const *const hf = (cprElfHdr1 const *)fold;
-        unsigned fold_hdrlen = umax(0x80, usizeof(hf->ehdr) +
+        unsigned fold_hdrlen = upx::umax(0x80u, usizeof(hf->ehdr) +
             get_te16(&hf->ehdr.e_phentsize) * get_te16(&hf->ehdr.e_phnum) +
-                sizeof(l_info) );
+                usizeof(l_info) );
         uncLoader = fold_hdrlen + fold;
         sz_unc = ((szfold < fold_hdrlen) ? 0 : (szfold - fold_hdrlen));
         method = ph.method;
@@ -1573,9 +1564,9 @@ PackLinuxElf64::buildLinuxLoader(
     }
     else {
         cprElfHdr1 const *const hf = (cprElfHdr1 const *)fold;
-        unsigned fold_hdrlen = umax(0x80, usizeof(hf->ehdr) +
+        unsigned fold_hdrlen = upx::umax(0x80u, usizeof(hf->ehdr) +
             get_te16(&hf->ehdr.e_phentsize) * get_te16(&hf->ehdr.e_phnum) +
-                sizeof(l_info) );
+                usizeof(l_info) );
         uncLoader = fold_hdrlen + fold;
         sz_unc = ((szfold < fold_hdrlen) ? 0 : (szfold - fold_hdrlen));
         method = ph.method;

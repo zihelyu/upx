@@ -420,8 +420,12 @@ struct TestBELE {
             constexpr T zero = {};
             constexpr T zero_copy = T::make(zero);
             assert_noexcept(zero_copy == 0);
+            assert_noexcept(!upx::has_single_bit(zero));
 #if defined(upx_is_constant_evaluated)
             static_assert(zero_copy == 0);
+            static_assert(zero_copy == zero);
+            static_assert(!upx::has_single_bit(zero));
+            static_assert(!upx::has_single_bit(zero_copy));
 #endif
         }
 #if defined(upx_is_constant_evaluated)
@@ -429,12 +433,15 @@ struct TestBELE {
             typedef typename T::integral_conversion_type U;
             constexpr T one = T::make(1);
             static_assert(one == 1);
+            static_assert(upx::has_single_bit(one));
             constexpr T four = T::make(one + 3);
             static_assert(four == 4);
+            static_assert(upx::has_single_bit(four));
             constexpr U all_bits_u = (U) T::make(U(0) - U(1));
             constexpr T all_bits = T::make(all_bits_u);
             static_assert(all_bits == all_bits_u);
             static_assert(all_bits == T::make(one - 2));
+            static_assert(!upx::has_single_bit(all_bits));
             static_assert(one == one);
             static_assert(!(one == four));
             static_assert(!(one == all_bits));

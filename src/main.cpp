@@ -343,7 +343,8 @@ done:
 }
 
 template <class T, T default_value, T min_value, T max_value>
-static int getoptvar(OptVar<T, default_value, min_value, max_value> *var, const char *arg_fatal) {
+static int getoptvar(upx::OptVar<T, default_value, min_value, max_value> *var,
+                     const char *arg_fatal) {
     T v = default_value;
     int r = getoptvar(&v, min_value, max_value, arg_fatal);
     if (r == 0)

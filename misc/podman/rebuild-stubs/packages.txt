@@ -230,7 +230,7 @@ ii  libsqlite3-0:amd64            3.45.1-1ubuntu2                   amd64       
 ii  libss2:amd64                  1.47.0-2.4~exp1ubuntu4            amd64        command-line interface parsing library
 ii  libssh-4:amd64                0.10.6-2build2                    amd64        tiny C SSH library (OpenSSL flavor)
 ii  libssh2-1t64:amd64            1.11.0-4.1build2                  amd64        SSH2 client-side library
-ii  libssl3t64:amd64              3.0.13-0ubuntu3                   amd64        Secure Sockets Layer toolkit - shared libraries
+ii  libssl3t64:amd64              3.0.13-0ubuntu3.1                 amd64        Secure Sockets Layer toolkit - shared libraries
 ii  libstdc++-13-dev:amd64        13.2.0-23ubuntu4                  amd64        GNU Standard C++ Library v3 (development files)
 ii  libstdc++6:amd64              14-20240412-0ubuntu1              amd64        GNU Standard C++ Library v3
 ii  libsystemd0:amd64             255.4-1ubuntu8                    amd64        systemd utility library
@@ -297,7 +297,7 @@ ii  neovim                        0.9.5-6ubuntu2                    amd64       
 ii  neovim-runtime                0.9.5-6ubuntu2                    all          heavily refactored vim fork (runtime files)
 ii  netbase                       6.4                               all          Basic TCP/IP networking system
 ii  ninja-build                   1.11.1-2                          amd64        small build system closest in spirit to Make
-ii  openssl                       3.0.13-0ubuntu3                   amd64        Secure Sockets Layer toolkit - cryptographic utility
+ii  openssl                       3.0.13-0ubuntu3.1                 amd64        Secure Sockets Layer toolkit - cryptographic utility
 ii  p7zip                         16.02+transitional.1              all          transitional package
 ii  parallel                      20231122+ds-1                     all          build and execute command lines from standard input in parallel
 ii  passwd                        1:4.13+dfsg1-4ubuntu3             amd64        change and administer password and group data
@@ -361,7 +361,7 @@ ii  zstd                          1.5.5+dfsg2-2build1               amd64       
 ||/ Name                          Version                           Architecture Description
 
 Packages sorted by Installed-Size:
-   964903 ===== TOTAL (355 packages)
+   964904 ===== TOTAL (355 packages)
     76943 valgrind                                 amd64
     72249 gcc-13-x86-64-linux-gnu                  amd64
     37841 g++-13-x86-64-linux-gnu                  amd64
@@ -450,7 +450,7 @@ Packages sorted by Installed-Size:
      2009 universal-ctags                          amd64
      1980 aria2                                    amd64
      1900 bash                                     amd64
-     1884 openssl                                  amd64
+     1885 openssl                                  amd64
      1798 zstd                                     amd64
      1796 procps                                   amd64
      1761 libdb5.3t64                              amd64

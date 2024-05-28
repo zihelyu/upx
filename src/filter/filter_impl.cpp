@@ -28,8 +28,6 @@
 #include "../conf.h"
 #include "../filter.h"
 
-static unsigned umin(const unsigned a, const unsigned b) { return (a <= b) ? a : b; }
-
 #define set_dummy(p, v) ((void) 0)
 #define get_8(p)        (*(p))
 #define set_8(p, v)     (*(p) = (v))

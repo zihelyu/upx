@@ -93,9 +93,9 @@ T *NewArray(upx_uint64_t n) may_throw {
 // ptr util
 **************************************************************************/
 
-// also see CHERI cheri_address_get()
-forceinline upx_ptraddr_t ptr_get_address(const void *p) { return (upx_uintptr_t) p; }
-forceinline upx_ptraddr_t ptr_get_address(upx_uintptr_t p) { return p; }
+// TODO later: CHERI; see cheri_address_get()
+forceinline upx_ptraddr_t ptr_get_address(const void *p) noexcept { return (upx_uintptr_t) p; }
+forceinline upx_ptraddr_t ptr_get_address(upx_uintptr_t p) noexcept { return p; }
 
 // ptrdiff_t with nullptr checks and asserted size; will throw on failure
 // NOTE: returns size_in_bytes, not number of elements!
@@ -138,6 +138,7 @@ forceinline void ptr_check_no_overlap(const void *a, size_t a_size, const void *
 // - this should play nice with static analyzers like clang-tidy etc.
 // NOTE: this is clearly UB (Undefined Behaviour), and stricter compilers or
 //   architectures may need a more advanced/costly implementation in the future
+// TODO later: CHERI
 template <class T>
 inline void ptr_invalidate_and_poison(T *(&ptr)) noexcept {
     ptr = (T *) (void *) 251; // 0x000000fb // NOLINT(performance-no-int-to-ptr)

@@ -79,15 +79,17 @@ RUN useradd upx -U --uid 2000 --shell /bin/bash -m \
     # symlink upx-stubtools
     && ln -s /usr/local/bin/bin-upx-20221212 .local/bin/bin-upx \
     # some convenience settings according to upx developer preferences
+    && echo "alias path='echo PATH=\"\$PATH\"'" >> .bashrc \
     && echo "alias md=mkdir" >> .bashrc \
     && echo "alias rd=rmdir" >> .bashrc \
     && echo 'mdd() { mkdir "$1" && cd "$1"; }' >> .bashrc \
     && echo 'm() { make "$@"; }' >> .bashrc \
+    && echo 'mm() { make -j8 "$@"; }' >> .bashrc \
     && echo 'tn() { time nice "$@"; }' >> .bashrc \
     && echo 'tnm() { time nice make "$@"; }' >> .bashrc \
-    && echo 'tnmm() { time nice make -j "$@"; }' >> .bashrc \
+    && echo 'tnmm() { time nice make -j8 "$@"; }' >> .bashrc \
     && echo 'source /usr/share/bash-completion/completions/make' >> .bashrc \
-    && echo 'complete -F _make m tnm tnmm' >> .bashrc \
+    && echo 'complete -F _make m mm tnm tnmm' >> .bashrc \
     && echo 'eval "$(zoxide init bash)"' >> .bashrc \
     && echo "alias zz=zi\nalias y=z\nalias yy=zi" >> .bashrc \
     && echo "alias cd..='cd ..'" >> .bashrc \
