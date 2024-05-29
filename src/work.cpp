@@ -238,8 +238,6 @@ void do_one_file(const char *const iname, char *const oname) may_throw {
         throwIOException("empty file -- skipped");
     if (st.st_size < 512)
         throwIOException("file is too small -- skipped");
-    if (!mem_size_valid_bytes(st.st_size))
-        throwIOException("file is too large -- skipped");
     if ((st.st_mode & S_IWUSR) == 0) {
         bool skip = true;
         if (opt->output_name)
