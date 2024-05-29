@@ -137,7 +137,7 @@ inline constexpr bool upx_is_integral_v = upx_is_integral<T>::value;
 // this limits uncompressed_size to about 682 MiB (715_128_832 bytes)
 typedef size_t upx_rsize_t;
 #define UPX_RSIZE_MAX     UPX_RSIZE_MAX_MEM
-#define UPX_RSIZE_MAX_MEM (780 * 1024 * 1024) // DO NOT CHANGE !!!
+#define UPX_RSIZE_MAX_MEM (512 * 1024 * 1024) // DO NOT CHANGE !!!
 #define UPX_RSIZE_MAX_STR (256 * 1024)
 
 // integral types
